@@ -4,7 +4,9 @@
 
 一个提供多种 LLM（大型语言模型）服务集成的 Node.js 模块，支持 DeepSeek、Gemini、Groq、讯飞星火和 YouChat 等服务提供商。
 
-示例：[Revelation](https://github.com/qcgm1978/revelation)
+示例：
+ - [Revelation](https://github.com/qcgm1978/revelation)
+ - [Psychotherapy](https://github.com/qcgm1978/psychotherapy)
 
 ## 安装
 

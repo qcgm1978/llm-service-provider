@@ -2,7 +2,9 @@
 
 A Node.js module that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
 
-Example: [Revelation](https://github.com/qcgm1978/revelation)
+Example: 
+ - [Revelation](https://github.com/qcgm1978/revelation)
+ - [Psychotherapy](https://github.com/qcgm1978/psychotherapy)
 
 ## Installation
 
