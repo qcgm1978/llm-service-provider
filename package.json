@@ -1,6 +1,6 @@
 {
   "name": "llm-service-provider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,11 @@
     "xunfei",
     "youchat"
   ],
-  "author": "Your Name",
+  "author": "qcgm1978",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qcgm1978/llm-service-provider.git"
+  },
   "license": "MIT",
   "dependencies": {
     "@google/genai": "^1.7.0",

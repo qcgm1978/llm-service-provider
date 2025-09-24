@@ -1,24 +1,22 @@
 # LLM Service Provider
 
-[English Document](https://github.com/qcgm1978/llm-service-provider/blob/main/README_EN.md)
+A Node.js module that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
 
-一个提供多种 LLM（大型语言模型）服务集成的 Node.js 模块，支持 DeepSeek、Gemini、Groq、讯飞星火和 YouChat 等服务提供商。
+Example: [Revelation](https://github.com/qcgm1978/revelation)
 
-示例：[Revelation](https://github.com/qcgm1978/revelation)
-
-## 安装
+## Installation
 
 ```bash
 npm install llm-service-provider
-# 或
+# or
 pnpm add llm-service-provider
-# 或
+# or
  yarn add llm-service-provider
 ```
 
-## 使用方法
+## Usage
 
-### 1. 使用 API 密钥管理组件
+### 1. Using API Key Management Component
 
 ```tsx
 import React, { useState } from 'react'
@@ -36,7 +34,7 @@ function App() {
   return (
     <div>
       <button onClick={() => setIsApiKeyManagerOpen(true)}>
-        配置 API 密钥
+        Configure API Key
       </button>
       
       <ApiKeyManager
@@ -51,7 +49,7 @@ function App() {
 export default App
 ```
 
-### 2. 使用流式内容生成
+### 2. Using Streaming Content Generation
 
 ```tsx
 import React, { useState, useEffect, useRef } from 'react'
@@ -73,7 +71,7 @@ function ContentGenerator({ topic }: { topic: string }) {
 
       try {
         const provider = getSelectedServiceProvider()
-        const generator = streamDefinition(topic, 'zh', undefined, undefined)
+        const generator = streamDefinition(topic, 'en', undefined, undefined)
         
         for await (const chunk of generator) {
           if (signal.aborted) break
@@ -81,7 +79,7 @@ function ContentGenerator({ topic }: { topic: string }) {
         }
       } catch (error) {
         console.error('Error generating content:', error)
-        setContent(`生成内容时出错: ${error instanceof Error ? error.message : '未知错误'}`)
+        setContent(`Error generating content: ${error instanceof Error ? error.message : 'Unknown error'}`)
       } finally {
         setIsGenerating(false)
       }
@@ -98,7 +96,7 @@ function ContentGenerator({ topic }: { topic: string }) {
 
   return (
     <div>
-      {isGenerating && <p>生成中...</p>}
+      {isGenerating && <p>Generating...</p>}
       <div>{content}</div>
     </div>
   )
@@ -107,7 +105,7 @@ function ContentGenerator({ topic }: { topic: string }) {
 export default ContentGenerator
 ```
 
-### 3. 服务提供商管理
+### 3. Service Provider Management
 
 ```javascript
 import {
@@ -117,29 +115,29 @@ import {
   hasApiKey
 } from 'llm-service-provider'
 
-// 获取当前选中的服务提供商
+// Get the currently selected service provider
 const currentProvider = getSelectedServiceProvider()
-console.log('当前选中的服务提供商:', currentProvider)
+console.log('Current selected service provider:', currentProvider)
 
-// 选择特定的服务提供商
+// Select a specific service provider
 setSelectedServiceProvider(ServiceProvider.GEMINI)
 
-// 检查是否已配置任何 API 密钥
+// Check if any API key is configured
 const hasKey = hasApiKey()
-console.log('是否已配置 API 密钥:', hasKey)
+console.log('Has API key configured:', hasKey)
 ```
 
-## 支持的服务提供商
+## Supported Service Providers
 
 - DeepSeek
 - Gemini
 - Groq (Meta)
-- 讯飞星火
+- Xunfei Xinghuo
 - YouChat
 
-## 浏览器兼容性
+## Browser Compatibility
 
-该模块支持所有现代浏览器，使用 localStorage 存储 API 密钥和用户偏好设置。
+This module supports all modern browsers and uses localStorage to store API keys and user preferences.
 
 ## License
 
