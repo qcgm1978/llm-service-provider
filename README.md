@@ -1,6 +1,6 @@
 # LLM Service Provider
 
-[English Document](https://github.com/qcgm1978/llm-service-provider/blob/main/README_EN.md)
+[English Document](README_EN.md)
 
 一个提供多种 LLM（大型语言模型）服务集成的 Node.js 模块，支持 DeepSeek、Gemini、Groq、讯飞星火和 YouChat 等服务提供商。
 
