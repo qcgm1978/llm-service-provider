@@ -1,12 +1,17 @@
 {
   "name": "llm-service-provider",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "publish:patch": "./publish.sh patch",
+    "publish:minor": "./publish.sh minor",
+    "publish:major": "./publish.sh major",
+    "publish:dry": "npm publish --dry-run",
+    "publish:local": "npm run build && npm publish"
   },
   "keywords": [
     "llm",
