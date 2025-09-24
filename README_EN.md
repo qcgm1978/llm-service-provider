@@ -139,6 +139,51 @@ console.log('Has API key configured:', hasKey)
 
 This module supports all modern browsers and uses localStorage to store API keys and user preferences.
 
+## Build and Publish
+
+### Development Build
+
+```bash
+npm install
+npm run build
+```
+
+### Version Release Process
+
+#### Automatic Version Update and Publishing
+
+The project provides several npm scripts to simplify the version update and publishing process:
+
+```bash
+# Update patch version (e.g., 1.0.0 -> 1.0.1)
+npm run publish:patch
+
+# Update minor version (e.g., 1.0.1 -> 1.1.0)
+npm run publish:minor
+
+# Update major version (e.g., 1.1.0 -> 2.0.0)
+npm run publish:major
+```
+
+These scripts will automatically:
+1. Update the version number in package.json
+2. Create a git commit with the version bump
+3. Create a git tag with the new version
+4. Push the commit and tag to the repository
+5. Trigger GitHub Actions to publish the package to npmjs.com
+
+#### GitHub Actions Automatic Publishing
+
+The project uses GitHub Actions workflows to automatically build and publish the package to npmjs.com whenever a new version tag is pushed.
+
+#### Test Publishing
+
+For testing the publishing process without actually publishing to npmjs.com:
+
+```bash
+npm run publish:dry
+```
+
 ## License
 
 MIT

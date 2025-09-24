@@ -141,6 +141,49 @@ console.log('是否已配置 API 密钥:', hasKey)
 
 该模块支持所有现代浏览器，使用 localStorage 存储 API 密钥和用户偏好设置。
 
+## 构建和发布
+
+### 开发构建
+
+项目使用 TypeScript 开发，构建命令如下：
+
+```bash
+# 安装依赖
+npm install
+
+# 构建项目
+npm run build
+
+# 构建结果会输出到 dist 目录
+```
+
+### 版本发布流程
+
+项目使用 GitHub Actions 实现自动发布到 npmjs。发布流程如下：
+
+1. 版本更新和标签创建：
+   ```bash
+   # 更新补丁版本 (v1.0.x)
+   npm run publish:patch
+   
+   # 更新次要版本 (v1.x.0)
+   npm run publish:minor
+   
+   # 更新主要版本 (vx.0.0)
+   npm run publish:major
+   ```
+
+2. 自动发布机制：
+   - 当推送符合 `v*.*.*` 格式的标签到 GitHub 时，GitHub Actions 会自动触发构建和发布流程
+   - Actions 会在 Ubuntu 环境中使用 Node.js 18 运行构建和发布命令
+   - 发布过程中会使用 `NPM_TOKEN` 环境变量进行身份验证
+
+3. 测试发布：
+   ```bash
+   # 执行测试发布，不会实际发布到 npmjs
+   npm run publish:dry
+   ```
+
 ## License
 
 MIT
