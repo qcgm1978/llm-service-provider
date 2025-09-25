@@ -1,9 +1,15 @@
 {
   "name": "llm-service-provider",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "README_EN.md",
+    "index.ts"
+  ],
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
