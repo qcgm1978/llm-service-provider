@@ -20,34 +20,36 @@ import {
   setYouChatApiKey,
   setHasShownApiKeyPrompt,
   clearAllApiKeys,
+  streamDefinition,
   generatePrompt,
-  streamDefinition
+  streamMindMap,
+  streamMindMapArrows
 } from './llmService'
 
 // 导出 React 组件
 import ApiKeyManager from './ApiKeyManager'
 
 // 导出所有功能
+import { 
+  getChapterMindMapPrompt, 
+  getMindMapArrowPrompt 
+} from './mindmap'
+
+// 服务提供商和API密钥管理
+
 export {
-  // 服务提供商枚举
   ServiceProvider,
-  
-  // 服务选择和管理
   getSelectedServiceProvider,
   setSelectedServiceProvider,
-  
-  // API 密钥检查
+  hasApiKey,
   hasDeepSeekApiKey,
   hasGeminiApiKey,
   hasGroqApiKey,
   hasXunfeiApiKey,
   hasXunfeiApiSecret,
   hasYouChatApiKey,
-  hasApiKey,
   hasFreeApiKey,
   hasShownApiKeyPrompt,
-  
-  // API 密钥设置
   setDeepSeekApiKey,
   setGeminiApiKey,
   setGroqApiKey,
@@ -55,12 +57,27 @@ export {
   setXunfeiApiSecret,
   setYouChatApiKey,
   setHasShownApiKeyPrompt,
-  clearAllApiKeys,
-  
-  // 内容生成
+  clearAllApiKeys
+}
+
+// 思维导图功能
+
+export {
+  getChapterMindMapPrompt,
+  getMindMapArrowPrompt
+}
+
+// React 组件
+
+export {
+  ApiKeyManager
+}
+
+// 内容生成
+
+export {
   generatePrompt,
   streamDefinition,
-  
-  // React 组件
-  ApiKeyManager
+  streamMindMap,
+  streamMindMapArrows
 }

@@ -1,3 +1,5 @@
+import { getChapterMindMapPrompt, getMindMapArrowPrompt } from './mindmap'
+
 export enum ServiceProvider {
   DEEPSEEK = 'deepseek',
   GEMINI = 'gemini',
@@ -284,6 +286,49 @@ export async function* streamDefinition(
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
     const prefix = language === 'zh' ? '发生错误: ' : 'Error: '
+    yield `${prefix}${errorMessage}`
+  }
+}
+
+// 在文件末尾添加
+// 思维导图生成函数
+export async function* streamMindMap(
+  content: string,
+  language: 'zh' | 'en' = 'zh'
+): AsyncGenerator<string, void, undefined> {
+  const provider = getSelectedServiceProvider()
+  const prompt = getChapterMindMapPrompt()
+  
+  try {
+    // 将内容和思维导图提示结合
+    const fullPrompt = `${content}\n\n${prompt}`
+    
+    // 使用streamDefinition函数来生成思维导图，但更改category以区分
+    yield* streamDefinition(fullPrompt, language, 'mindmap')
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    const prefix = language === 'zh' ? '生成思维导图时发生错误: ' : 'Error generating mind map: '
+    yield `${prefix}${errorMessage}`
+  }
+}
+
+// 思维导图箭头生成函数
+export async function* streamMindMapArrows(
+  mindMapData: string,
+  language: 'zh' | 'en' = 'zh'
+): AsyncGenerator<string, void, undefined> {
+  const provider = getSelectedServiceProvider()
+  const prompt = getMindMapArrowPrompt()
+  
+  try {
+    // 将思维导图数据和箭头提示结合
+    const fullPrompt = `${mindMapData}\n\n${prompt}`
+    
+    // 使用streamDefinition函数来生成箭头，但更改category以区分
+    yield* streamDefinition(fullPrompt, language, 'mindmap_arrows')
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    const prefix = language === 'zh' ? '生成思维导图箭头时发生错误: ' : 'Error generating mind map arrows: '
     yield `${prefix}${errorMessage}`
   }
 }

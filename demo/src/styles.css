@@ -1,0 +1,406 @@
+/* 基础样式 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+/* 容器样式 */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 标题样式 */
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+h2 {
+  color: #555;
+  margin: 20px 0 10px 0;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+h3 {
+  font-family: 'Comic Sans MS', cursive;
+}
+
+/* 输入框样式 */
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+/* 按钮样式 */
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Comic Sans MS', cursive;
+  transition: all 0.3s ease;
+  transform: rotate(-1deg);
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: rotate(1deg) scale(1.05);
+}
+
+button:active {
+  transform: rotate(0deg) scale(0.95);
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 文本区域样式 */
+.text-area {
+  width: 100%;
+  min-height: 200px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* 服务提供商选择器 */
+.provider-selector {
+  margin: 15px 0;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+}
+
+.provider-selector select {
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 2px solid #ddd;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+/* 加载状态 */
+.loading {
+  display: inline-block;
+  margin-left: 10px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 提示信息 */
+.info-message {
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+  margin: 10px 0;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+.error-message {
+  color: #dc3545;
+  font-weight: bold;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+/* 思维导图样式 */
+.mindmap-container {
+  width: 100%;
+  height: 600px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  margin: 20px 0;
+  overflow: auto;
+  background-color: #fffef0;
+  background-image: 
+    linear-gradient(#f0f0f0 1px, transparent 1px),
+    linear-gradient(90deg, #f0f0f0 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.mindmap-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+.tag-core {
+  background-color: #ffcccc;
+  color: #cc0000;
+}
+
+.tag-case {
+  background-color: #cce5ff;
+  color: #0066cc;
+}
+
+.tag-practice {
+  background-color: #ccffcc;
+  color: #006600;
+}
+
+.tag-quote {
+  background-color: #ffccff;
+  color: #660066;
+}
+
+/* 分节样式 */
+.section {
+  margin-bottom: 30px;
+  padding: 15px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.result-container {
+  margin-top: 15px;
+}
+
+/* 表格样式 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-family: 'Comic Sans MS', cursive;
+}
+
+table, th, td {
+  border: 2px solid #ddd;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+/* 预格式化文本样式 */
+pre {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: 'Comic Sans MS', cursive;
+  border: 2px solid #ddd;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+  border: 2px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 改进思维导图容器样式 */
+.mindmap-container.improved {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fafafa;
+  background-image: 
+    linear-gradient(to right, #eee 1px, transparent 1px),
+    linear-gradient(to bottom, #eee 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: auto;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* 优化手绘效果 */
+.hand-drawn {
+  filter: url(#hand-drawn-filter);
+}
+
+/* 为SVG添加滤镜以增强手绘效果 */
+.mindmap-svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* 改进节点悬停效果 */
+.mindmap-svg .hand-drawn:hover {
+  stroke-width: 4;
+  transition: stroke-width 0.2s ease;
+}
+
+/* 为SVG添加滤镜 */
+.svg-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* React Flow 思维导图容器 */
+.mindmap-container {
+  height: 600px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fafafa;
+  position: relative;
+}
+
+/* 自定义思维导图节点 */
+.mindmap-node {
+  background-color: white;
+  border: 2px solid #555;
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 120px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.mindmap-node:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.node-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* 节点标签样式 */
+.node-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: #eee;
+  color: #333;
+}
+
+.tag.核心 {
+  background-color: #ffcccc;
+  color: #cc0000;
+}
+
+.tag.案例 {
+  background-color: #cce5ff;
+  color: #0066cc;
+}
+
+.tag.实践 {
+  background-color: #ccffcc;
+  color: #006600;
+}
+
+.tag.金句 {
+  background-color: #ffccff;
+  color: #660066;
+}
+
+/* 空状态和错误状态 */
+.empty-state,
+.error-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  text-align: center;
+  padding: 20px;
+}
+
+.error-display {
+  color: #d32f2f;
+}
+
+.error-display h4 {
+  margin: 0 0 10px 0;
+}
+
+.error-display p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* 调整 React Flow 控件样式 */
+.react-flow__controls-button {
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 0 5px 0;
+  padding: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.react-flow__controls-button:hover {
+  background-color: #0056b3;
+}
