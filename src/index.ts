@@ -28,6 +28,7 @@ import {
 
 // 导出 React 组件
 import ApiKeyManager from './ApiKeyManager'
+import MindMapVisualizer from './MindMapVisualizer'
 
 // 导出所有功能
 import { 
@@ -37,7 +38,7 @@ import {
 
 // 服务提供商和API密钥管理
 
-export {
+export { 
   ServiceProvider,
   getSelectedServiceProvider,
   setSelectedServiceProvider,
@@ -62,20 +63,21 @@ export {
 
 // 思维导图功能
 
-export {
+export { 
   getChapterMindMapPrompt,
   getMindMapArrowPrompt
 }
 
 // React 组件
 
-export {
-  ApiKeyManager
+export { 
+  ApiKeyManager,
+  MindMapVisualizer
 }
 
 // 内容生成
 
-export {
+export { 
   generatePrompt,
   streamDefinition,
   streamMindMap,

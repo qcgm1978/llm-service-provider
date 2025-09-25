@@ -8,7 +8,10 @@ import {
   streamMindMap,
   streamMindMapArrows,
   getChapterMindMapPrompt,
-  getMindMapArrowPrompt 
+  getMindMapArrowPrompt,
+  MindMapVisualizer,
+  MindMapData,
+  ArrowsData
 } from '../../src'
 import ApiKeyManager from '../../src/ApiKeyManager'
 import './styles.css'
@@ -390,32 +393,21 @@ function App() {
           </pre>
         </div>
         
-        {/* 思维导图可视化 - 使用 React Flow */}
+        {/* 思维导图可视化 - 使用 MindMapVisualizer 组件 */}
         <div className="result-container">
           <h3>思维导图可视化:</h3>
-          <div className="mindmap-container" ref={reactFlowWrapper}>
+          <div className="mindmap-container">
             {mindMapError ? (
               <div className="error-display">
                 <h4>解析思维导图数据失败</h4>
                 <p>{mindMapError}</p>
                 <p>请检查JSON格式并修复错误后重新生成</p>
               </div>
-            ) : nodes.length > 0 ? (
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onInit={setReactFlowInstance}
-                nodeTypes={nodeTypes}
-                fitView
-                attributionPosition="bottom-left"
-              >
-                <MiniMap />
-                <Controls />
-                <Background variant="dots" gap={20} size={1} />
-              </ReactFlow>
+            ) : parsedMindMap ? (
+              <MindMapVisualizer 
+                mindMapData={parsedMindMap} 
+                arrowsData={parsedArrows} 
+              />
             ) : (
               <div className="empty-state">
                 请先生成思维导图数据
