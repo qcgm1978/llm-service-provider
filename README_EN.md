@@ -139,6 +139,35 @@ const hasKey = hasApiKey()
 console.log('Has API key configured:', hasKey)
 ```
 
+## 4. Using the Demo Example
+
+The project includes a complete demonstration application located in the `demo` folder. This demo showcases all the main features of the library, including API key configuration, service provider selection, content generation, mind map creation, and visualization.
+
+### Running the Demo Application
+
+```bash
+# Navigate to the demo directory
+cd demo
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+### Demo Application Features
+
+The demo application includes the following functional modules:
+
+1. **API Key Configuration**: Set up API keys for various service providers using the ApiKeyManager component
+2. **Service Provider Selection**: Switch between DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat
+3. **Content Generation**: Generate content based on the input topic
+4. **Mind Map Generation**: Create mind map data from the generated content
+5. **Arrow Connection Generation**: Add meaningful connection arrows to the mind map
+6. **Mind Map Visualization**: Display the generated mind map using the MindMapVisualizer component
+7. **Raw Prompt Display**: View the original prompt texts used for generating mind maps and arrows
+
 ## Supported Service Providers
 
 - DeepSeek
