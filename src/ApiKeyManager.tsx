@@ -232,7 +232,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               color: '#34495e'
             }}
           >
-            服务提供商（讯飞星火/DeepSeek/Gemini/Groq/YouChat）
+            服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat）
           </label>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button
@@ -333,7 +333,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   : selectedProvider === ServiceProvider.GEMINI
                   ? 'Gemini API 密钥'
                   : selectedProvider === ServiceProvider.GROQ
-                  ? 'Groq API 密钥(需代理)'
+                  ? 'Meta API 密钥(需代理)'
                   : '讯飞 API Key'}
               </label>
               <div style={{ position: 'relative' }}>
