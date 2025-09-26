@@ -1,3 +1,4 @@
+// 添加在文件开头
 export const getChapterMindMapPrompt = () => {
   const userPrompt = `\`\`\`ts
 export interface NodeObj {
@@ -48,6 +49,7 @@ export interface Summary {
   return userPrompt
 }
 
+// 保留现有的getMindMapArrowPrompt函数
 export const getMindMapArrowPrompt = () => {
   const userPrompt = `你需要为已有的思维导图添加箭头连接，以显示不同节点之间的关联关系。
 \`\`\`ts

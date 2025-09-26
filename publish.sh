@@ -15,6 +15,10 @@ echo "更新 $type 版本..."
 new_version=$(npm version $type --no-git-tag-version)
 echo "新版本号: $new_version"
 
+# 验证代码可构建
+echo "验证构建..."
+npm run build
+
 # 提交更改
 echo "提交更改..."
 git add package.json
