@@ -1,34 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
-import {
-  ServiceProvider,
-  getSelectedServiceProvider,
-  setSelectedServiceProvider,
-  hasApiKey,
-  streamDefinition,
-  streamMindMap,
-  streamMindMapArrows,
-  getChapterMindMapPrompt,
-  getMindMapArrowPrompt,
-  MindMapVisualizer,
-  MindMapData,
-  ArrowsData
-} from '../../src'
-import ApiKeyManager from '../../src/ApiKeyManager'
-import './styles.css'
-
-import ReactFlow, {
-  MiniMap,
-  Controls,
-  Background,
-  Node,
-  Edge,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  Connection,
-  Handle
-} from 'reactflow'
-import 'reactflow/dist/style.css'
+import React, { useState, useRef, useEffect } from 'react';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Connection, Handle } from 'react-flow-renderer';
+import 'react-flow-renderer/dist/style.css';
+import { ServiceProvider, streamDefinition, streamMindMap, streamMindMapArrows, generatePrompt, hasApiKey, getSelectedServiceProvider, setSelectedServiceProvider } from '../../src';
+import ApiKeyManager from '../../src/ApiKeyManager';
+import MindMapVisualizer from '../../src/MindMapVisualizer';
+import { getChapterMindMapPrompt, getMindMapArrowPrompt } from '../../src/mindmap';
+import PromptManager from './PromptManager';
+import './styles.css';
 
 interface NodeObj {
   topic: string
@@ -92,33 +70,34 @@ const nodeTypes = {
 
 function App() {
   // 基础状态
-  const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false)
-  const [topic, setTopic] = useState('如何制作思维导图')
+  const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
+  const [isPromptManagerOpen, setIsPromptManagerOpen] = useState(false);
+  const [topic, setTopic] = useState('如何制作思维导图');
   
   // 内容生成状态
-  const [content, setContent] = useState('')
-  const [isGeneratingContent, setIsGeneratingContent] = useState(false)
+  const [content, setContent] = useState('');
+  const [isGeneratingContent, setIsGeneratingContent] = useState(false);
   
   // 思维导图状态
-  const [mindMap, setMindMap] = useState('')
-  const [isGeneratingMindMap, setIsGeneratingMindMap] = useState(false)
-  const [parsedMindMap, setParsedMindMap] = useState<MindMapData | null>(null)
-  const [mindMapError, setMindMapError] = useState<string>('')
+  const [mindMap, setMindMap] = useState('');
+  const [isGeneratingMindMap, setIsGeneratingMindMap] = useState(false);
+  const [parsedMindMap, setParsedMindMap] = useState<MindMapData | null>(null);
+  const [mindMapError, setMindMapError] = useState<string>('');
   
   // 箭头生成状态
-  const [arrows, setArrows] = useState('')
-  const [isGeneratingArrows, setIsGeneratingArrows] = useState(false)
-  const [parsedArrows, setParsedArrows] = useState<ArrowsData | null>(null)
-  const [arrowsError, setArrowsError] = useState<string>('')
+  const [arrows, setArrows] = useState('');
+  const [isGeneratingArrows, setIsGeneratingArrows] = useState(false);
+  const [parsedArrows, setParsedArrows] = useState<ArrowsData | null>(null);
+  const [arrowsError, setArrowsError] = useState<string>('');
   
   // 服务提供商状态
-  const [selectedProvider, setSelectedProvider] = useState(getSelectedServiceProvider())
+  const [selectedProvider, setSelectedProvider] = useState(getSelectedServiceProvider());
 
   // React Flow 状态
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const reactFlowWrapper = useRef<HTMLDivElement>(null)
-  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null)
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
 
   // 解析思维导图数据
   useEffect(() => {
@@ -321,10 +300,27 @@ function App() {
         <ApiKeyManager
           isOpen={isApiKeyManagerOpen}
           onSave={(key) => {
-            console.log('API key saved:', key)
-            setIsApiKeyManagerOpen(false)
+            console.log('API key saved:', key);
+            setIsApiKeyManagerOpen(false);
           }}
           onClose={() => setIsApiKeyManagerOpen(false)}
+        />
+      </div>
+
+      {/* 提示模板管理 */}
+      <div className="section">
+        <h2>提示模板管理</h2>
+        <button 
+          onClick={() => setIsPromptManagerOpen(true)}
+        >
+          管理提示模板
+        </button>
+        <PromptManager
+          isOpen={isPromptManagerOpen}
+          onClose={() => setIsPromptManagerOpen(false)}
+          onSave={() => {
+            console.log('提示模板已保存');
+          }}
         />
       </div>
 
@@ -457,7 +453,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

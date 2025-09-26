@@ -1,4 +1,5 @@
-import { getChapterMindMapPrompt, getMindMapArrowPrompt } from './mindmap'
+import { getPromptByName, formatPrompt } from './prompts';
+import { getChapterMindMapPrompt, getMindMapArrowPrompt } from './mindmap';
 
 export enum ServiceProvider {
   DEEPSEEK = 'deepseek',
@@ -141,26 +142,55 @@ export const generatePrompt = (
   category?: string,
   context?: string
 ): string => {
-  let prompt: string
+  let promptTemplate: string | undefined;
+  
   if (language === 'zh') {
     if (context) {
-      prompt = `请用中文回答"${topic}"。\n\n上下文信息：${context}`
+      promptTemplate = getPromptByName('带上下文回答', 'zh');
     } else if (category) {
-      prompt = `请用中文为${category}类别里的术语"${topic}"提供一个简洁、百科全书式的定义。请提供信息丰富且中立的内容。不要使用markdown、标题或任何特殊格式。只返回定义本身的文本。`
+      promptTemplate = getPromptByName('类别定义', 'zh');
     } else {
-      prompt = `请用中文为术语"${topic}"提供一个简洁、百科全书式的定义。请提供信息丰富且中立的内容。不要使用markdown、标题或任何特殊格式。只返回定义本身的文本。`
+      promptTemplate = getPromptByName('简洁定义', 'zh');
     }
   } else {
     if (context) {
-      prompt = `Please answer the question "${topic}" in English.\n\nContext information: ${context}`
+      promptTemplate = getPromptByName('Answer with Context', 'en');
     } else if (category) {
-      prompt = `Please provide a concise, encyclopedia-style definition for the term: "${topic}" in the category of ${category} in English. Please provide informative and neutral content. Do not use markdown, headings, or any special formatting. Return only the text of the definition itself.`
+      promptTemplate = getPromptByName('Category Definition', 'en');
     } else {
-      prompt = `Please provide a concise, encyclopedia-style definition for the term: "${topic}" in English. Please provide informative and neutral content. Do not use markdown, headings, or any special formatting. Return only the text of the definition itself.`
+      promptTemplate = getPromptByName('Concise Definition', 'en');
     }
   }
-  return prompt
-}
+  
+  // 如果找不到模板，使用默认实现
+  if (!promptTemplate) {
+    // 保留原来的默认实现作为后备
+    if (language === 'zh') {
+      if (context) {
+        return `${topic}\n\n${context}`;
+      } else if (category) {
+        return `${topic}`;
+      } else {
+        return `${topic}`;
+      }
+    } else {
+      if (context) {
+        return `${topic}\n\n${context}`;
+      } else if (category) {
+        return `${topic}`;
+      } else {
+        return `${topic}`;
+      }
+    }
+  }
+  
+  // 替换提示模板中的变量
+  const replacements: Record<string, string> = { topic };
+  if (category) replacements.category = category;
+  if (context) replacements.context = context;
+  
+  return formatPrompt(promptTemplate, replacements);
+};
 
 export const hasXunfeiApiKey = (): boolean => {
   if (hasLocalStorage()) {

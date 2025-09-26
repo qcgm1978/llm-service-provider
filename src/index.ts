@@ -1,85 +1,21 @@
-// 导出核心服务
-import { 
-  ServiceProvider,
-  getSelectedServiceProvider,
-  setSelectedServiceProvider,
-  hasDeepSeekApiKey,
-  hasGeminiApiKey,
-  hasGroqApiKey,
-  hasXunfeiApiKey,
-  hasXunfeiApiSecret,
-  hasYouChatApiKey,
-  hasApiKey,
-  hasFreeApiKey,
-  hasShownApiKeyPrompt,
-  setDeepSeekApiKey,
-  setGeminiApiKey,
-  setGroqApiKey,
-  setXunfeiApiKey,
-  setXunfeiApiSecret,
-  setYouChatApiKey,
-  setHasShownApiKeyPrompt,
-  clearAllApiKeys,
-  streamDefinition,
-  generatePrompt,
-  streamMindMap,
-  streamMindMapArrows
-} from './llmService'
+// 导出服务提供商枚举
 
-// 导出 React 组件
-import ApiKeyManager from './ApiKeyManager'
-import MindMapVisualizer from './MindMapVisualizer'
+export { ServiceProvider } from './llmService';
 
-// 导出所有功能
-import { 
-  getChapterMindMapPrompt, 
-  getMindMapArrowPrompt 
-} from './mindmap'
+// 导出主要功能函数
+export { streamDefinition, generatePrompt } from './llmService';
 
-// 服务提供商和API密钥管理
+// 导出思维导图相关功能
+export { streamMindMap, streamMindMapArrows } from './llmService';
 
-export { 
-  ServiceProvider,
-  getSelectedServiceProvider,
-  setSelectedServiceProvider,
-  hasApiKey,
-  hasDeepSeekApiKey,
-  hasGeminiApiKey,
-  hasGroqApiKey,
-  hasXunfeiApiKey,
-  hasXunfeiApiSecret,
-  hasYouChatApiKey,
-  hasFreeApiKey,
-  hasShownApiKeyPrompt,
-  setDeepSeekApiKey,
-  setGeminiApiKey,
-  setGroqApiKey,
-  setXunfeiApiKey,
-  setXunfeiApiSecret,
-  setYouChatApiKey,
-  setHasShownApiKeyPrompt,
-  clearAllApiKeys
-}
+// 导出 API Key 管理功能
+export { hasApiKey, getSelectedServiceProvider, setSelectedServiceProvider } from './llmService';
 
-// 思维导图功能
+// 导出提示管理功能
+export { getPromptByName, formatPrompt, getPromptsByLanguage, updatePrompt, resetPrompts } from './prompts';
 
-export { 
-  getChapterMindMapPrompt,
-  getMindMapArrowPrompt
-}
+export { getChapterMindMapPrompt, getMindMapArrowPrompt } from './mindmap';
 
-// React 组件
-
-export { 
-  ApiKeyManager,
-  MindMapVisualizer
-}
-
-// 内容生成
-
-export { 
-  generatePrompt,
-  streamDefinition,
-  streamMindMap,
-  streamMindMapArrows
-}
+// 导出组件
+export { default as ApiKeyManager } from './ApiKeyManager';
+export { default as MindMapVisualizer } from './MindMapVisualizer';
