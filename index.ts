@@ -4,7 +4,9 @@ import {
   streamDefinition,
   hasApiKey,
   getChapterMindMapPrompt,
-  getMindMapArrowPrompt
+  getMindMapArrowPrompt,
+  streamMindMap,
+  streamMindMapArrows
 } from './src'
 
 export {
@@ -12,7 +14,9 @@ export {
   hasApiKey,
   ApiKeyManager,
   getChapterMindMapPrompt,
-  getMindMapArrowPrompt
+  getMindMapArrowPrompt,
+  streamMindMap,
+  streamMindMapArrows
 }
 
 export default {
@@ -20,5 +24,7 @@ export default {
   hasApiKey,
   ApiKeyManager,
   getChapterMindMapPrompt,
-  getMindMapArrowPrompt
+  getMindMapArrowPrompt,
+  streamMindMap,
+  streamMindMapArrows
 }
