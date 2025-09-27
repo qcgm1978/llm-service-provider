@@ -43,23 +43,38 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
       setSelectedProvider(provider)
 
       if (provider === ServiceProvider.DEEPSEEK) {
-        const key = typeof window !== 'undefined' ? localStorage.getItem('DEEPSEEK_API_KEY') || '' : ''
+        const key =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('DEEPSEEK_API_KEY') || ''
+            : ''
         setApiKey(key)
         setIsValid(hasDeepSeekApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.GEMINI) {
-        const key = typeof window !== 'undefined' ? localStorage.getItem('GEMINI_API_KEY') || '' : ''
+        const key =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('GEMINI_API_KEY') || ''
+            : ''
         setApiKey(key)
         setIsValid(hasGeminiApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.GROQ) {
-        const key = typeof window !== 'undefined' ? localStorage.getItem('GROQ_API_KEY') || '' : ''
+        const key =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('GROQ_API_KEY') || ''
+            : ''
         setApiKey(key)
         setIsValid(hasGroqApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.XUNFEI) {
-        const key = typeof window !== 'undefined' ? localStorage.getItem('XUNFEI_API_KEY') || '' : ''
-        const secret = typeof window !== 'undefined' ? localStorage.getItem('XUNFEI_API_SECRET') || '' : ''
+        const key =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('XUNFEI_API_KEY') || ''
+            : ''
+        const secret =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('XUNFEI_API_SECRET') || ''
+            : ''
         setApiKey(key)
         setApiSecret(secret)
         setIsValid(hasXunfeiApiKey() && hasXunfeiApiSecret())
@@ -80,23 +95,38 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     setSelectedServiceProvider(provider)
 
     if (provider === ServiceProvider.DEEPSEEK) {
-      const key = typeof window !== 'undefined' ? localStorage.getItem('DEEPSEEK_API_KEY') || '' : ''
+      const key =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('DEEPSEEK_API_KEY') || ''
+          : ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasDeepSeekApiKey())
     } else if (provider === ServiceProvider.GEMINI) {
-      const key = typeof window !== 'undefined' ? localStorage.getItem('GEMINI_API_KEY') || '' : ''
+      const key =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('GEMINI_API_KEY') || ''
+          : ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasGeminiApiKey())
     } else if (provider === ServiceProvider.GROQ) {
-      const key = typeof window !== 'undefined' ? localStorage.getItem('GROQ_API_KEY') || '' : ''
+      const key =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('GROQ_API_KEY') || ''
+          : ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasGroqApiKey())
     } else if (provider === ServiceProvider.XUNFEI) {
-      const key = typeof window !== 'undefined' ? localStorage.getItem('XUNFEI_API_KEY') || '' : ''
-      const secret = typeof window !== 'undefined' ? localStorage.getItem('XUNFEI_API_SECRET') || '' : ''
+      const key =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('XUNFEI_API_KEY') || ''
+          : ''
+      const secret =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('XUNFEI_API_SECRET') || ''
+          : ''
       setApiKey(key)
       setApiSecret(secret)
       setIsValid(hasXunfeiApiKey() && hasXunfeiApiSecret())
@@ -239,9 +269,18 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.XUNFEI)}
               style={{
                 padding: '0.5rem 1rem',
-                border: selectedProvider === ServiceProvider.XUNFEI ? '2px solid #3498db' : '2px solid #e1e8ed',
-                backgroundColor: selectedProvider === ServiceProvider.XUNFEI ? '#3498db' : 'white',
-                color: selectedProvider === ServiceProvider.XUNFEI ? 'white' : '#34495e',
+                border:
+                  selectedProvider === ServiceProvider.XUNFEI
+                    ? '2px solid #3498db'
+                    : '2px solid #e1e8ed',
+                backgroundColor:
+                  selectedProvider === ServiceProvider.XUNFEI
+                    ? '#3498db'
+                    : 'white',
+                color:
+                  selectedProvider === ServiceProvider.XUNFEI
+                    ? 'white'
+                    : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -254,9 +293,18 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.DEEPSEEK)}
               style={{
                 padding: '0.5rem 1rem',
-                border: selectedProvider === ServiceProvider.DEEPSEEK ? '2px solid #3498db' : '2px solid #e1e8ed',
-                backgroundColor: selectedProvider === ServiceProvider.DEEPSEEK ? '#3498db' : 'white',
-                color: selectedProvider === ServiceProvider.DEEPSEEK ? 'white' : '#34495e',
+                border:
+                  selectedProvider === ServiceProvider.DEEPSEEK
+                    ? '2px solid #3498db'
+                    : '2px solid #e1e8ed',
+                backgroundColor:
+                  selectedProvider === ServiceProvider.DEEPSEEK
+                    ? '#3498db'
+                    : 'white',
+                color:
+                  selectedProvider === ServiceProvider.DEEPSEEK
+                    ? 'white'
+                    : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -269,9 +317,18 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.GEMINI)}
               style={{
                 padding: '0.5rem 1rem',
-                border: selectedProvider === ServiceProvider.GEMINI ? '2px solid #3498db' : '2px solid #e1e8ed',
-                backgroundColor: selectedProvider === ServiceProvider.GEMINI ? '#3498db' : 'white',
-                color: selectedProvider === ServiceProvider.GEMINI ? 'white' : '#34495e',
+                border:
+                  selectedProvider === ServiceProvider.GEMINI
+                    ? '2px solid #3498db'
+                    : '2px solid #e1e8ed',
+                backgroundColor:
+                  selectedProvider === ServiceProvider.GEMINI
+                    ? '#3498db'
+                    : 'white',
+                color:
+                  selectedProvider === ServiceProvider.GEMINI
+                    ? 'white'
+                    : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -284,9 +341,18 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.GROQ)}
               style={{
                 padding: '0.5rem 1rem',
-                border: selectedProvider === ServiceProvider.GROQ ? '2px solid #3498db' : '2px solid #e1e8ed',
-                backgroundColor: selectedProvider === ServiceProvider.GROQ ? '#3498db' : 'white',
-                color: selectedProvider === ServiceProvider.GROQ ? 'white' : '#34495e',
+                border:
+                  selectedProvider === ServiceProvider.GROQ
+                    ? '2px solid #3498db'
+                    : '2px solid #e1e8ed',
+                backgroundColor:
+                  selectedProvider === ServiceProvider.GROQ
+                    ? '#3498db'
+                    : 'white',
+                color:
+                  selectedProvider === ServiceProvider.GROQ
+                    ? 'white'
+                    : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -299,9 +365,18 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.YOUCHAT)}
               style={{
                 padding: '0.5rem 1rem',
-                border: selectedProvider === ServiceProvider.YOUCHAT ? '2px solid #3498db' : '2px solid #e1e8ed',
-                backgroundColor: selectedProvider === ServiceProvider.YOUCHAT ? '#3498db' : 'white',
-                color: selectedProvider === ServiceProvider.YOUCHAT ? 'white' : '#34495e',
+                border:
+                  selectedProvider === ServiceProvider.YOUCHAT
+                    ? '2px solid #3498db'
+                    : '2px solid #e1e8ed',
+                backgroundColor:
+                  selectedProvider === ServiceProvider.YOUCHAT
+                    ? '#3498db'
+                    : 'white',
+                color:
+                  selectedProvider === ServiceProvider.YOUCHAT
+                    ? 'white'
+                    : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -313,10 +388,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           </div>
         </div>
 
-        {(selectedProvider === ServiceProvider.DEEPSEEK ||
-          selectedProvider === ServiceProvider.GEMINI ||
-          selectedProvider === ServiceProvider.GROQ ||
-          selectedProvider === ServiceProvider.XUNFEI) && (
+        {
           <>
             <div style={{ marginBottom: '1rem' }}>
               <label
@@ -331,54 +403,72 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 {selectedProvider === ServiceProvider.DEEPSEEK
                   ? 'DeepSeek API 密钥'
                   : selectedProvider === ServiceProvider.GEMINI
-                  ? 'Gemini API 密钥'
+                  ? 'Gemini API 密钥(需代理)'
                   : selectedProvider === ServiceProvider.GROQ
                   ? 'Meta API 密钥(需代理)'
+                  : selectedProvider === ServiceProvider.YOUCHAT
+                  ? '(需代理)'
                   : '讯飞 API Key'}
               </label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  id='apiKey'
-                  type={showPassword ? 'text' : 'password'}
-                  value={apiKey}
-                  onChange={e => {
-                    setApiKey(e.target.value)
-                    if (selectedProvider === ServiceProvider.XUNFEI) {
-                      setIsValid(e.target.value.length > 0 && apiSecret.length > 0)
-                    } else {
-                      setIsValid(e.target.value.length > 0)
-                    }
-                  }}
-                  onKeyPress={handleKeyPress}
-                  placeholder={`请输入你的 ${selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : selectedProvider === ServiceProvider.GROQ ? 'Groq' : '讯飞'} ${selectedProvider === ServiceProvider.XUNFEI ? 'API Key' : 'API 密钥'}`}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '2px solid #e1e8ed',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    boxSizing: 'border-box',
-                    transition: 'border-color 0.3s ease'
-                  }}
-                />
-                <button
-                  type='button'
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '0.75rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: '#666',
-                    fontSize: '1rem'
-                  }}
-                >
-                  {showPassword ? '🙈' : '👁️'}
-                </button>
-              </div>
+              {selectedProvider !== ServiceProvider.YOUCHAT && (
+                <div style={{ position: 'relative' }}>
+                  <input
+                    id='apiKey'
+                    type={showPassword ? 'text' : 'password'}
+                    value={apiKey}
+                    onChange={e => {
+                      setApiKey(e.target.value)
+                      if (selectedProvider === ServiceProvider.XUNFEI) {
+                        setIsValid(
+                          e.target.value.length > 0 && apiSecret.length > 0
+                        )
+                      } else {
+                        setIsValid(e.target.value.length > 0)
+                      }
+                    }}
+                    onKeyPress={handleKeyPress}
+                    placeholder={`请输入你的 ${
+                      selectedProvider === ServiceProvider.DEEPSEEK
+                        ? 'DeepSeek'
+                        : selectedProvider === ServiceProvider.GEMINI
+                        ? 'Gemini'
+                        : selectedProvider === ServiceProvider.GROQ
+                        ? 'Groq'
+                        : '讯飞'
+                    } ${
+                      selectedProvider === ServiceProvider.XUNFEI
+                        ? 'API Key'
+                        : 'API 密钥'
+                    }`}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      border: '2px solid #e1e8ed',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      boxSizing: 'border-box',
+                      transition: 'border-color 0.3s ease'
+                    }}
+                  />
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '0.75rem',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#666',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              )}
             </div>
 
             {selectedProvider === ServiceProvider.XUNFEI && (
@@ -436,76 +526,79 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               </div>
             )}
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: '#7f8c8d' }}>
-                💡 获取 API 密钥：
-                {selectedProvider === ServiceProvider.XUNFEI ? (
-                  <a
-                    href='https://console.xfyun.cn/app/myapp'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{ color: '#3498db', textDecoration: 'none' }}
-                  >
-                    点击这里访问讯飞开放平台获取 API Key 和 Secret
-                  </a>
-                ) : (
-                  <a
-                    href={
-                      selectedProvider === ServiceProvider.DEEPSEEK
-                        ? 'https://platform.deepseek.com/'
+            {selectedProvider !== ServiceProvider.YOUCHAT && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: '#7f8c8d' }}>
+                  💡 获取 API 密钥：
+                  {selectedProvider === ServiceProvider.XUNFEI ? (
+                    <a
+                      href='https://console.xfyun.cn/app/myapp'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      style={{ color: '#3498db', textDecoration: 'none' }}
+                    >
+                      点击这里访问讯飞开放平台获取 API Key 和 Secret
+                    </a>
+                  ) : (
+                    <a
+                      href={
+                        selectedProvider === ServiceProvider.DEEPSEEK
+                          ? 'https://platform.deepseek.com/'
+                          : selectedProvider === ServiceProvider.GEMINI
+                          ? 'https://makersuite.google.com/app/apikey'
+                          : selectedProvider === ServiceProvider.GROQ
+                          ? 'https://console.groq.com/keys'
+                          : '#'
+                      }
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      style={{ color: '#3498db', textDecoration: 'none' }}
+                    >
+                      点击这里访问{' '}
+                      {selectedProvider === ServiceProvider.DEEPSEEK
+                        ? 'DeepSeek'
                         : selectedProvider === ServiceProvider.GEMINI
-                        ? 'https://makersuite.google.com/app/apikey'
-                        : selectedProvider === ServiceProvider.GROQ
-                        ? 'https://console.groq.com/keys'
-                        : '#'
-                    }
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{ color: '#3498db', textDecoration: 'none' }}
-                  >
-                    点击这里访问{' '}
-                    {selectedProvider === ServiceProvider.DEEPSEEK
-                      ? 'DeepSeek'
-                      : selectedProvider === ServiceProvider.GEMINI
-                      ? 'Gemini'
-                      : 'Groq'}{' '}
-                    平台
-                  </a>
-                )}
-              </p>
-            </div>
+                        ? 'Gemini'
+                        : 'Groq'}{' '}
+                      平台
+                    </a>
+                  )}
+                </p>
+              </div>
+            )}
           </>
-        )}
+        }
 
         <div
           style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}
         >
-          {(selectedProvider !== ServiceProvider.XUNFEI && selectedProvider !== ServiceProvider.YOUCHAT) && (
-            <button
-              onClick={handleClear}
-              style={{
-                padding: '0.75rem 1.5rem',
-                border: '2px solid #e74c3c',
-                backgroundColor: 'white',
-                color: '#e74c3c',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: '500',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = '#e74c3c'
-                e.currentTarget.style.color = 'white'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = 'white'
-                e.currentTarget.style.color = '#e74c3c'
-              }}
-            >
-              清除
-            </button>
-          )}
+          {selectedProvider !== ServiceProvider.XUNFEI &&
+            selectedProvider !== ServiceProvider.YOUCHAT && (
+              <button
+                onClick={handleClear}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  border: '2px solid #e74c3c',
+                  backgroundColor: 'white',
+                  color: '#e74c3c',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.backgroundColor = '#e74c3c'
+                  e.currentTarget.style.color = 'white'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.backgroundColor = 'white'
+                  e.currentTarget.style.color = '#e74c3c'
+                }}
+              >
+                清除
+              </button>
+            )}
           <button
             onClick={handleSave}
             disabled={!isValid}
