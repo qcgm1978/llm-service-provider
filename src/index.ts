@@ -9,7 +9,7 @@ export { streamDefinition, generatePrompt } from './llmService';
 export { streamMindMap, streamMindMapArrows } from './llmService';
 
 // 导出 API Key 管理功能
-export { hasApiKey, getSelectedServiceProvider, setSelectedServiceProvider } from './llmService';
+export { hasApiKey, getSelectedServiceProvider, setSelectedServiceProvider,setHasShownApiKeyPrompt } from './llmService';
 
 // 导出提示管理功能
 export { getPromptByName, formatPrompt, getPromptsByLanguage, updatePrompt, resetPrompts } from './prompts';

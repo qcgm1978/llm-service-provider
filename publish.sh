@@ -21,7 +21,7 @@ npm run build
 
 # 提交更改
 echo "提交更改..."
-git add package.json
+git add -u
 git commit -m "Bump version to $new_version"
 
 # 创建标签
