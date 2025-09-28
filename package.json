@@ -1,6 +1,6 @@
 {
   "name": "llm-service-provider",
-  "version": "2.8.9",
+  "version": "2.9.0",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
