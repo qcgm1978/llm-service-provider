@@ -20,8 +20,10 @@ if [ $? -ne 0 ]; then
   echo "构建失败，取消发布"
   exit 1
 fi
-
-git push origin main --tags
+echo "提交更改..."
+git add -u
+git commit -m "Bump version to $new_version"
+git push origin master --tags
 
 if [ $? -eq 0 ]; then
   echo "发布流程已触发，请检查GitHub Actions查看发布状态"
