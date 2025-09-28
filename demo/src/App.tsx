@@ -386,7 +386,8 @@ function App () {
           onClose={() => setIsApiKeyManagerOpen(false)}
           isOpen={isApiKeyManagerOpen}
           defaultPromptType='wiki'
-          language='en'
+          language='zh'
+          compactTemplate={true}
           onPromptTypeChange={(promptType, category, context) => {
             setSelectedPromptType(promptType)
             if (category !== undefined) setCategory(category)

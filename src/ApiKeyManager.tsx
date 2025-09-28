@@ -30,6 +30,7 @@ interface ApiKeyManagerProps {
   onPromptTypeChange?: (promptType: string, category?: string, context?: string) => void
   defaultPromptType?: string
   language?: 'zh' | 'en'
+  compactTemplate?: boolean
 }
 
 const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
@@ -39,7 +40,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   isOpen,
   onPromptTypeChange,
   defaultPromptType,
-  language = 'zh'
+  language = 'zh',
+  compactTemplate = false
 }) => {
   const [selectedPromptType, setSelectedPromptType] = useState(defaultPromptType || '简洁定义')
   const [category, setCategory] = useState('')
@@ -279,24 +281,25 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* <div style={{ position: 'absolute', top: '1rem', left: '1rem' }}>
-          <select
-            value={currentLanguage}
-            onChange={(e) => handleLanguageChange(e.target.value as 'zh' | 'en')}
+        <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+          <button
+            onClick={onClose}
             style={{
-              padding: '0.25rem 0.5rem',
-              border: '1px solid #e1e8ed',
+              background: 'none',
+              border: 'none',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              color: '#666',
+              padding: '0.5rem',
               borderRadius: '4px',
-              fontSize: '0.8rem'
+              transition: 'background-color 0.2s ease'
             }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
           >
-            {availableLanguages.map(lang => (
-              <option key={lang.code} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
-        </div> */}
+            ×
+          </button>
+        </div>
 
         <h2 style={{ marginTop: 0, marginBottom: '1.5rem', color: '#2c3e50' }}>
           {currentLanguage === 'zh' ? 'API 密钥配置' : 'API Key Configuration'}
@@ -619,21 +622,24 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           </button>
         </div>
              
-        <div style={{ marginBottom: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-          <h3 style={{ marginTop: 0, marginBottom: '1rem', color: '#2c3e50', fontSize: '1.1rem' }}>
-            {currentLanguage === 'zh' ? '提示模板设置' : 'Prompt Template Settings'}
-          </h3>
-          <div style={{ marginBottom: '1rem' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontWeight: '500',
-                color: '#34495e'
-              }}
-            >
-              {currentLanguage === 'zh' ? '选择提示类型' : 'Select Prompt Type'}
-            </label>
+        {!compactTemplate && (
+          <div style={{ marginBottom: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+            <h3 style={{ marginTop: 0, marginBottom: '1rem', color: '#2c3e50', fontSize: '1.1rem' }}>
+              {currentLanguage === 'zh' ? '提示模板设置' : 'Prompt Template Settings'}
+            </h3>
+            <div style={{ marginBottom: '1rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#34495e'
+                }}
+              >
+                {currentLanguage === 'zh' ? '选择提示类型' : 'Select Prompt Type'}
+              </label>
+            </div>
+            
             <select
               value={selectedPromptType}
               onChange={handlePromptTypeChange}
@@ -654,67 +660,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               ))}
             </select>
           </div>
+        )}
 
-          {selectedPromptType === 'wiki' && (
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '500',
-                  color: '#34495e'
-                }}
-              >
-                {currentLanguage === 'zh' ? '输入类别' : 'Enter Category'}
-              </label>
-              <input
-                type='text'
-                value={category}
-                onChange={handleCategoryChange}
-                placeholder={currentLanguage === 'zh' ? '输入类别...' : 'Enter category...'}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e1e8ed',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-          )}
-
-          {selectedPromptType === '带上下文回答' && (
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  marginBottom: '0.5rem',
-                  fontWeight: '500',
-                  color: '#34495e'
-                }}
-              >
-                {currentLanguage === 'zh' ? '输入上下文信息' : 'Enter Context Information'}
-              </label>
-              <textarea
-                value={context}
-                onChange={handleContextChange}
-                placeholder={currentLanguage === 'zh' ? '输入上下文信息...' : 'Enter context information...'}
-                rows={4}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '2px solid #e1e8ed',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  boxSizing: 'border-box',
-                  resize: 'vertical'
-                }}
-              />
-            </div>
-          )}
-        </div>
-        
         {isValid && (
           <div
             style={{
