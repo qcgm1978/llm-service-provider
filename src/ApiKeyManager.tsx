@@ -1,4 +1,9 @@
+// 在文件顶部导入必要的模块
 import React, { useState, useEffect } from 'react'
+import {
+  getPromptByName,
+  getPromptsByLanguage
+} from './prompts'
 import {
   ServiceProvider,
   getSelectedServiceProvider,
@@ -21,14 +26,56 @@ interface ApiKeyManagerProps {
   onClose: () => void
   onNavigateToWiki?: () => void
   isOpen: boolean
+  onPromptTypeChange?: (promptType: string, category?: string, context?: string) => void
 }
 
 const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   onSave,
   onClose,
   onNavigateToWiki,
-  isOpen
+  isOpen,
+  onPromptTypeChange
 }) => {
+  // 添加新的状态
+  const [selectedPromptType, setSelectedPromptType] = useState('简洁定义')
+  const [category, setCategory] = useState('')
+  const [context, setContext] = useState('')
+  const [availablePrompts, setAvailablePrompts] = useState<string[]>([
+    '简洁定义'
+  ])
+
+  // 加载可用的提示模板类型
+  useEffect(() => {
+    const prompts = getPromptsByLanguage('zh')
+    const promptTypes = prompts.map(prompt => prompt.act)
+    setAvailablePrompts(promptTypes)
+  }, [])
+
+  // 处理提示类型变化
+  const handlePromptTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newPromptType = e.target.value
+    setSelectedPromptType(newPromptType)
+    if (onPromptTypeChange) {
+      onPromptTypeChange(newPromptType, category, context)
+    }
+  }
+
+  // 处理category变化
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCategory(e.target.value)
+    if (onPromptTypeChange) {
+      onPromptTypeChange(selectedPromptType, e.target.value, context)
+    }
+  }
+
+  // 处理context变化
+  const handleContextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContext(e.target.value)
+    if (onPromptTypeChange) {
+      onPromptTypeChange(selectedPromptType, category, e.target.value)
+    }
+  }
+
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider>(
     ServiceProvider.XUNFEI
   )
@@ -626,8 +673,103 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           >
             保存
           </button>
+          
         </div>
+             <div style={{ marginBottom: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+          <h3 style={{ marginTop: 0, marginBottom: '1rem', color: '#2c3e50', fontSize: '1.1rem' }}>
+            提示模板设置
+          </h3>
+          <div style={{ marginBottom: '1rem' }}>
+            <label
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '500',
+                color: '#34495e'
+              }}
+            >
+              选择提示类型
+            </label>
+            <select
+              value={selectedPromptType}
+              onChange={handlePromptTypeChange}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: '2px solid #e1e8ed',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                boxSizing: 'border-box',
+                backgroundColor: 'white'
+              }}
+            >
+              {availablePrompts.map(type => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
 
+          {selectedPromptType === 'wiki' && (
+            <div style={{ marginBottom: '1rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#34495e'
+                }}
+              >
+                输入类别
+              </label>
+              <input
+                type='text'
+                value={category}
+                onChange={handleCategoryChange}
+                placeholder='输入类别...'
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #e1e8ed',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+          )}
+
+          {selectedPromptType === '带上下文回答' && (
+            <div style={{ marginBottom: '1rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  fontWeight: '500',
+                  color: '#34495e'
+                }}
+              >
+                输入上下文信息
+              </label>
+              <textarea
+                value={context}
+                onChange={handleContextChange}
+                placeholder='输入上下文信息...'
+                rows={4}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #e1e8ed',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  boxSizing: 'border-box',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+          )}
+        </div>
         {isValid && (
           <div
             style={{
@@ -654,6 +796,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           </div>
         )}
       </div>
+      
+
     </div>
   )
 }

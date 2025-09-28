@@ -148,7 +148,7 @@ export const generatePrompt = (
     if (context) {
       promptTemplate = getPromptByName('带上下文回答', 'zh');
     } else if (category) {
-      promptTemplate = getPromptByName('类别定义', 'zh');
+      promptTemplate = getPromptByName('wiki', 'zh');
     } else {
       promptTemplate = getPromptByName('简洁定义', 'zh');
     }

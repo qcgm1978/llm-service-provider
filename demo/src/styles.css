@@ -509,3 +509,46 @@ pre {
 .react-flow__controls-button:hover {
   background-color: #0056b3;
 }
+
+/* 提示模板类型选择器样式 */
+.prompt-type-selector {
+  margin: 10px 0;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+.prompt-type-selector label {
+  font-family: 'Comic Sans MS', cursive;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.prompt-type-selector select {
+  padding: 8px 12px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  background-color: white;
+  font-family: 'Comic Sans MS', cursive;
+  font-size: 14px;
+  cursor: pointer;
+  transform: rotate(-1deg);
+}
+
+.prompt-type-selector select:hover {
+  transform: rotate(1deg) scale(1.02);
+}
+
+/* 上下文输入框样式 */
+.context-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: 'Comic Sans MS', cursive;
+  resize: vertical;
+  min-height: 100px;
+}

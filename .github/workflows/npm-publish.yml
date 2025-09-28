@@ -1,3 +1,4 @@
+# npm login/npm create token 后，将token添加到secrets中，命名为NPM_TOKEN before the first publish
 name: Publish to npmjs
 
 on:
