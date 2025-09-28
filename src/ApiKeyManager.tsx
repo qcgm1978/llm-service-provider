@@ -1,12 +1,13 @@
 import './index.css'
 import React, { useState, useEffect } from 'react'
-import {
-  getPromptByName,
-  getPromptsByLanguage
+import { 
+  getPromptByName, 
+  getPromptsByLanguage, 
+  getLanguages 
 } from './prompts'
-import {
-  ServiceProvider,
-  getSelectedServiceProvider,
+import { 
+  ServiceProvider, 
+  getSelectedServiceProvider, 
   setSelectedServiceProvider,
   setDeepSeekApiKey,
   setGeminiApiKey,
@@ -27,7 +28,8 @@ interface ApiKeyManagerProps {
   onNavigateToWiki?: () => void
   isOpen: boolean
   onPromptTypeChange?: (promptType: string, category?: string, context?: string) => void
-  defaultPromptType?: string // 添加默认提示模板属性
+  defaultPromptType?: string
+  language?: 'zh' | 'en'
 }
 
 const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
@@ -36,32 +38,35 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   onNavigateToWiki,
   isOpen,
   onPromptTypeChange,
-  defaultPromptType // 解构新属性
+  defaultPromptType,
+  language = 'zh'
 }) => {
-  // 初始化时使用默认模板值（如果提供了的话）
   const [selectedPromptType, setSelectedPromptType] = useState(defaultPromptType || '简洁定义')
   const [category, setCategory] = useState('')
   const [context, setContext] = useState('')
   const [availablePrompts, setAvailablePrompts] = useState<string[]>([
     '简洁定义'
   ])
+  const [availableLanguages, setAvailableLanguages] = useState(getLanguages())
+  const [currentLanguage, setCurrentLanguage] = useState<"zh" | "en">((language === 'zh' || language === 'en') ? language : 'zh')
 
-  // 加载可用的提示模板类型
   useEffect(() => {
-    const prompts = getPromptsByLanguage('zh')
+    const prompts = getPromptsByLanguage(currentLanguage)
     const promptTypes = prompts.map(prompt => prompt.act)
     setAvailablePrompts(promptTypes)
     
-    // 如果提供了默认模板，且该模板在可用列表中，则使用它
     if (defaultPromptType && promptTypes.includes(defaultPromptType)) {
       setSelectedPromptType(defaultPromptType)
       if (onPromptTypeChange) {
         onPromptTypeChange(defaultPromptType, category, context)
       }
     }
-  }, [defaultPromptType, category, context, onPromptTypeChange])
+  }, [defaultPromptType, category, context, onPromptTypeChange, currentLanguage])
 
-  // 处理提示类型变化
+  const handleLanguageChange = (lang: 'zh' | 'en') => {
+    setCurrentLanguage(lang)
+  }
+
   const handlePromptTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPromptType = e.target.value
     setSelectedPromptType(newPromptType)
@@ -70,7 +75,6 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     }
   }
 
-  // 处理category变化
   const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategory(e.target.value)
     if (onPromptTypeChange) {
@@ -78,7 +82,6 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     }
   }
 
-  // 处理context变化
   const handleContextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContext(e.target.value)
     if (onPromptTypeChange) {
@@ -100,36 +103,36 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
       setSelectedProvider(provider)
 
       if (provider === ServiceProvider.DEEPSEEK) {
-        const key =
-          typeof window !== 'undefined'
+        const key = 
+          typeof window !== 'undefined' 
             ? localStorage.getItem('DEEPSEEK_API_KEY') || ''
             : ''
         setApiKey(key)
         setIsValid(hasDeepSeekApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.GEMINI) {
-        const key =
-          typeof window !== 'undefined'
+        const key = 
+          typeof window !== 'undefined' 
             ? localStorage.getItem('GEMINI_API_KEY') || ''
             : ''
         setApiKey(key)
         setIsValid(hasGeminiApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.GROQ) {
-        const key =
-          typeof window !== 'undefined'
+        const key = 
+          typeof window !== 'undefined' 
             ? localStorage.getItem('GROQ_API_KEY') || ''
             : ''
         setApiKey(key)
         setIsValid(hasGroqApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.XUNFEI) {
-        const key =
-          typeof window !== 'undefined'
+        const key = 
+          typeof window !== 'undefined' 
             ? localStorage.getItem('XUNFEI_API_KEY') || ''
             : ''
-        const secret =
-          typeof window !== 'undefined'
+        const secret = 
+          typeof window !== 'undefined' 
             ? localStorage.getItem('XUNFEI_API_SECRET') || ''
             : ''
         setApiKey(key)
@@ -152,36 +155,36 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     setSelectedServiceProvider(provider)
 
     if (provider === ServiceProvider.DEEPSEEK) {
-      const key =
-        typeof window !== 'undefined'
+      const key = 
+        typeof window !== 'undefined' 
           ? localStorage.getItem('DEEPSEEK_API_KEY') || ''
           : ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasDeepSeekApiKey())
     } else if (provider === ServiceProvider.GEMINI) {
-      const key =
-        typeof window !== 'undefined'
+      const key = 
+        typeof window !== 'undefined' 
           ? localStorage.getItem('GEMINI_API_KEY') || ''
           : ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasGeminiApiKey())
     } else if (provider === ServiceProvider.GROQ) {
-      const key =
-        typeof window !== 'undefined'
+      const key = 
+        typeof window !== 'undefined' 
           ? localStorage.getItem('GROQ_API_KEY') || ''
           : ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasGroqApiKey())
     } else if (provider === ServiceProvider.XUNFEI) {
-      const key =
-        typeof window !== 'undefined'
+      const key = 
+        typeof window !== 'undefined' 
           ? localStorage.getItem('XUNFEI_API_KEY') || ''
           : ''
-      const secret =
-        typeof window !== 'undefined'
+      const secret = 
+        typeof window !== 'undefined' 
           ? localStorage.getItem('XUNFEI_API_SECRET') || ''
           : ''
       setApiKey(key)
@@ -263,8 +266,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   if (!isOpen) return null
 
   return (
-    <div id="api-key-manager" onClick={onClose}
-    >
+    <div id="api-key-manager" onClick={onClose}>
       <div
         style={{
           backgroundColor: 'white',
@@ -277,24 +279,27 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         }}
         onClick={e => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '1rem',
-            right: '1rem',
-            background: 'none',
-            border: 'none',
-            fontSize: '1.5rem',
-            cursor: 'pointer',
-            color: '#666'
-          }}
-        >
-          ×
-        </button>
+        {/* <div style={{ position: 'absolute', top: '1rem', left: '1rem' }}>
+          <select
+            value={currentLanguage}
+            onChange={(e) => handleLanguageChange(e.target.value as 'zh' | 'en')}
+            style={{
+              padding: '0.25rem 0.5rem',
+              border: '1px solid #e1e8ed',
+              borderRadius: '4px',
+              fontSize: '0.8rem'
+            }}
+          >
+            {availableLanguages.map(lang => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </div> */}
 
         <h2 style={{ marginTop: 0, marginBottom: '1.5rem', color: '#2c3e50' }}>
-          API 密钥配置
+          {currentLanguage === 'zh' ? 'API 密钥配置' : 'API Key Configuration'}
         </h2>
 
         <div style={{ marginBottom: '1.5rem' }}>
@@ -306,49 +311,34 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               color: '#34495e'
             }}
           >
-            服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat）
+            {currentLanguage === 'zh' 
+              ? '服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat）' 
+              : 'Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat)'}
           </label>
+          
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => handleProviderChange(ServiceProvider.XUNFEI)}
               style={{
                 padding: '0.5rem 1rem',
-                border:
-                  selectedProvider === ServiceProvider.XUNFEI
-                    ? '2px solid #3498db'
-                    : '2px solid #e1e8ed',
-                backgroundColor:
-                  selectedProvider === ServiceProvider.XUNFEI
-                    ? '#3498db'
-                    : 'white',
-                color:
-                  selectedProvider === ServiceProvider.XUNFEI
-                    ? 'white'
-                    : '#34495e',
+                border: selectedProvider === ServiceProvider.XUNFEI ? '2px solid #3498db' : '2px solid #e1e8ed',
+                backgroundColor: selectedProvider === ServiceProvider.XUNFEI ? '#3498db' : 'white',
+                color: selectedProvider === ServiceProvider.XUNFEI ? 'white' : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
                 transition: 'all 0.3s ease'
               }}
             >
-              讯飞星火
+              {currentLanguage === 'zh' ? '讯飞星火' : 'Xunfei'}
             </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.DEEPSEEK)}
               style={{
                 padding: '0.5rem 1rem',
-                border:
-                  selectedProvider === ServiceProvider.DEEPSEEK
-                    ? '2px solid #3498db'
-                    : '2px solid #e1e8ed',
-                backgroundColor:
-                  selectedProvider === ServiceProvider.DEEPSEEK
-                    ? '#3498db'
-                    : 'white',
-                color:
-                  selectedProvider === ServiceProvider.DEEPSEEK
-                    ? 'white'
-                    : '#34495e',
+                border: selectedProvider === ServiceProvider.DEEPSEEK ? '2px solid #3498db' : '2px solid #e1e8ed',
+                backgroundColor: selectedProvider === ServiceProvider.DEEPSEEK ? '#3498db' : 'white',
+                color: selectedProvider === ServiceProvider.DEEPSEEK ? 'white' : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -361,18 +351,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.GEMINI)}
               style={{
                 padding: '0.5rem 1rem',
-                border:
-                  selectedProvider === ServiceProvider.GEMINI
-                    ? '2px solid #3498db'
-                    : '2px solid #e1e8ed',
-                backgroundColor:
-                  selectedProvider === ServiceProvider.GEMINI
-                    ? '#3498db'
-                    : 'white',
-                color:
-                  selectedProvider === ServiceProvider.GEMINI
-                    ? 'white'
-                    : '#34495e',
+                border: selectedProvider === ServiceProvider.GEMINI ? '2px solid #3498db' : '2px solid #e1e8ed',
+                backgroundColor: selectedProvider === ServiceProvider.GEMINI ? '#3498db' : 'white',
+                color: selectedProvider === ServiceProvider.GEMINI ? 'white' : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -385,18 +366,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.GROQ)}
               style={{
                 padding: '0.5rem 1rem',
-                border:
-                  selectedProvider === ServiceProvider.GROQ
-                    ? '2px solid #3498db'
-                    : '2px solid #e1e8ed',
-                backgroundColor:
-                  selectedProvider === ServiceProvider.GROQ
-                    ? '#3498db'
-                    : 'white',
-                color:
-                  selectedProvider === ServiceProvider.GROQ
-                    ? 'white'
-                    : '#34495e',
+                border: selectedProvider === ServiceProvider.GROQ ? '2px solid #3498db' : '2px solid #e1e8ed',
+                backgroundColor: selectedProvider === ServiceProvider.GROQ ? '#3498db' : 'white',
+                color: selectedProvider === ServiceProvider.GROQ ? 'white' : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -409,18 +381,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               onClick={() => handleProviderChange(ServiceProvider.YOUCHAT)}
               style={{
                 padding: '0.5rem 1rem',
-                border:
-                  selectedProvider === ServiceProvider.YOUCHAT
-                    ? '2px solid #3498db'
-                    : '2px solid #e1e8ed',
-                backgroundColor:
-                  selectedProvider === ServiceProvider.YOUCHAT
-                    ? '#3498db'
-                    : 'white',
-                color:
-                  selectedProvider === ServiceProvider.YOUCHAT
-                    ? 'white'
-                    : '#34495e',
+                border: selectedProvider === ServiceProvider.YOUCHAT ? '2px solid #3498db' : '2px solid #e1e8ed',
+                backgroundColor: selectedProvider === ServiceProvider.YOUCHAT ? '#3498db' : 'white',
+                color: selectedProvider === ServiceProvider.YOUCHAT ? 'white' : '#34495e',
                 borderRadius: '8px',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
@@ -432,7 +395,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           </div>
         </div>
 
-        {
+        {(
           <>
             <div style={{ marginBottom: '1rem' }}>
               <label
@@ -445,14 +408,14 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 }}
               >
                 {selectedProvider === ServiceProvider.DEEPSEEK
-                  ? 'DeepSeek API 密钥'
+                  ? currentLanguage === 'zh' ? 'DeepSeek API 密钥' : 'DeepSeek API Key'
                   : selectedProvider === ServiceProvider.GEMINI
-                  ? 'Gemini API 密钥(需代理)'
+                  ? currentLanguage === 'zh' ? 'Gemini API 密钥(需代理)' : 'Gemini API Key(Proxy Required)'
                   : selectedProvider === ServiceProvider.GROQ
-                  ? 'Meta API 密钥(需代理)'
+                  ? currentLanguage === 'zh' ? 'Meta API 密钥(需代理)' : 'Meta API Key(Proxy Required)'
                   : selectedProvider === ServiceProvider.YOUCHAT
-                  ? '(需代理)'
-                  : '讯飞 API Key'}
+                  ? currentLanguage === 'zh' ? '(需代理)' : '(Proxy Required)'
+                  : currentLanguage === 'zh' ? '讯飞 API Key' : 'Xunfei API Key'}
               </label>
               {selectedProvider !== ServiceProvider.YOUCHAT && (
                 <div style={{ position: 'relative' }}>
@@ -463,27 +426,15 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                     onChange={e => {
                       setApiKey(e.target.value)
                       if (selectedProvider === ServiceProvider.XUNFEI) {
-                        setIsValid(
-                          e.target.value.length > 0 && apiSecret.length > 0
-                        )
+                        setIsValid(e.target.value.length > 0 && apiSecret.length > 0)
                       } else {
                         setIsValid(e.target.value.length > 0)
                       }
                     }}
                     onKeyPress={handleKeyPress}
-                    placeholder={`请输入你的 ${
-                      selectedProvider === ServiceProvider.DEEPSEEK
-                        ? 'DeepSeek'
-                        : selectedProvider === ServiceProvider.GEMINI
-                        ? 'Gemini'
-                        : selectedProvider === ServiceProvider.GROQ
-                        ? 'Groq'
-                        : '讯飞'
-                    } ${
-                      selectedProvider === ServiceProvider.XUNFEI
-                        ? 'API Key'
-                        : 'API 密钥'
-                    }`}
+                    placeholder={currentLanguage === 'zh' 
+                      ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI ? '讯飞' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} ${selectedProvider === ServiceProvider.XUNFEI ? 'API Key' : 'API 密钥'}`
+                      : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI ? 'Xunfei' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} API Key`}
                     style={{
                       width: '100%',
                       padding: '0.75rem',
@@ -526,7 +477,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                     color: '#34495e'
                   }}
                 >
-                  讯飞 API Secret
+                  {currentLanguage === 'zh' ? '讯飞 API Secret' : 'Xunfei API Secret'}
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
@@ -538,7 +489,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                       setIsValid(apiKey.length > 0 && e.target.value.length > 0)
                     }}
                     onKeyPress={handleKeyPress}
-                    placeholder='请输入你的讯飞 API Secret'
+                    placeholder={currentLanguage === 'zh' ? '请输入你的讯飞 API Secret' : 'Please enter your Xunfei API Secret'}
                     style={{
                       width: '100%',
                       padding: '0.75rem',
@@ -573,7 +524,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             {selectedProvider !== ServiceProvider.YOUCHAT && (
               <div style={{ marginBottom: '1.5rem' }}>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#7f8c8d' }}>
-                  💡 获取 API 密钥：
+                  💡 {currentLanguage === 'zh' ? '获取 API 密钥：' : 'Get API Key: '}
                   {selectedProvider === ServiceProvider.XUNFEI ? (
                     <a
                       href='https://console.xfyun.cn/app/myapp'
@@ -581,7 +532,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                       rel='noopener noreferrer'
                       style={{ color: '#3498db', textDecoration: 'none' }}
                     >
-                      点击这里访问讯飞开放平台获取 API Key 和 Secret
+                      {currentLanguage === 'zh' ? '点击这里访问讯飞开放平台获取 API Key 和 Secret' : 'Click here to visit Xunfei Open Platform to get API Key and Secret'}
                     </a>
                   ) : (
                     <a
@@ -598,20 +549,16 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                       rel='noopener noreferrer'
                       style={{ color: '#3498db', textDecoration: 'none' }}
                     >
-                      点击这里访问{' '}
-                      {selectedProvider === ServiceProvider.DEEPSEEK
-                        ? 'DeepSeek'
-                        : selectedProvider === ServiceProvider.GEMINI
-                        ? 'Gemini'
-                        : 'Groq'}{' '}
-                      平台
+                      {currentLanguage === 'zh' 
+                        ? `点击这里访问 ${selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} 平台` 
+                        : `Click here to visit ${selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} platform`}
                     </a>
                   )}
                 </p>
               </div>
             )}
           </>
-        }
+        )}
 
         <div
           style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}
@@ -640,7 +587,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   e.currentTarget.style.color = '#e74c3c'
                 }}
               >
-                清除
+                {currentLanguage === 'zh' ? '清除' : 'Clear'}
               </button>
             )}
           <button
@@ -668,13 +615,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               }
             }}
           >
-            保存
+            {currentLanguage === 'zh' ? '保存' : 'Save'}
           </button>
-          
         </div>
-             <div style={{ marginBottom: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+             
+        <div style={{ marginBottom: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
           <h3 style={{ marginTop: 0, marginBottom: '1rem', color: '#2c3e50', fontSize: '1.1rem' }}>
-            提示模板设置
+            {currentLanguage === 'zh' ? '提示模板设置' : 'Prompt Template Settings'}
           </h3>
           <div style={{ marginBottom: '1rem' }}>
             <label
@@ -685,7 +632,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 color: '#34495e'
               }}
             >
-              选择提示类型
+              {currentLanguage === 'zh' ? '选择提示类型' : 'Select Prompt Type'}
             </label>
             <select
               value={selectedPromptType}
@@ -718,13 +665,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   color: '#34495e'
                 }}
               >
-                输入类别
+                {currentLanguage === 'zh' ? '输入类别' : 'Enter Category'}
               </label>
               <input
                 type='text'
                 value={category}
                 onChange={handleCategoryChange}
-                placeholder='输入类别...'
+                placeholder={currentLanguage === 'zh' ? '输入类别...' : 'Enter category...'}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -747,12 +694,12 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   color: '#34495e'
                 }}
               >
-                输入上下文信息
+                {currentLanguage === 'zh' ? '输入上下文信息' : 'Enter Context Information'}
               </label>
               <textarea
                 value={context}
                 onChange={handleContextChange}
-                placeholder='输入上下文信息...'
+                placeholder={currentLanguage === 'zh' ? '输入上下文信息...' : 'Enter context information...'}
                 rows={4}
                 style={{
                   width: '100%',
@@ -767,6 +714,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             </div>
           )}
         </div>
+        
         {isValid && (
           <div
             style={{
@@ -788,13 +736,11 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               ? 'Groq'
               : selectedProvider === ServiceProvider.YOUCHAT
               ? 'YouChat'
-              : '讯飞'}{' '}
-            API 密钥已配置，应用可以正常使用
+              : currentLanguage === 'zh' ? '讯飞' : 'Xunfei'}{' '}
+            {currentLanguage === 'zh' ? 'API 密钥已配置，应用可以正常使用' : 'API key has been configured, the application can be used normally'}
           </div>
         )}
       </div>
-      
-
     </div>
   )
 }
