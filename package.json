@@ -1,6 +1,6 @@
 {
   "name": "llm-service-provider",
-  "version": "2.14.0",
+  "version": "2.15.0",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,9 @@
     "publish:minor": "./publish.sh minor",
     "publish:major": "./publish.sh major",
     "publish:dry": "npm publish --dry-run",
-    "publish:local": "npm run build && npm publish"
+    "publish:local": "npm run build && npm publish",
+    "screenshot": "node screenshot.js",
+    "screenshot:simple": "node screenshot_simple.js"
   },
   "keywords": [
     "llm",
@@ -52,6 +54,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.10",
+    "puppeteer": "^24.22.3",
     "typescript": "~5.8.2"
   }
 }

@@ -4,6 +4,11 @@
 
 一个提供多种 LLM（大型语言模型）服务集成的 Node.js 模块，支持 DeepSeek、Gemini、Groq、讯飞星火和 YouChat 等服务提供商。
 
+## 最新版本更新（v2.14.0）
+
+- **多语言支持**：现在支持中英文切换功能，所有界面文本和提示模板都可以根据用户选择的语言进行动态切换
+- **CSS文件打包修复**：修复了CSS文件未被正确打包到dist目录的问题，确保样式文件能够正常工作
+
 ## 功能展示
 
 ### LLM 服务集成
@@ -55,6 +60,7 @@ function App() {
         isOpen={isApiKeyManagerOpen}
         onSave={handleSaveApiKey}
         onClose={() => setIsApiKeyManagerOpen(false)}
+        language="zh" // 设置为"zh"使用中文界面，设置为"en"使用英文界面
       />
     </div>
   )
@@ -169,6 +175,7 @@ npm run dev
 5. **箭头连接生成**：为思维导图添加有意义的连接箭头
 6. **思维导图可视化**：使用MindMapVisualizer组件展示生成的思维导图
 7. **原始提示文本展示**：查看用于生成思维导图和箭头的原始提示文本
+8. **多语言支持**：支持中英文界面切换
 
 ## 支持的服务提供商
 

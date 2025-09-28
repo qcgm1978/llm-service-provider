@@ -2,6 +2,11 @@
 
 A Node.js module that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
 
+## Latest Version Update (v2.14.0)
+
+- **Multi-language Support**: Now supports Chinese and English switching functionality, all interface texts and prompt templates can be dynamically switched based on the language selected by the user
+- **CSS File Packaging Fix**: Fixed the issue where CSS files were not properly packaged into the dist directory, ensuring style files work correctly
+
 ## Feature Showcase
 
 ### LLM Service Integration
@@ -53,6 +58,7 @@ function App() {
         isOpen={isApiKeyManagerOpen}
         onSave={handleSaveApiKey}
         onClose={() => setIsApiKeyManagerOpen(false)}
+        language="en" // Set to "zh" for Chinese interface, "en" for English interface
       />
     </div>
   )
@@ -167,6 +173,7 @@ The demo application includes the following functional modules:
 5. **Arrow Connection Generation**: Add meaningful connection arrows to the mind map
 6. **Mind Map Visualization**: Display the generated mind map using the MindMapVisualizer component
 7. **Raw Prompt Display**: View the original prompt texts used for generating mind maps and arrows
+8. **Multi-language Support**: Supports Chinese and English interface switching
 
 ## Supported Service Providers
 
