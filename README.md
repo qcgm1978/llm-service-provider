@@ -11,13 +11,9 @@
 
 ## 功能展示
 
-### LLM 服务集成
+### LLM 服务集成 思维导图可视化
 
 ![LLM 服务集成](llm.png)
-
-### 思维导图可视化
-
-![思维导图可视化](mind_map.png)
 
 示例：
  - [Revelation](https://github.com/qcgm1978/revelation)

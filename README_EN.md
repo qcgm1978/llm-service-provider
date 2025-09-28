@@ -9,13 +9,9 @@ A Node.js module that integrates multiple LLM (Large Language Model) services, s
 
 ## Feature Showcase
 
-### LLM Service Integration
+### LLM Service Integration, Mind Map Visualization
 
 ![LLM Service Integration](llm.png)
-
-### Mind Map Visualization
-
-![Mind Map Visualization](mind_map.png)
 
 Example: 
  - [Revelation](https://github.com/qcgm1978/revelation)
