@@ -27,6 +27,7 @@ interface ApiKeyManagerProps {
   onNavigateToWiki?: () => void
   isOpen: boolean
   onPromptTypeChange?: (promptType: string, category?: string, context?: string) => void
+  defaultPromptType?: string // 添加默认提示模板属性
 }
 
 const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
@@ -34,10 +35,11 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   onClose,
   onNavigateToWiki,
   isOpen,
-  onPromptTypeChange
+  onPromptTypeChange,
+  defaultPromptType // 解构新属性
 }) => {
-  // 添加新的状态
-  const [selectedPromptType, setSelectedPromptType] = useState('简洁定义')
+  // 初始化时使用默认模板值（如果提供了的话）
+  const [selectedPromptType, setSelectedPromptType] = useState(defaultPromptType || '简洁定义')
   const [category, setCategory] = useState('')
   const [context, setContext] = useState('')
   const [availablePrompts, setAvailablePrompts] = useState<string[]>([
@@ -49,7 +51,15 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     const prompts = getPromptsByLanguage('zh')
     const promptTypes = prompts.map(prompt => prompt.act)
     setAvailablePrompts(promptTypes)
-  }, [])
+    
+    // 如果提供了默认模板，且该模板在可用列表中，则使用它
+    if (defaultPromptType && promptTypes.includes(defaultPromptType)) {
+      setSelectedPromptType(defaultPromptType)
+      if (onPromptTypeChange) {
+        onPromptTypeChange(defaultPromptType, category, context)
+      }
+    }
+  }, [defaultPromptType, category, context, onPromptTypeChange])
 
   // 处理提示类型变化
   const handlePromptTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

@@ -301,7 +301,10 @@ function App () {
         prompt = topic
       }
 
-      // 调用streamDefinition函数，并传入生成的prompt
+      // 保存用户选择的模板类型
+      localStorage.setItem('SELECTED_PROMPT_TEMPLATE', selectedPromptType);
+
+      // 调用streamDefinition函数
       for await (const chunk of streamDefinition(
         topic,
         'zh',
@@ -310,10 +313,15 @@ function App () {
       )) {
         setContent(prev => prev + chunk)
       }
+      
+      // 使用完毕后清除保存的模板类型
+      localStorage.removeItem('SELECTED_PROMPT_TEMPLATE');
     } catch (error) {
       setContent(
         `生成失败: ${error instanceof Error ? error.message : '未知错误'}`
       )
+      // 发生错误时也清除保存的模板类型
+      localStorage.removeItem('SELECTED_PROMPT_TEMPLATE');
     } finally {
       setIsGeneratingContent(false)
     }
@@ -377,13 +385,13 @@ function App () {
           onSave={() => {}}
           onClose={() => setIsApiKeyManagerOpen(false)}
           isOpen={isApiKeyManagerOpen}
+          defaultPromptType='wiki'
           onPromptTypeChange={(promptType, category, context) => {
             setSelectedPromptType(promptType)
             if (category !== undefined) setCategory(category)
             if (context !== undefined) setContext(context)
           }}
         />
-        
       </div>
 
       {/* 提示模板管理 */}

@@ -1,8 +1,6 @@
 import { streamDefinition, hasApiKey, setHasShownApiKeyPrompt } from './src/llmService'
 import ApiKeyManager from './src/ApiKeyManager'
 import { 
-  streamDefinition,
-  hasApiKey,
   getChapterMindMapPrompt,
   getMindMapArrowPrompt,
   streamMindMap,

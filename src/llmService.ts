@@ -144,21 +144,38 @@ export const generatePrompt = (
 ): string => {
   let promptTemplate: string | undefined;
   
-  if (language === 'zh') {
-    if (context) {
-      promptTemplate = getPromptByName('带上下文回答', 'zh');
-    } else if (category) {
-      promptTemplate = getPromptByName('wiki', 'zh');
-    } else {
-      promptTemplate = getPromptByName('简洁定义', 'zh');
+  // 首先检查是否有用户手动选择的模板类型
+  const selectedTemplate = typeof window !== 'undefined' && window.localStorage ? 
+    localStorage.getItem('SELECTED_PROMPT_TEMPLATE') : undefined;
+  
+  if (selectedTemplate) {
+    // 如果有用户选择的模板，优先使用
+    promptTemplate = getPromptByName(selectedTemplate, language);
+    
+    // 特殊处理wiki模板，当category为空时使用简化版本
+    if (selectedTemplate === 'wiki' && !category && language === 'zh') {
+      promptTemplate = '请用中文为"{topic}"提供一个简洁、百科全书式的定义。请提供信息丰富且中立的内容。不要使用markdown、标题或任何特殊格式。只返回定义本身的文本。';
     }
-  } else {
-    if (context) {
-      promptTemplate = getPromptByName('Answer with Context', 'en');
-    } else if (category) {
-      promptTemplate = getPromptByName('Category Definition', 'en');
+  }
+  
+  // 如果没有用户选择的模板或者找不到该模板，则按原来的逻辑选择模板
+  if (!promptTemplate) {
+    if (language === 'zh') {
+      if (context) {
+        promptTemplate = getPromptByName('带上下文回答', 'zh');
+      } else if (category) {
+        promptTemplate = getPromptByName('wiki', 'zh');
+      } else {
+        promptTemplate = getPromptByName('简洁定义', 'zh');
+      }
     } else {
-      promptTemplate = getPromptByName('Concise Definition', 'en');
+      if (context) {
+        promptTemplate = getPromptByName('Answer with Context', 'en');
+      } else if (category) {
+        promptTemplate = getPromptByName('Category Definition', 'en');
+      } else {
+        promptTemplate = getPromptByName('Concise Definition', 'en');
+      }
     }
   }
   
@@ -191,6 +208,7 @@ export const generatePrompt = (
   
   return formatPrompt(promptTemplate, replacements);
 };
+
 
 export const hasXunfeiApiKey = (): boolean => {
   if (hasLocalStorage()) {
