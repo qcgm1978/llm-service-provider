@@ -12,7 +12,13 @@ if [ $? -ne 0 ]; then
   cp mind_map.png llm.png
 fi
 
+# 获取当前版本号
+current_version=$(node -p "require('./package.json').version")
+
 npm version $1
+
+# 获取新版本号
+new_version=$(node -p "require('./package.json').version")
 
 npm run build
 
@@ -30,3 +36,6 @@ if [ $? -eq 0 ]; then
 else
   echo "Git推送失败，请手动检查"
 fi
+
+# 最后输出版本号
+echo "发布版本: $new_version"
