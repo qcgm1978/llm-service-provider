@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './index.css'
 import { 
-  getPromptByName, 
   getPromptsByLanguage, 
   getLanguages 
 } from './prompts'
@@ -14,12 +13,14 @@ import {
   setXunfeiApiKey,
   setXunfeiApiSecret,
   setGroqApiKey,
+  setOpenAiApiKey,
   hasDeepSeekApiKey,
   hasGeminiApiKey,
   hasXunfeiApiKey,
   hasXunfeiApiSecret,
   hasYouChatApiKey,
-  hasGroqApiKey
+  hasGroqApiKey,
+  hasOpenAiApiKey
 } from './llmService'
 
 interface ApiKeyManagerProps {
@@ -234,6 +235,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         onSave(apiKey.trim())
       }
     }
+    else if (selectedProvider === ServiceProvider.OPENAI) {
+      if (apiKey.trim()) {
+        setOpenAiApiKey(apiKey.trim())
+        setIsValid(true)
+        onSave(apiKey.trim())
+      }
+    }
 
     onClose()
 
@@ -289,8 +297,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         <div className="api-key-manager-section">
           <label className="api-key-manager-label">
             {currentLanguage === 'zh' 
-              ? '服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat）' 
-              : 'Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat)'}
+              ? '服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat/OpenAI）' 
+              : 'Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat/OpenAI)'}
           </label>
           
           <div className="api-key-manager-provider-buttons">
@@ -324,6 +332,12 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             >
               YouChat
             </button>
+            <button
+              onClick={() => handleProviderChange(ServiceProvider.OPENAI)}
+              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.OPENAI ? 'active' : ''}`}
+            >
+              OpenAI
+            </button>
           </div>
         </div>
 
@@ -340,6 +354,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   ? currentLanguage === 'zh' ? 'Gemini API 密钥(需代理)' : 'Gemini API Key(Proxy Required)'
                   : selectedProvider === ServiceProvider.GROQ
                   ? currentLanguage === 'zh' ? 'Meta API 密钥(需代理)' : 'Meta API Key(Proxy Required)'
+                  : selectedProvider === ServiceProvider.OPENAI
+                  ? currentLanguage === 'zh' ? 'OpenAI API 密钥(需代理)' : 'OpenAI API Key(Proxy Required)'
                   : currentLanguage === 'zh' ? '讯飞 API Key' : 'Xunfei API Key'}
               </label>
               <div className="api-key-manager-input-wrapper">
@@ -357,8 +373,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder={currentLanguage === 'zh' 
-                    ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI ? '讯飞' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} ${selectedProvider === ServiceProvider.XUNFEI ? 'API Key' : 'API 密钥'}`
-                    : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI ? 'Xunfei' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} API Key`}
+                    ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI ? '讯飞' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : selectedProvider === ServiceProvider.GROQ ? 'Groq' : 'OpenAI'} ${selectedProvider === ServiceProvider.XUNFEI ? 'API Key' : 'API 密钥'}`
+                    : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI ? 'Xunfei' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : selectedProvider === ServiceProvider.GROQ ? 'Groq' : 'OpenAI'} API Key`}
                   className="api-key-manager-input"
                 />
                 <button
@@ -422,14 +438,16 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                       ? 'https://makersuite.google.com/app/apikey'
                       : selectedProvider === ServiceProvider.GROQ
                       ? 'https://console.groq.com/keys'
+                      : selectedProvider === ServiceProvider.OPENAI
+                      ? 'https://platform.openai.com/api-keys'
                       : '#'
                   }
                   target='_blank'
                   rel='noopener noreferrer'
                 >
                   {currentLanguage === 'zh' 
-                    ? `点击这里访问 ${selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} 平台` 
-                    : `Click here to visit ${selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : 'Groq'} platform`}
+                    ? `点击这里访问 ${selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : selectedProvider === ServiceProvider.GROQ ? 'Groq' : 'OpenAI'} 平台` 
+                    : `Click here to visit ${selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : selectedProvider === ServiceProvider.GROQ ? 'Groq' : 'OpenAI'} platform`}
                 </a>
               )}
             </p>
@@ -493,6 +511,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               ? 'Groq'
               : selectedProvider === ServiceProvider.YOUCHAT
               ? 'YouChat'
+              : selectedProvider === ServiceProvider.OPENAI
+              ? 'OpenAI'
               : currentLanguage === 'zh' ? '讯飞' : 'Xunfei'}{' '}
             {currentLanguage === 'zh' ? 'API 密钥已配置，应用可以正常使用' : 'API key has been configured, the application can be used normally'}
           </div>

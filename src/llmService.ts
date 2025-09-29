@@ -1,12 +1,15 @@
 import { getPromptByName, formatPrompt } from './prompts';
 import { getChapterMindMapPrompt, getMindMapArrowPrompt } from './mindmap';
 
+// 在ServiceProvider枚举中添加OpenAI
+
 export enum ServiceProvider {
   DEEPSEEK = 'deepseek',
   GEMINI = 'gemini',
   XUNFEI = 'xunfei',
   YOUCHAT = 'youchat',
-  GROQ = 'groq'
+  GROQ = 'groq',
+  OPENAI = 'openai' // 添加OpenAI
 }
 
 // 检查运行环境是否支持 localStorage
@@ -31,6 +34,8 @@ export const getSelectedServiceProvider = (): ServiceProvider => {
 
   if (hasDeepSeekApiKey()) {
     return ServiceProvider.DEEPSEEK
+  } else if (hasOpenAiApiKey()) {
+    return ServiceProvider.OPENAI
   } else if (hasGeminiApiKey()) {
     return ServiceProvider.GEMINI
   } else if (hasGroqApiKey()) {
@@ -133,6 +138,7 @@ export const clearAllApiKeys = (): void => {
     localStorage.removeItem('DEEPSEEK_API_KEY')
     localStorage.removeItem('GEMINI_API_KEY')
     localStorage.removeItem('GROQ_API_KEY')
+    localStorage.removeItem('OPENAI_API_KEY') 
   }
 }
 
@@ -274,13 +280,36 @@ export const setYouChatApiKey = (key: string): void => {
   }
 }
 
+// 在hasGroqApiKey函数后添加hasOpenAiApiKey函数
+
+export const hasOpenAiApiKey = (): boolean => {
+  if (hasLocalStorage()) {
+    const key = localStorage.getItem('OPENAI_API_KEY')
+    return !!key && key.trim().length > 0
+  }
+  return false
+}
+
+// 在setGroqApiKey函数后添加setOpenAiApiKey函数
+
+export const setOpenAiApiKey = (key: string): void => {
+  if (hasLocalStorage()) {
+    if (key) {
+      localStorage.setItem('OPENAI_API_KEY', key)
+    } else {
+      localStorage.removeItem('OPENAI_API_KEY')
+    }
+  }
+}
+
 export const hasApiKey = (): boolean => {
   return (
     hasDeepSeekApiKey() ||
     hasGeminiApiKey() ||
     hasGroqApiKey() ||
     hasYouChatApiKey() ||
-    hasFreeApiKey()
+    hasFreeApiKey() ||
+    hasOpenAiApiKey() // 添加OpenAI检查
   )
 }
 
@@ -300,6 +329,12 @@ export async function* streamDefinition(
       case ServiceProvider.DEEPSEEK:
         if (hasDeepSeekApiKey()) {
           const { streamDefinition } = await import('./deepseekService')
+          yield* streamDefinition(topic, language, category, context)
+          break
+        }
+      case ServiceProvider.OPENAI:
+        if (hasOpenAiApiKey()) {
+          const { streamDefinition } = await import('./openaiService')
           yield* streamDefinition(topic, language, category, context)
           break
         }
