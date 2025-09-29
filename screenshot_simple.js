@@ -20,7 +20,7 @@ async function takeScreenshot() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });
     
-    await page.goto('http://localhost:5174/', {
+    await page.goto('http://localhost:5173/', {
       waitUntil: 'networkidle0'
     });
     
