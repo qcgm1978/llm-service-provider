@@ -13,7 +13,6 @@ import {
   streamDefinition,
   streamMindMap,
   streamMindMapArrows,
-  generatePrompt,
   hasApiKey,
   getSelectedServiceProvider,
   setSelectedServiceProvider

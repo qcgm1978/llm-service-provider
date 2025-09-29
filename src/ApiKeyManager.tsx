@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import './index.css'
+// 导入CSS Modules
+import styles from './index.module.css'
+
 import { 
   getPromptsByLanguage, 
   getLanguages 
@@ -278,63 +280,63 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   if (!isOpen) return null
 
   return (
-    <div id="api-key-manager" onClick={onClose}>
+    <div id="api-key-manager" onClick={onClose} className={styles.apiKeyManagerModal}>
       <div
-        className={`api-key-manager-container ${styleVariant === 'default' ? '' : `api-key-manager-${styleVariant}`}`}
+        className={`${styles.apiKeyManagerContainer} ${styleVariant === 'default' ? '' : styles[`apiKeyManager${styleVariant.charAt(0).toUpperCase() + styleVariant.slice(1)}`]}`}
         onClick={e => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="api-key-manager-close-btn"
+          className={styles.apiKeyManagerCloseBtn}
         >
           ×
         </button>
 
-        <h2 className="api-key-manager-title">
+        <h2 className={styles.apiKeyManagerTitle}>
           {currentLanguage === 'zh' ? 'API 密钥配置' : 'API Key Configuration'}
         </h2>
 
-        <div className="api-key-manager-section">
-          <label className="api-key-manager-label">
+        <div className={styles.apiKeyManagerSection}>
+          <label className={styles.apiKeyManagerLabel}>
             {currentLanguage === 'zh' 
               ? '服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat/OpenAI）' 
               : 'Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat/OpenAI)'}
           </label>
           
-          <div className="api-key-manager-provider-buttons">
+          <div className={styles.apiKeyManagerProviderButtons}>
             <button
               onClick={() => handleProviderChange(ServiceProvider.XUNFEI)}
-              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.XUNFEI ? 'active' : ''}`}
+              className={`${styles.apiKeyManagerProviderBtn} ${selectedProvider === ServiceProvider.XUNFEI ? styles.active : ''}`}
             >
               {currentLanguage === 'zh' ? '讯飞星火' : 'Xunfei'}
             </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.DEEPSEEK)}
-              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.DEEPSEEK ? 'active' : ''}`}
+              className={`${styles.apiKeyManagerProviderBtn} ${selectedProvider === ServiceProvider.DEEPSEEK ? styles.active : ''}`}
             >
               DeepSeek
             </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.GEMINI)}
-              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.GEMINI ? 'active' : ''}`}
+              className={`${styles.apiKeyManagerProviderBtn} ${selectedProvider === ServiceProvider.GEMINI ? styles.active : ''}`}
             >
               Gemini
             </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.GROQ)}
-              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.GROQ ? 'active' : ''}`}
+              className={`${styles.apiKeyManagerProviderBtn} ${selectedProvider === ServiceProvider.GROQ ? styles.active : ''}`}
             >
               Meta
             </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.YOUCHAT)}
-              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.YOUCHAT ? 'active' : ''}`}
+              className={`${styles.apiKeyManagerProviderBtn} ${selectedProvider === ServiceProvider.YOUCHAT ? styles.active : ''}`}
             >
               YouChat
             </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.OPENAI)}
-              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.OPENAI ? 'active' : ''}`}
+              className={`${styles.apiKeyManagerProviderBtn} ${selectedProvider === ServiceProvider.OPENAI ? styles.active : ''}`}
             >
               OpenAI
             </button>
@@ -343,10 +345,10 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
 
         {(selectedProvider !== ServiceProvider.YOUCHAT) && (
           <>
-            <div className="api-key-manager-input-group">
+            <div className={styles.apiKeyManagerInputGroup}>
               <label
                 htmlFor='apiKey'
-                className="api-key-manager-label"
+                className={styles.apiKeyManagerLabel}
               >
                 {selectedProvider === ServiceProvider.DEEPSEEK
                   ? currentLanguage === 'zh' ? 'DeepSeek API 密钥' : 'DeepSeek API Key'
@@ -358,7 +360,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   ? currentLanguage === 'zh' ? 'OpenAI API 密钥(需代理)' : 'OpenAI API Key(Proxy Required)'
                   : currentLanguage === 'zh' ? '讯飞 API Key' : 'Xunfei API Key'}
               </label>
-              <div className="api-key-manager-input-wrapper">
+              <div className={styles.apiKeyManagerInputWrapper}>
                 <input
                   id='apiKey'
                   type={showPassword ? 'text' : 'password'}
@@ -375,12 +377,12 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   placeholder={currentLanguage === 'zh' 
                     ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI ? '讯飞' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : selectedProvider === ServiceProvider.GROQ ? 'Groq' : 'OpenAI'} ${selectedProvider === ServiceProvider.XUNFEI ? 'API Key' : 'API 密钥'}`
                     : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI ? 'Xunfei' : selectedProvider === ServiceProvider.DEEPSEEK ? 'DeepSeek' : selectedProvider === ServiceProvider.GEMINI ? 'Gemini' : selectedProvider === ServiceProvider.GROQ ? 'Groq' : 'OpenAI'} API Key`}
-                  className="api-key-manager-input"
+                  className={styles.apiKeyManagerInput}
                 />
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
-                  className="api-key-manager-password-toggle"
+                  className={styles.apiKeyManagerPasswordToggle}
                 >
                   {showPassword ? '🙈' : '👁️'}
                 </button>
@@ -388,14 +390,14 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             </div>
 
             {selectedProvider === ServiceProvider.XUNFEI && (
-              <div className="api-key-manager-input-group">
+              <div className={styles.apiKeyManagerInputGroup}>
                 <label
                   htmlFor='apiSecret'
-                  className="api-key-manager-label"
+                  className={styles.apiKeyManagerLabel}
                 >
                   {currentLanguage === 'zh' ? '讯飞 API Secret' : 'Xunfei API Secret'}
                 </label>
-                <div className="api-key-manager-input-wrapper">
+                <div className={styles.apiKeyManagerInputWrapper}>
                   <input
                     id='apiSecret'
                     type={showPassword ? 'text' : 'password'}
@@ -406,12 +408,12 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                     }}
                     onKeyPress={handleKeyPress}
                     placeholder={currentLanguage === 'zh' ? '请输入你的讯飞 API Secret' : 'Please enter your Xunfei API Secret'}
-                    className="api-key-manager-input"
+                    className={styles.apiKeyManagerInput}
                   />
                   <button
                     type='button'
                     onClick={() => setShowPassword(!showPassword)}
-                    className="api-key-manager-password-toggle"
+                    className={styles.apiKeyManagerPasswordToggle}
                   >
                     {showPassword ? '🙈' : '👁️'}
                   </button>
@@ -419,7 +421,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               </div>
             )}
 
-            <p className="api-key-manager-info-text">
+            <p className={styles.apiKeyManagerInfoText}>
               💡 {currentLanguage === 'zh' ? '获取 API 密钥：' : 'Get API Key: '}
               {selectedProvider === ServiceProvider.XUNFEI ? (
                 <a
@@ -454,12 +456,12 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           </>
         )}
 
-        <div className="api-key-manager-actions">
+        <div className={styles.apiKeyManagerActions}>
           {selectedProvider !== ServiceProvider.XUNFEI &&
             selectedProvider !== ServiceProvider.YOUCHAT && (
               <button
                 onClick={handleClear}
-                className="api-key-manager-clear-btn"
+                className={styles.apiKeyManagerClearBtn}
               >
                 {currentLanguage === 'zh' ? '清除' : 'Clear'}
               </button>
@@ -467,20 +469,20 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           <button
             onClick={handleSave}
             disabled={!isValid}
-            className="api-key-manager-save-btn"
+            className={styles.apiKeyManagerSaveBtn}
           >
             {currentLanguage === 'zh' ? '保存' : 'Save'}
           </button>
         </div>
               
         {!compactTemplate && (selectedProvider !== ServiceProvider.YOUCHAT) && (
-          <div className="api-key-manager-template-section">
-            <h3 className="api-key-manager-template-title">
+          <div className={styles.apiKeyManagerTemplateSection}>
+            <h3 className={styles.apiKeyManagerTemplateTitle}>
               {currentLanguage === 'zh' ? '提示模板设置' : 'Prompt Template Settings'}
             </h3>
             <div>
               <label
-                className="api-key-manager-label"
+                className={styles.apiKeyManagerLabel}
               >
                 {currentLanguage === 'zh' ? '选择提示类型' : 'Select Prompt Type'}
               </label>
@@ -489,7 +491,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             <select
               value={selectedPromptType}
               onChange={handlePromptTypeChange}
-              className="api-key-manager-select"
+              className={styles.apiKeyManagerSelect}
             >
               {availablePrompts.map(type => (
                 <option key={type} value={type}>
@@ -501,7 +503,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         )}
 
         {isValid && (
-          <div className="api-key-manager-success-message">
+          <div className={styles.apiKeyManagerSuccessMessage}>
             ✅{' '}
             {selectedProvider === ServiceProvider.DEEPSEEK
               ? 'DeepSeek'
