@@ -51,6 +51,16 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/index.module.css": {
+      "style": "./dist/index.module.css"
+    }
+  },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.10",

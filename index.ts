@@ -27,3 +27,6 @@ export default {
   streamMindMap,
   streamMindMapArrows
 }
+
+export { default as ApiKeyManager } from './src/ApiKeyManager'
+export { default as styles } from './src/index.module.css'
