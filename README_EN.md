@@ -2,9 +2,12 @@
 
 A Node.js module that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
 
-## Latest Version Update (v2.14.0)
+## Latest Version Update (v2.17.0)
 
-- **Multi-language Support**: Now supports Chinese and English switching functionality, all interface texts and prompt templates can be dynamically switched based on the language selected by the user
+- **Style Refactoring**: Moved all inline styles from ApiKeyManager component to CSS files for clearer code structure and easier maintenance
+- **Theme Style Support**: Added two style schemes based on Comic Sans MS font (lively cartoon style and retro comic style)
+- **Style Switching Feature**: Support switching between default style, comic1 and comic2 styles via styleVariant property
+- **Multi-language Support**: Supports Chinese and English switching functionality, all interface texts and prompt templates can be dynamically switched based on the language selected by the user
 - **CSS File Packaging Fix**: Fixed the issue where CSS files were not properly packaged into the dist directory, ensuring style files work correctly
 
 ## Feature Showcase
@@ -55,6 +58,7 @@ function App() {
         onSave={handleSaveApiKey}
         onClose={() => setIsApiKeyManagerOpen(false)}
         language="en" // Set to "zh" for Chinese interface, "en" for English interface
+        styleVariant="default" // Optional values: "default" (default style), "comic1" (lively cartoon style), "comic2" (retro comic style)
       />
     </div>
   )
@@ -170,6 +174,7 @@ The demo application includes the following functional modules:
 6. **Mind Map Visualization**: Display the generated mind map using the MindMapVisualizer component
 7. **Raw Prompt Display**: View the original prompt texts used for generating mind maps and arrows
 8. **Multi-language Support**: Supports Chinese and English interface switching
+9. **Theme Style Switching**: Supports switching between default style, lively cartoon style and retro comic style
 
 ## Supported Service Providers
 

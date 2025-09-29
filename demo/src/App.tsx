@@ -94,7 +94,7 @@ const nodeTypes = {
 
 function App () {
   // 基础状态
-  const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false)
+  const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(true)
   const [isPromptManagerOpen, setIsPromptManagerOpen] = useState(false)
   const [topic, setTopic] = useState('如何制作思维导图')
   // 新增: 添加选择prompt形式的状态
@@ -388,6 +388,7 @@ function App () {
           defaultPromptType='wiki'
           language='zh'
           compactTemplate={false}
+          styleVariant="comic2"
           onPromptTypeChange={(promptType, category, context) => {
             setSelectedPromptType(promptType)
             if (category !== undefined) setCategory(category)
