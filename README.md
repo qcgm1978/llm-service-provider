@@ -190,12 +190,6 @@ npm run dev
 
 该模块支持所有现代浏览器，使用 localStorage 存储 API 密钥和用户偏好设置。
 
-## Node.js 环境注意事项
-
-由于 localStorage 是浏览器特有的 Web API，该模块在纯 Node.js 环境中运行时，**API 密钥等数据不会被持久化存储**。
-
-项目代码中已包含环境兼容性检查（通过 `typeof window !== 'undefined'` 判断当前运行环境），确保模块可以在 Node.js 环境中被导入而不会报错。但在纯 Node.js 环境中使用时，需要通过其他方式管理和存储 API 密钥。
-
 ## 构建和发布
 
 ### 开发构建

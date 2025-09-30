@@ -188,12 +188,6 @@ The demo application includes the following functional modules:
 
 This module supports all modern browsers and uses localStorage to store API keys and user preferences.
 
-## Node.js Environment Notes
-
-Since localStorage is a browser-specific Web API, **API keys and other data will not be persistently stored** when running the module in a pure Node.js environment.
-
-The project code includes environment compatibility checks (using `typeof window !== 'undefined'` to determine the current runtime environment) to ensure the module can be imported in Node.js environments without errors. However, when using it in a pure Node.js environment, you need to manage and store API keys through other means.
-
 ## Build and Publish
 
 ### Development Build
