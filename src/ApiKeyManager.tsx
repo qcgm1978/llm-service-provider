@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 // 删除这行
-// import './index.css'
+import './index.css'
 import { 
   getPromptsByLanguage, 
   getLanguages 
