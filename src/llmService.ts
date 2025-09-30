@@ -12,24 +12,13 @@ export enum ServiceProvider {
   OPENAI = 'openai' // 添加OpenAI
 }
 
-// 检查运行环境是否支持 localStorage
-const hasLocalStorage = () => {
-  try {
-    return typeof window !== 'undefined' && !!window.localStorage
-  } catch (e) {
-    return false
-  }
-}
-
 export const getSelectedServiceProvider = (): ServiceProvider => {
-  if (hasLocalStorage()) {
-    const saved = localStorage.getItem('selected_service_provider')
-    if (
-      saved &&
-      Object.values(ServiceProvider).includes(saved as ServiceProvider)
-    ) {
-      return saved as ServiceProvider
-    }
+  const saved = localStorage.getItem('selected_service_provider')
+  if (
+    saved &&
+    Object.values(ServiceProvider).includes(saved as ServiceProvider)
+  ) {
+    return saved as ServiceProvider
   }
 
   if (hasDeepSeekApiKey()) {
@@ -48,25 +37,17 @@ export const getSelectedServiceProvider = (): ServiceProvider => {
 }
 
 export const setSelectedServiceProvider = (provider: ServiceProvider): void => {
-  if (hasLocalStorage()) {
-    localStorage.setItem('selected_service_provider', provider)
-  }
+  localStorage.setItem('selected_service_provider', provider)
 }
 
 export const hasDeepSeekApiKey = (): boolean => {
-  if (hasLocalStorage()) {
-    const key = localStorage.getItem('DEEPSEEK_API_KEY')
-    return !!key && key.trim().length > 0
-  }
-  return false
+  const key = localStorage.getItem('DEEPSEEK_API_KEY')
+  return !!key && key.trim().length > 0
 }
 
 export const hasGeminiApiKey = (): boolean => {
-  if (hasLocalStorage()) {
-    const key = localStorage.getItem('GEMINI_API_KEY')
-    return !!key && key.trim().length > 0
-  }
-  return false
+  const key = localStorage.getItem('GEMINI_API_KEY')
+  return !!key && key.trim().length > 0
 }
 
 export const hasFreeApiKey = (): boolean => {
@@ -74,72 +55,49 @@ export const hasFreeApiKey = (): boolean => {
 }
 
 export const setDeepSeekApiKey = (key: string): void => {
-  if (hasLocalStorage()) {
-    if (key) {
-      localStorage.setItem('DEEPSEEK_API_KEY', key)
-    } else {
-      localStorage.removeItem('DEEPSEEK_API_KEY')
-    }
+  if (key) {
+    localStorage.setItem('DEEPSEEK_API_KEY', key)
+  } else {
+    localStorage.removeItem('DEEPSEEK_API_KEY')
   }
 }
 
 export const setGeminiApiKey = (key: string): void => {
-  if (hasLocalStorage()) {
-    if (key) {
-      localStorage.setItem('GEMINI_API_KEY', key)
-      
-      // 更新 Gemini API 密钥
-      if (typeof window !== 'undefined') {
-        try {
-          // 动态导入以避免循环依赖
-          import('./geminiService').then(({ updateApiKey }) => {
-            updateApiKey(key)
-          })
-        } catch (e) {
-          console.error('Failed to update Gemini API key:', e)
-        }
-      }
-    } else {
-      localStorage.removeItem('GEMINI_API_KEY')
-      
-      if (typeof window !== 'undefined') {
-        try {
-          import('./geminiService').then(({ updateApiKey }) => {
-            updateApiKey(null)
-          })
-        } catch (e) {
-          console.error('Failed to clear Gemini API key:', e)
-        }
-      }
+  if (key) {
+    localStorage.setItem('GEMINI_API_KEY', key)
+    
+    // 更新 Gemini API 密钥
+    try {
+      // 动态导入以避免循环依赖
+      import('./geminiService').then(({ updateApiKey }) => {
+        updateApiKey(key)
+      })
+    } catch (e) {
+      console.error('Failed to update Gemini API key:', e)
     }
+  } else {
+    localStorage.removeItem('GEMINI_API_KEY')
   }
 }
 
 export const hasGroqApiKey = (): boolean => {
-  if (hasLocalStorage()) {
-    const key = localStorage.getItem('GROQ_API_KEY')
-    return !!key && key.trim().length > 0
-  }
-  return false
+  const key = localStorage.getItem('GROQ_API_KEY')
+  return !!key && key.trim().length > 0
 }
 
 export const setGroqApiKey = (key: string): void => {
-  if (hasLocalStorage()) {
-    if (key) {
-      localStorage.setItem('GROQ_API_KEY', key)
-    } else {
-      localStorage.removeItem('GROQ_API_KEY')
-    }
+  if (key) {
+    localStorage.setItem('GROQ_API_KEY', key)
+  } else {
+    localStorage.removeItem('GROQ_API_KEY')
   }
 }
 
 export const clearAllApiKeys = (): void => {
-  if (hasLocalStorage()) {
-    localStorage.removeItem('DEEPSEEK_API_KEY')
-    localStorage.removeItem('GEMINI_API_KEY')
-    localStorage.removeItem('GROQ_API_KEY')
-    localStorage.removeItem('OPENAI_API_KEY') 
-  }
+  localStorage.removeItem('DEEPSEEK_API_KEY')
+  localStorage.removeItem('GEMINI_API_KEY')
+  localStorage.removeItem('GROQ_API_KEY')
+  localStorage.removeItem('OPENAI_API_KEY') 
 }
 
 export const generatePrompt = (
@@ -151,8 +109,7 @@ export const generatePrompt = (
   let promptTemplate: string | undefined;
   
   // 首先检查是否有用户手动选择的模板类型
-  const selectedTemplate = typeof window !== 'undefined' && window.localStorage ? 
-    localStorage.getItem('SELECTED_PROMPT_TEMPLATE') : undefined;
+  const selectedTemplate = localStorage.getItem('SELECTED_PROMPT_TEMPLATE');
   
   if (selectedTemplate) {
     // 如果有用户选择的模板，优先使用
@@ -217,53 +174,38 @@ export const generatePrompt = (
 
 
 export const hasXunfeiApiKey = (): boolean => {
-  if (hasLocalStorage()) {
-    const key = localStorage.getItem('XUNFEI_API_KEY')
-    return !!key && key.trim().length > 0
-  }
-  return false
+  const key = localStorage.getItem('XUNFEI_API_KEY')
+  return !!key && key.trim().length > 0
 }
 
 export const hasXunfeiApiSecret = (): boolean => {
-  if (hasLocalStorage()) {
-    const secret = localStorage.getItem('XUNFEI_API_SECRET')
-    return !!secret && secret.trim().length > 0
-  }
-  return false
+  const secret = localStorage.getItem('XUNFEI_API_SECRET')
+  return !!secret && secret.trim().length > 0
 }
 
 export const setXunfeiApiKey = (key: string): void => {
-  if (hasLocalStorage()) {
-    if (key) {
-      localStorage.setItem('XUNFEI_API_KEY', key)
-    } else {
-      localStorage.removeItem('XUNFEI_API_KEY')
-    }
+  if (key) {
+    localStorage.setItem('XUNFEI_API_KEY', key)
+  } else {
+    localStorage.removeItem('XUNFEI_API_KEY')
   }
 }
 
 export const setXunfeiApiSecret = (secret: string): void => {
-  if (hasLocalStorage()) {
-    if (secret) {
-      localStorage.setItem('XUNFEI_API_SECRET', secret)
-    } else {
-      localStorage.removeItem('XUNFEI_API_SECRET')
-    }
+  if (secret) {
+    localStorage.setItem('XUNFEI_API_SECRET', secret)
+  } else {
+    localStorage.removeItem('XUNFEI_API_SECRET')
   }
 }
 
 export const hasShownApiKeyPrompt = (): boolean => {
-  if (hasLocalStorage()) {
-    const shown = localStorage.getItem('has_shown_api_key_prompt')
-    return shown === 'true'
-  }
-  return false
+  const shown = localStorage.getItem('has_shown_api_key_prompt')
+  return shown === 'true'
 }
 
 export const setHasShownApiKeyPrompt = (shown: boolean): void => {
-  if (hasLocalStorage()) {
-    localStorage.setItem('has_shown_api_key_prompt', shown.toString())
-  }
+  localStorage.setItem('has_shown_api_key_prompt', shown.toString())
 }
 
 export const hasYouChatApiKey = (): boolean => {
@@ -271,34 +213,27 @@ export const hasYouChatApiKey = (): boolean => {
 }
 
 export const setYouChatApiKey = (key: string): void => {
-  if (hasLocalStorage()) {
-    if (key) {
-      localStorage.setItem('YOUCHAT_API_KEY', key)
-    } else {
-      localStorage.removeItem('YOUCHAT_API_KEY')
-    }
+  if (key) {
+    localStorage.setItem('YOUCHAT_API_KEY', key)
+  } else {
+    localStorage.removeItem('YOUCHAT_API_KEY')
   }
 }
 
 // 在hasGroqApiKey函数后添加hasOpenAiApiKey函数
 
 export const hasOpenAiApiKey = (): boolean => {
-  if (hasLocalStorage()) {
-    const key = localStorage.getItem('OPENAI_API_KEY')
-    return !!key && key.trim().length > 0
-  }
-  return false
+  const key = localStorage.getItem('OPENAI_API_KEY')
+  return !!key && key.trim().length > 0
 }
 
 // 在setGroqApiKey函数后添加setOpenAiApiKey函数
 
 export const setOpenAiApiKey = (key: string): void => {
-  if (hasLocalStorage()) {
-    if (key) {
-      localStorage.setItem('OPENAI_API_KEY', key)
-    } else {
-      localStorage.removeItem('OPENAI_API_KEY')
-    }
+  if (key) {
+    localStorage.setItem('OPENAI_API_KEY', key)
+  } else {
+    localStorage.removeItem('OPENAI_API_KEY')
   }
 }
 

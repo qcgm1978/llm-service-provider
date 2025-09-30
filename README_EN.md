@@ -1,6 +1,6 @@
 # LLM Service Provider
 
-A Node.js module that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
+A frontend component library that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
 
 ## Latest Version Update (v2.17.0)
 

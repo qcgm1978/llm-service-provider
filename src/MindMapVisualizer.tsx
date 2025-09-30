@@ -13,7 +13,7 @@ import ReactFlow, {
   Position,
   BackgroundVariant
 } from 'reactflow'
-import 'reactflow/dist/style.css'
+import './index.css'
 import type { NodeObj, Summary, MindMapData, Arrow, ArrowsData } from './types/mindmap'
 
 interface MindMapVisualizerProps {

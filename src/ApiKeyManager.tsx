@@ -106,40 +106,25 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     if (isOpen) {
       const provider = getSelectedServiceProvider()
       setSelectedProvider(provider)
-
+  
       if (provider === ServiceProvider.DEEPSEEK) {
-        const key = 
-          typeof window !== 'undefined' 
-            ? localStorage.getItem('DEEPSEEK_API_KEY') || ''
-            : ''
+        const key = localStorage.getItem('DEEPSEEK_API_KEY') || ''
         setApiKey(key)
         setIsValid(hasDeepSeekApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.GEMINI) {
-        const key = 
-          typeof window !== 'undefined' 
-            ? localStorage.getItem('GEMINI_API_KEY') || ''
-            : ''
+        const key = localStorage.getItem('GEMINI_API_KEY') || ''
         setApiKey(key)
         setIsValid(hasGeminiApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.GROQ) {
-        const key = 
-          typeof window !== 'undefined' 
-            ? localStorage.getItem('GROQ_API_KEY') || ''
-            : ''
+        const key = localStorage.getItem('GROQ_API_KEY') || ''
         setApiKey(key)
         setIsValid(hasGroqApiKey())
         setApiSecret('')
       } else if (provider === ServiceProvider.XUNFEI) {
-        const key = 
-          typeof window !== 'undefined' 
-            ? localStorage.getItem('XUNFEI_API_KEY') || ''
-            : ''
-        const secret = 
-          typeof window !== 'undefined' 
-            ? localStorage.getItem('XUNFEI_API_SECRET') || ''
-            : ''
+        const key = localStorage.getItem('XUNFEI_API_KEY') || ''
+        const secret = localStorage.getItem('XUNFEI_API_SECRET') || ''
         setApiKey(key)
         setApiSecret(secret)
         setIsValid(hasXunfeiApiKey() && hasXunfeiApiSecret())
@@ -158,40 +143,25 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   const handleProviderChange = (provider: ServiceProvider) => {
     setSelectedProvider(provider)
     setSelectedServiceProvider(provider)
-
+  
     if (provider === ServiceProvider.DEEPSEEK) {
-      const key = 
-        typeof window !== 'undefined' 
-          ? localStorage.getItem('DEEPSEEK_API_KEY') || ''
-          : ''
+      const key = localStorage.getItem('DEEPSEEK_API_KEY') || ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasDeepSeekApiKey())
     } else if (provider === ServiceProvider.GEMINI) {
-      const key = 
-        typeof window !== 'undefined' 
-          ? localStorage.getItem('GEMINI_API_KEY') || ''
-          : ''
+      const key = localStorage.getItem('GEMINI_API_KEY') || ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasGeminiApiKey())
     } else if (provider === ServiceProvider.GROQ) {
-      const key = 
-        typeof window !== 'undefined' 
-          ? localStorage.getItem('GROQ_API_KEY') || ''
-          : ''
+      const key = localStorage.getItem('GROQ_API_KEY') || ''
       setApiKey(key)
       setApiSecret('')
       setIsValid(hasGroqApiKey())
     } else if (provider === ServiceProvider.XUNFEI) {
-      const key = 
-        typeof window !== 'undefined' 
-          ? localStorage.getItem('XUNFEI_API_KEY') || ''
-          : ''
-      const secret = 
-        typeof window !== 'undefined' 
-          ? localStorage.getItem('XUNFEI_API_SECRET') || ''
-          : ''
+      const key = localStorage.getItem('XUNFEI_API_KEY') || ''
+      const secret = localStorage.getItem('XUNFEI_API_SECRET') || ''
       setApiKey(key)
       setApiSecret(secret)
       setIsValid(hasXunfeiApiKey() && hasXunfeiApiSecret())
