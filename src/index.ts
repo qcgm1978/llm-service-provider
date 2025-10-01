@@ -33,7 +33,7 @@ export const {
 
 export const init = initServices;
 
-export { setHasShownApiKeyPrompt } from '../llm-core/src/llmService';
+export { setHasShownApiKeyPrompt } from '@qcgm1978/llm-core';
 
 export { default as ApiKeyManager } from './ApiKeyManager';
 export { default as MindMapVisualizer } from './MindMapVisualizer';

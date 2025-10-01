@@ -1,4 +1,4 @@
-import { ServiceProvider, registerServiceProvider } from '../llm-core/src/llmService'
+import { ServiceProvider, registerServiceProvider } from '@qcgm1978/llm-core'
 
 /**
  * 初始化所有 LLM 服务
