@@ -42,7 +42,7 @@
   "license": "MIT",
   "dependencies": {
     "@google/genai": "^1.7.0",
-    "@qcgm1978/llm-core": "^1.0.2",
+    "@qcgm1978/llm-core": "latest",
     "query-string": "^9.3.1",
     "reactflow": "^11.11.4",
     "sse.js": "^2.7.1",
