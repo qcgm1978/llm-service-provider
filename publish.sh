@@ -14,11 +14,38 @@ fi
 
 # 获取当前版本号
 current_version=$(node -p "require('./package.json').version")
+echo "当前版本: $current_version"
 
-npm version $1
+# 手动更新版本号
+# 解析版本号
+IFS='.' read -r major minor patch <<< "$current_version"
 
-# 获取新版本号
-new_version=$(node -p "require('./package.json').version")
+# 根据类型更新版本号
+case "$1" in
+  major)
+    major=$((major + 1))
+    minor=0
+    patch=0
+    ;;
+  minor)
+    minor=$((minor + 1))
+    patch=0
+    ;;
+  patch)
+    patch=$((patch + 1))
+    ;;
+  *)
+    echo "版本类型无效"
+    exit 1
+    ;;
+esac
+
+new_version="$major.$minor.$patch"
+
+# 更新package.json中的版本号
+sed -i '' "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/g" package.json
+
+echo "更新后版本: $new_version"
 
 npm run build
 
@@ -29,6 +56,7 @@ fi
 echo "提交更改..."
 git add -u
 git commit -m "Bump version to $new_version"
+git tag -a "v$new_version" -m "Version $new_version"
 git push origin master --tags --force
 
 if [ $? -eq 0 ]; then
