@@ -1,16 +1,16 @@
-import * as llmCore from '@qcgm1978/llm-core';
+import * as llmCore from '../llm-core/src';
 import initServices from './initServices';
 
 initServices();
 
-export const { 
-  ServiceProvider, 
-  getSelectedServiceProvider, 
-  setSelectedServiceProvider, 
-  hasApiKey, 
-  streamDefinition, 
-  streamMindMap, 
-  streamMindMapArrows, 
+export const {
+  ServiceProvider,
+  getSelectedServiceProvider,
+  setSelectedServiceProvider,
+  hasApiKey,
+  streamDefinition,
+  streamMindMap,
+  streamMindMapArrows,
   generatePrompt,
   getPromptByName,
   formatPrompt,
@@ -18,12 +18,22 @@ export const {
   updatePrompt,
   resetPrompts,
   getChapterMindMapPrompt,
-  getMindMapArrowPrompt
+  getMindMapArrowPrompt,
+  hasDeepSeekApiKey,
+  hasGeminiApiKey,
+  hasGroqApiKey,
+  hasOpenAiApiKey,
+  hasDoubaoApiKey,
+  setDeepSeekApiKey,
+  setGeminiApiKey,
+  setGroqApiKey,
+  setOpenAiApiKey,
+  setDoubaoApiKey
 } = llmCore;
 
 export const init = initServices;
 
-export { setHasShownApiKeyPrompt } from './llmService';
+export { setHasShownApiKeyPrompt } from '../llm-core/src/llmService';
 
 export { default as ApiKeyManager } from './ApiKeyManager';
 export { default as MindMapVisualizer } from './MindMapVisualizer';
