@@ -105,6 +105,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   const [isValid, setIsValid] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
+  // 修改useEffect函数，添加OpenAI和Doubao的处理
   useEffect(() => {
     if (isOpen) {
       const provider = getSelectedServiceProvider()
@@ -131,6 +132,16 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         setApiKey(key)
         setApiSecret(secret)
         setIsValid(hasXunfeiApiKey() && hasXunfeiApiSecret())
+      } else if (provider === ServiceProvider.OPENAI) {
+        const key = localStorage.getItem('OPENAI_API_KEY') || ''
+        setApiKey(key)
+        setIsValid(hasOpenAiApiKey())
+        setApiSecret('')
+      } else if (provider === ServiceProvider.DOUBAO) {
+        const key = localStorage.getItem('DOUBAO_API_KEY') || ''
+        setApiKey(key)
+        setIsValid(hasDoubaoApiKey())
+        setApiSecret('')
       } else if (provider === ServiceProvider.YOUCHAT) {
         setApiKey('')
         setApiSecret('')
