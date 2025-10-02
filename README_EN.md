@@ -2,8 +2,9 @@
 
 A frontend component library that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
 
-## Latest Version Update (v2.17.0)
+## Latest Version Update (v3.1.10)
 
+- **Added Doubao Service Support**: Integrated Doubao large language model service, users can use this service by configuring Doubao API key
 - **Style Refactoring**: Moved all inline styles from ApiKeyManager component to CSS files for clearer code structure and easier maintenance
 - **Theme Style Support**: Added two style schemes based on Comic Sans MS font (lively cartoon style and retro comic style)
 - **Style Switching Feature**: Support switching between default style, comic1 and comic2 styles via styleVariant property
@@ -183,6 +184,7 @@ The demo application includes the following functional modules:
 - Groq (Meta) - (Proxy required)
 - Xunfei Xinghuo
 - YouChat - Default service, free to use without API key
+- Doubao - Supports Doubao large language model service
 
 ## Browser Compatibility
 
@@ -236,3 +238,7 @@ npm run publish:dry
 ## License
 
 MIT
+
+          {currentLanguage === 'zh' 
+              ? '服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat/OpenAI/豆包）' 
+              : 'Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat/OpenAI/Doubao)'}

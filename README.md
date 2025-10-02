@@ -4,8 +4,9 @@
 
 一个提供多种 LLM（大型语言模型）服务集成的前端组件库，支持 DeepSeek、Gemini、Groq、讯飞星火和 YouChat 等服务提供商。
 
-## 最新版本更新（v2.17.0）
+## 最新版本更新（v3.1.10）
 
+- **新增豆包服务支持**：集成了豆包（Doubao）大语言模型服务，用户可以通过配置豆包API密钥来使用该服务
 - **样式重构**：将ApiKeyManager组件中的所有内联样式移动到CSS文件中，使代码结构更清晰，便于维护
 - **主题样式支持**：新增基于Comic Sans MS字体的两种样式方案（活泼卡通风格和复古漫画风格）
 - **样式切换功能**：通过styleVariant属性支持在默认样式、comic1和comic2样式之间切换
@@ -185,6 +186,7 @@ npm run dev
 - Groq (Meta) - (需代理)
 - 讯飞星火
 - YouChat - 默认服务，无需API密钥可免费使用
+- 豆包 - 支持豆包大语言模型服务
 
 ## 浏览器兼容性
 
@@ -236,3 +238,7 @@ npm run build
 ## License
 
 MIT
+
+          {currentLanguage === 'zh' 
+              ? '服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat/OpenAI/豆包）' 
+              : 'Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat/OpenAI/Doubao)'}
