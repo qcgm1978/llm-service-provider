@@ -8,10 +8,11 @@
     "dist",
     "README.md",
     "README_EN.md",
-    "index.ts"
+    "index.ts",
+    "index.css"
   ],
   "scripts": {
-    "build": "tsc && cp src/index.css dist/",
+    "build": "tsc",
     "prepare": "npm run build",
     "publish:patch": "./publish.sh patch",
     "publish:minor": "./publish.sh minor",
