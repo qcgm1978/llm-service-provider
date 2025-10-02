@@ -1,29 +1,18 @@
-import { streamDefinition, hasApiKey, setHasShownApiKeyPrompt } from './llm-core/src/llmService'
-import ApiKeyManager from './src/ApiKeyManager'
-import { 
-  getChapterMindMapPrompt,
-  getMindMapArrowPrompt,
-  streamMindMap,
-  streamMindMapArrows
-} from './src'
+import * as llmServiceProvider from './src';
 
-export {
-  streamDefinition,
-  hasApiKey,
-  setHasShownApiKeyPrompt,
-  ApiKeyManager,
-  getChapterMindMapPrompt,
-  getMindMapArrowPrompt,
-  streamMindMap,
-  streamMindMapArrows
-}
+// 导出所有从src/index.ts导出的内容
+export * from './src';
 
+// 重新导出ApiKeyManager和MindMapVisualizer
+import { ApiKeyManager, MindMapVisualizer } from './src';
+export { ApiKeyManager, MindMapVisualizer };
+
+// 默认导出一个不直接引用ApiKeyManager的对象
 export default {
-  streamDefinition,
-  hasApiKey,
-  ApiKeyManager,
-  getChapterMindMapPrompt,
-  getMindMapArrowPrompt,
-  streamMindMap,
-  streamMindMapArrows
-}
+  streamDefinition: llmServiceProvider.streamDefinition,
+  hasApiKey: llmServiceProvider.hasApiKey,
+  getChapterMindMapPrompt: llmServiceProvider.getChapterMindMapPrompt,
+  getMindMapArrowPrompt: llmServiceProvider.getMindMapArrowPrompt,
+  streamMindMap: llmServiceProvider.streamMindMap,
+  streamMindMapArrows: llmServiceProvider.streamMindMapArrows
+};
