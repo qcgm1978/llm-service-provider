@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/core": "^7.28.4",
     "@babel/helper-compilation-targets": "^7.27.2",
+    "@qcgm1978/llm-core": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-flow-renderer": "^10.3.17",

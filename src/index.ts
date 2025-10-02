@@ -1,4 +1,4 @@
-import * as llmCore from '../llm-core/src';
+import * as llmCore from '@qcgm1978/llm-core';
 import initServices from './initServices';
 
 initServices();
