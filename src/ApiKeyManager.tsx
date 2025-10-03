@@ -316,12 +316,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             >
               Meta
             </button>
-            <button
-              onClick={() => handleProviderChange(ServiceProvider.YOUCHAT)}
-              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.YOUCHAT ? 'active' : ''}`}
-            >
-              YouChat
-            </button>
+           
             <button
               onClick={() => handleProviderChange(ServiceProvider.OPENAI)}
               className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.OPENAI ? 'active' : ''}`}
@@ -333,6 +328,12 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.DOUBAO ? 'active' : ''}`}
             >
               豆包
+            </button>
+             <button
+              onClick={() => handleProviderChange(ServiceProvider.YOUCHAT)}
+              className={`api-key-manager-provider-btn ${selectedProvider === ServiceProvider.YOUCHAT ? 'active' : ''}`}
+            >
+              YouChat
             </button>
           </div>
         </div>
