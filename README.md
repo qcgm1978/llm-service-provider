@@ -238,7 +238,3 @@ npm run build
 ## License
 
 MIT
-
-          {currentLanguage === 'zh' 
-              ? '服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat/OpenAI/豆包）' 
-              : 'Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat/OpenAI/Doubao)'}
