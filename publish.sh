@@ -16,11 +16,8 @@ fi
 current_version=$(node -p "require('./package.json').version")
 echo "当前版本: $current_version"
 
-# 手动更新版本号
-# 解析版本号
 IFS='.' read -r major minor patch <<< "$current_version"
 
-# 根据类型更新版本号
 case "$1" in
   major)
     major=$((major + 1))
@@ -42,10 +39,8 @@ esac
 
 new_version="$major.$minor.$patch"
 
-# 更新package.json中的版本号
 sed -i '' "s/\"version\": \"$current_version\"/\"version\": \"$new_version\"/g" package.json
 
-echo "更新后版本: $new_version"
 
 npm run build
 
