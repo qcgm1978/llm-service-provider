@@ -1,6 +1,6 @@
 {
   "name": "llm-service-provider",
-  "version": "3.1.15",
+  "version": "3.1.16",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,6 +12,8 @@
   ],
   "scripts": {
     "build": "tsc && cp index.css dist/",
+    "sync": "cnpm sync @qcgm1978/llm-core",
+    "i": "cnpm install @qcgm1978/llm-core@latest",
     "prepare": "npm run build",
     "publish:patch": "./publish.sh patch",
     "publish:minor": "./publish.sh minor",
