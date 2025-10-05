@@ -1,0 +1,129 @@
+{
+  "chatgpt_for_engineering_teams_prompts": [
+    {
+      "use_case": "Evaluate cloud providers for migration",
+      "prompt": "I’m an infrastructure engineer evaluating cloud migration options. Context: We’re moving from on-prem to the cloud for a fintech backend. Output: Compare AWS, GCP, and Azure for scalability, pricing, compliance, and developer tooling. Include citations.",
+      "中文翻译": "我是一名基础设施工程师，正在评估云迁移方案。背景：我们要将金融科技后端系统从本地部署迁移到云端。输出要求：对比AWS、GCP和Azure在可扩展性、定价、合规性和开发工具方面的差异，并包含引用来源。"
+    },
+    {
+      "use_case": "Research frameworks for real-time apps",
+      "prompt": "I’m building a real-time collaboration tool. Context: We need low-latency and scalability. Output: Compare top frameworks (e.g., SignalR, Socket.io, WebRTC) with use cases, pros/cons, and current usage by other SaaS companies. Include sources.",
+      "中文翻译": "我正在开发一款实时协作工具。背景：我们需要低延迟和高可扩展性的解决方案。输出要求：对比主流框架（如SignalR、Socket.io、WebRTC），包含适用场景、优缺点以及其他SaaS公司当前的使用情况，并包含引用来源。"
+    },
+    {
+      "use_case": "Benchmark observability tools",
+      "prompt": "Benchmark the top observability tools. Context: We want to move from basic logging to full-stack monitoring. Output: Create a comparison table of features, pricing, integrations for Datadog, New Relic, Prometheus, and OpenTelemetry. Include sources.",
+      "中文翻译": "对主流可观测性工具进行基准测试。背景：我们希望从基础日志记录升级到全栈监控。输出要求：创建对比表格，涵盖Datadog、New Relic、Prometheus和OpenTelemetry的功能、定价、集成能力，并包含引用来源。"
+    },
+    {
+      "use_case": "Analyze AI/ML trends in logistics",
+      "prompt": "I’m researching AI/ML adoption in logistics systems. Context: Our company is considering integrating predictive routing. Output: A 5-paragraph summary on current trends, vendors, and implementation patterns. Include citations and links.",
+      "中文翻译": "我正在研究物流系统中的AI/ML应用情况。背景：我们公司正考虑集成预测性路径规划功能。输出要求：撰写5段式总结，内容涵盖当前趋势、相关供应商和实施模式，并包含引用文献和链接。"
+    },
+    {
+      "use_case": "Investigate compliance best practices",
+      "prompt": "Research best practices for GDPR/CCPA compliance so we can help kick off discussions with our legal team. Context: Our app stores sensitive user data in the EU and US. Output: A compliance checklist with citations, sorted by regulation. Include links to documentation and regulations.",
+      "中文翻译": "研究GDPR/CCPA合规的最佳实践，以便协助我们与法务团队启动相关讨论。背景：我们的应用在欧盟和美国存储敏感用户数据。输出要求：按法规分类制作合规清单，并包含引用来源，同时附上法规文档和条款链接。"
+    },
+    {
+      "use_case": "Review system design doc",
+      "prompt": "I’ve drafted a technical design document for [insert project or feature]. Review it for clarity, architectural soundness, and completeness. Highlight any missing considerations or questions reviewers may raise.",
+      "中文翻译": "我已为[插入项目或功能名称]起草了一份技术设计文档。请从清晰度、架构合理性和完整性方面进行审核，并指出遗漏的注意事项或审核人员可能提出的问题。"
+    },
+    {
+      "use_case": "Document internal API behavior",
+      "prompt": "I need to document how this internal API works for other developers. Here’s the relevant code, schema, and usage examples: [insert materials]. Create clear documentation including endpoints, input/output formats, and expected behavior.",
+      "中文翻译": "我需要为其他开发人员编写这份内部API的使用文档。以下是相关代码、 schema 和使用示例：[插入材料]。请撰写清晰的文档，包含接口端点、输入/输出格式以及预期行为说明。"
+    },
+    {
+      "use_case": "Draft runbook for on-call engineers",
+      "prompt": "I need to create a runbook for on-call engineers supporting [insert system]. Draft one that includes sections for system overview, common alerts, diagnostic steps, and escalation procedures.",
+      "中文翻译": "我需要为负责[插入系统名称]运维的值班工程师编写一份操作手册。请起草手册，包含系统概述、常见告警、诊断步骤和升级流程等章节。"
+    },
+    {
+      "use_case": "Draft onboarding guide for new hires",
+      "prompt": "I need to write an onboarding guide for new engineers joining [insert team]. Create a draft with sections for required tools, access setup, codebase overview, and first tasks. Make it suitable for self-service onboarding.",
+      "中文翻译": "我需要为加入[插入团队名称]的新工程师编写一份入职指南。请起草指南，包含必备工具、权限设置、代码库概述和初始任务等章节，确保内容适合自助式入职学习。"
+    },
+    {
+      "use_case": "Write JIRA ticket from spec",
+      "prompt": "Based on this engineering spec for [insert task or feature], write a JIRA ticket that includes the problem statement, context, goals, acceptance criteria, and technical notes for implementation.",
+      "中文翻译": "根据[插入任务或功能名称]的工程规格说明，编写一份JIRA工单，包含问题描述、背景信息、目标、验收标准以及实施相关的技术说明。"
+    },
+    {
+      "use_case": "Debug failing system in production",
+      "prompt": "A system in production is intermittently failing, and we’re struggling to isolate the root cause. Based on the following logs, metrics, and recent changes: [insert context], help identify the most likely causes and suggest next steps for mitigation.",
+      "中文翻译": "生产环境中的某系统出现间歇性故障，我们难以定位根本原因。根据以下日志、指标数据和近期变更：[插入相关信息]，请协助识别最可能的故障原因，并提出缓解问题的后续步骤建议。"
+    },
+    {
+      "use_case": "Analyze performance bottlenecks",
+      "prompt": "Our service is experiencing latency and degraded performance during peak usage. Here are metrics, logs, and relevant traces: [insert context]. Help identify the bottlenecks and recommend specific optimizations.",
+      "中文翻译": "我们的服务在高峰使用时段出现延迟增加和性能下降问题。以下是相关指标、日志和追踪数据：[插入相关信息]。请协助识别性能瓶颈，并提出具体的优化建议。"
+    },
+    {
+      "use_case": "Analyze a data pipeline failure",
+      "prompt": "A critical data pipeline failed in yesterday’s run. Here are the logs, data volume trends, and error outputs: [insert context]. Analyze what likely went wrong and provide recommendations to prevent recurrence.",
+      "中文翻译": "一条关键数据管道在昨日运行时发生故障。以下是相关日志、数据量趋势和错误输出：[插入相关信息]。请分析可能的故障原因，并提出预防再次发生的建议。"
+    },
+    {
+      "use_case": "Suggest observability improvements",
+      "prompt": "We currently use [insert tools] for monitoring [insert service]. Review our observability setup and suggest improvements across metrics, logging, alerting, and dashboards to improve issue detection and debugging.",
+      "中文翻译": "我们目前使用[插入工具名称]监控[插入服务名称]。请审核我们的可观测性配置，并从指标监控、日志记录、告警机制和仪表盘展示等方面提出改进建议，以提升问题检测和调试效率。"
+    },
+    {
+      "use_case": "Brainstorm edge cases for testing",
+      "prompt": "We’re preparing test cases for [insert feature/system]. Brainstorm potential edge cases and failure scenarios that may not be covered by standard testing, including unusual user inputs, system state changes, and concurrency issues.",
+      "中文翻译": "我们正在为[插入功能/系统名称]准备测试用例。请梳理标准测试可能未覆盖的潜在边缘场景和故障情况，包括异常用户输入、系统状态变更以及并发问题等。"
+    },
+    {
+      "use_case": "Identify trends in product usage logs",
+      "prompt": "Analyze this CSV of product usage logs. Context: We want to identify usage trends over time and across user segments. Output: Summary stats + line or bar charts highlighting key trends.",
+      "中文翻译": "分析这份产品使用日志的CSV文件。背景：我们希望识别不同时间段和用户群体的使用趋势。输出要求：统计摘要数据，以及突出关键趋势的折线图或柱状图。"
+    },
+    {
+      "use_case": "Visualize system error rates over time",
+      "prompt": "Plot error rates over time from this dataset. Context: It contains application logs from the last month. Output: A time-series chart with callouts for error spikes and a short interpretation.",
+      "中文翻译": "根据这份数据集绘制错误率随时间变化的图表。背景：该数据集包含过去一个月的应用日志。输出要求：时间序列图表（需标注错误峰值），以及简短的解读说明。"
+    },
+    {
+      "use_case": "Analyze performance test results",
+      "prompt": "Analyze this set of performance test results. Context: It compares two versions of our backend service. Output: Side-by-side comparison charts + text summary of improvements or regressions.",
+      "中文翻译": "分析这份性能测试结果数据集。背景：该数据集用于对比我们后端服务的两个版本。输出要求：并排对比图表，以及说明性能提升或退化情况的文字摘要。"
+    },
+    {
+      "use_case": "Prioritize bugs based on impact",
+      "prompt": "Analyze this bug report dataset. Context: Each row includes severity, frequency, and affected users. Output: A prioritized list of top bugs with charts showing frequency vs. severity.",
+      "中文翻译": "分析这份bug报告数据集。背景：每一行数据包含bug的严重程度、出现频率和受影响用户数。输出要求：按优先级排序的主要bug列表，以及展示频率与严重程度关系的图表。"
+    },
+    {
+      "use_case": "Summarize feedback from user surveys",
+      "prompt": "Summarize this user feedback CSV. Context: It includes ratings and open text responses from a recent survey. Output: Key themes, sentiment scores, and charts showing distribution of ratings.",
+      "中文翻译": "总结这份用户反馈的CSV文件。背景：该文件包含近期调查的评分数据和开放式文本反馈。输出要求：提炼关键主题、情感分数，以及展示评分分布情况的图表。"
+    },
+    {
+      "use_case": "Create a component diagram",
+      "prompt": "I need to visualize the architecture of [insert system or service]. Generate a component diagram showing key services, data flows, and third-party integrations. Use clear labels and group components logically.",
+      "中文翻译": "我需要可视化[插入系统或服务名称]的架构。请生成组件图，展示关键服务、数据流向以及第三方集成关系，要求标签清晰、组件分组符合逻辑。"
+    },
+    {
+      "use_case": "Visualize system architecture",
+      "prompt": "Create an image of the system architecture. Context: It’s a microservices-based e-commerce platform with services for payments, catalog, and user profiles. Output: Diagram with labeled services and data flow arrows.",
+      "中文翻译": "生成系统架构图。背景：这是一个基于微服务的电商平台，包含支付、商品目录和用户资料等服务。输出要求：带服务标签和数据流箭头的架构图。"
+    },
+    {
+      "use_case": "Explain CI/CD pipeline to stakeholders",
+      "prompt": "Create an image that explains our CI/CD process. Context: This is for a presentation to business stakeholders. Output: Diagram showing dev → build → test → deploy steps with basic icons and short descriptions.",
+      "中文翻译": "生成用于解释我们CI/CD流程的图表。背景：该图表用于向业务相关方演示。输出要求：展示从开发（dev）→构建（build）→测试（test）→部署（deploy）流程的图表，需包含基础图标和简短说明。"
+    },
+    {
+      "use_case": "Model data flow in ML pipeline",
+      "prompt": "Create an image showing data flow in a machine learning pipeline. Context: We collect raw user data, clean it, train models, and serve predictions. Output: A labeled flowchart from raw data to inference.",
+      "中文翻译": "生成展示机器学习管道中数据流的图表。背景：我们的流程包括收集原始用户数据、数据清洗、模型训练和预测服务。输出要求：从原始数据到推理过程的带标签流程图。"
+    },
+    {
+      "use_case": "Diagram customer journey through app",
+      "prompt": "Create a customer journey map through our mobile banking app. Context: Steps include onboarding, account linking, transactions, and support. Output: A visual flowchart with steps, screens, and decision points.",
+      "中文翻译": "生成用户使用我们移动银行应用的旅程图。背景：流程步骤包括入职注册、账户关联、交易操作和客服支持。输出要求：包含步骤、界面和决策节点的可视化流程图。"
+    }
+  ]
+}
