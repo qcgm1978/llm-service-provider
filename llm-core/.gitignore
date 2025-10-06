@@ -41,5 +41,3 @@ coverage/
 *.tmp
 *.temp
 .cache/
-
-# llm-core/

@@ -49,7 +49,15 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   compactTemplate = false,
   styleVariant = 'default'
 }) => {
-  const [selectedPromptType, setSelectedPromptType] = useState(defaultPromptType || '简洁定义')
+  // 获取localStorage中的值作为初始值
+  const storedPromptType = localStorage.getItem('SELECTED_PROMPT_TEMPLATE');
+  const [selectedPromptType, setSelectedPromptType] = useState(storedPromptType || defaultPromptType || '简洁定义');
+  
+  // 创建自定义函数来更新状态并保存到localStorage
+  const updateSelectedPromptType = (value: string) => {
+    setSelectedPromptType(value);
+    localStorage.setItem('SELECTED_PROMPT_TEMPLATE', value);
+  };
   const [category, setCategory] = useState('')
   const [context, setContext] = useState('')
   const [availablePrompts, setAvailablePrompts] = useState<string[]>([
@@ -64,7 +72,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     setAvailablePrompts(promptTypes)
     
     if (defaultPromptType && promptTypes.includes(defaultPromptType)) {
-      setSelectedPromptType(defaultPromptType)
+      updateSelectedPromptType(defaultPromptType) // 使用自定义函数
       if (onPromptTypeChange) {
         onPromptTypeChange(defaultPromptType, category, context)
       }
@@ -77,7 +85,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
 
   const handlePromptTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPromptType = e.target.value
-    setSelectedPromptType(newPromptType)
+    updateSelectedPromptType(newPromptType) // 使用自定义函数
     if (onPromptTypeChange) {
       onPromptTypeChange(newPromptType, category, context)
     }
@@ -524,5 +532,10 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     </div>
   )
 }
+
+// 添加可导出的函数
+export const updateSelectedPromptType = (value: string) => {
+  localStorage.setItem('SELECTED_PROMPT_TEMPLATE', value);
+};
 
 export default ApiKeyManager

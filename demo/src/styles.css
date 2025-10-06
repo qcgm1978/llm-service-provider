@@ -510,7 +510,7 @@ pre {
   background-color: #0056b3;
 }
 
-/* 提示模板类型选择器样式 */
+/* 提示模板类型选择器样式 - 移除可能干扰点击的transform属性 */
 .prompt-type-selector {
   margin: 10px 0;
   padding: 10px;
@@ -533,11 +533,11 @@ pre {
   font-family: 'Comic Sans MS', cursive;
   font-size: 14px;
   cursor: pointer;
-  transform: rotate(-1deg);
+  /* 移除transform属性 */
 }
 
 .prompt-type-selector select:hover {
-  transform: rotate(1deg) scale(1.02);
+  /* 移除hover时的transform效果 */
 }
 
 /* 上下文输入框样式 */

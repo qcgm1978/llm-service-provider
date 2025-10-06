@@ -1,4 +1,4 @@
-import { initAllServices } from '@qcgm1978/llm-core';
+import { initAllServices } from '../llm-core';
 
 export default initAllServices;
 export { initAllServices };

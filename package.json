@@ -12,8 +12,6 @@
   ],
   "scripts": {
     "build": "tsc && cp index.css dist/",
-    "sync": "cnpm sync @qcgm1978/llm-core",
-    "i": "cnpm install @qcgm1978/llm-core@latest",
     "prepare": "npm run build",
     "publish:patch": "./publish.sh patch",
     "publish:minor": "./publish.sh minor",
@@ -44,7 +42,6 @@
   "license": "MIT",
   "dependencies": {
     "@google/genai": "^1.7.0",
-    "@qcgm1978/llm-core": "latest",
     "query-string": "^9.3.1",
     "reactflow": "^11.11.4",
     "sse.js": "^2.7.1",
