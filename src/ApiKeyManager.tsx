@@ -482,7 +482,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           </button>
         </div>
               
-        {!compactTemplate && (selectedProvider !== ServiceProvider.YOUCHAT) && (
+        {!compactTemplate  && (
           <div className="api-key-manager-template-section">
             <h3 className="api-key-manager-template-title">
               {currentLanguage === 'zh' ? '提示模板设置' : 'Prompt Template Settings'}

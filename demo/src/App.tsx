@@ -94,7 +94,7 @@ const nodeTypes = {
 
 function App() {
   // 基础状态
-  const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
+  const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(true);
   const [isPromptManagerOpen, setIsPromptManagerOpen] = useState(false);
   const [topic, setTopic] = useState("如何制作思维导图");
   const [selectedPromptType, setSelectedPromptType] = useState("简洁定义");
@@ -366,7 +366,7 @@ function App() {
           onSave={() => {}}
           onClose={() => setIsApiKeyManagerOpen(false)}
           isOpen={isApiKeyManagerOpen}
-          defaultPromptType="wiki"
+          defaultPromptType={selectedPromptType}
           language="zh"
           compactTemplate={false}
           styleVariant="comic2"
