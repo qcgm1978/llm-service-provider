@@ -5,6 +5,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+# cnpm debug logs
+npminstall-debug.log*
 
 # Production builds
 dist/
