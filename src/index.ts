@@ -1,4 +1,4 @@
-import * as llmCore from '../llm-core';
+import * as llmCore from '../llm-core/src/index';
 import initServices from './initServices';
 
 initServices();
@@ -33,7 +33,7 @@ export const {
 
 export const init = initServices;
 
-export { setHasShownApiKeyPrompt } from '../llm-core';
+export { setHasShownApiKeyPrompt } from '../llm-core/src/index';
 
 export { default as ApiKeyManager } from './ApiKeyManager';
 export { default as MindMapVisualizer } from './MindMapVisualizer';

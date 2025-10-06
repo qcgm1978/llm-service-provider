@@ -24,7 +24,7 @@ import {
   hasOpenAiApiKey,
   hasDoubaoApiKey,
   setDoubaoApiKey
-} from '@qcgm1978/llm-core'
+} from '../llm-core/src/index'
 
 interface ApiKeyManagerProps {
   onSave: (apiKey: string) => void
