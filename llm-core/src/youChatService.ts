@@ -54,6 +54,17 @@ function setChatContext (context: typeof chatContext) {
   chatContext = context
 }
 
+// 添加全局配置变量来控制是否允许 chat 字段
+let allowChatField = false
+
+export function setAllowChatField(allow: boolean): void {
+  allowChatField = allow
+}
+
+export function getAllowChatField(): boolean {
+  return allowChatField
+}
+
 export async function* streamDefinition (
   topic: string,
   language: 'zh' | 'en' = 'zh',
@@ -75,12 +86,17 @@ export async function* streamDefinition (
         const headers = {
           accept: 'text/event-stream',
         }
-        const payload = {
+        
+        const payload: any = {
           q: prompt,
           domain: 'youchat',
           chatId: contextData.chatId,
           queryTraceId: contextData.chatId,
-          chat: JSON.stringify(contextData.chatHistory),
+        }
+        
+        // 只有在 allowChatField 为 true 时才包含 chat 字段
+        if (allowChatField) {
+          payload.chat = JSON.stringify(contextData.chatHistory)
         }
 
         const source = new SSE(

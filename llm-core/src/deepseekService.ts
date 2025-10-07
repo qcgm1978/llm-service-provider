@@ -1,6 +1,7 @@
 import { generatePrompt } from './llmService'
 
-const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions'
+// const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions'
+const DEEPSEEK_API_URL='https://api.deepseek.com/v3.1_terminus_expires_on_20251015/chat/completions'
 const DEEPSEEK_MODEL = 'deepseek-chat'
 
 function getApiKey (): string | undefined {
@@ -57,7 +58,7 @@ export async function* streamDefinition (
         ],
         stream: true,
         max_tokens: 500,
-        temperature: 0.7
+        temperature: 0.7 // https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings
       })
     })
 

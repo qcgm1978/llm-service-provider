@@ -65,7 +65,7 @@ export const setDeepSeekApiKey = (key: string): void => {
 }
 
 export interface ServiceProviderImplementation {
-  streamDefinition: (topic: string, language: 'zh' | 'en', category?: string, context?: string) => AsyncGenerator<string, void, undefined>;
+  streamDefinition: (topic: string, language: 'zh' | 'en', category?: string, context?: string, allowChatField?: boolean) => AsyncGenerator<string, void, undefined>;
 }
 
 export const serviceProvidersRegistry: Record<ServiceProvider, ServiceProviderImplementation | null> = {
@@ -109,12 +109,12 @@ function cleanContent(content: string): string {
   return cleaned
 }
 
-// 修改streamDefinition函数，使用辅助函数处理所有返回的数据
 export async function* streamDefinition(
   topic: string,
   language: 'zh' | 'en' = 'zh',
   category?: string,
-  context?: string
+  context?: string,
+  allowChatField: boolean = false
 ): AsyncGenerator<string, void, undefined> {
   const provider = getSelectedServiceProvider()
   const implementation = serviceProvidersRegistry[provider];
@@ -153,6 +153,7 @@ export async function* streamDefinition(
         case ServiceProvider.YOUCHAT:
           if (hasYouChatApiKey()) {
             const { streamDefinition } = await import('./youChatService')
+            // 我们需要修改 youChatService.ts 来接受这个参数
             implementationStream = streamDefinition(topic, language, category, context)
             break
           }
@@ -361,7 +362,6 @@ export async function* streamMindMap(
     // 将内容和思维导图提示结合
     const fullPrompt = `${content}\n\n${prompt}`
     
-    // 使用streamDefinition函数来生成思维导图，但更改category以区分
     yield* streamDefinition(fullPrompt, language, 'mindmap')
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
