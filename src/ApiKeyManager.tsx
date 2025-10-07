@@ -49,11 +49,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   compactTemplate = false,
   styleVariant = 'default'
 }) => {
-  // 获取localStorage中的值作为初始值
   const storedPromptType = localStorage.getItem('SELECTED_PROMPT_TEMPLATE');
   const [selectedPromptType, setSelectedPromptType] = useState(storedPromptType || defaultPromptType || '简洁定义');
   
-  // 创建自定义函数来更新状态并保存到localStorage
   const updateSelectedPromptType = (value: string) => {
     setSelectedPromptType(value);
     localStorage.setItem('SELECTED_PROMPT_TEMPLATE', value);

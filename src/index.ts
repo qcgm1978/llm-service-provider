@@ -36,4 +36,5 @@ export const init = initServices;
 export { setHasShownApiKeyPrompt } from '../llm-core/src/index';
 
 export { default as ApiKeyManager } from './ApiKeyManager';
+export { updateSelectedPromptType } from './ApiKeyManager';
 export { default as MindMapVisualizer } from './MindMapVisualizer';
