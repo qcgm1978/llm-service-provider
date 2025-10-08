@@ -60,5 +60,4 @@ else
   echo "Git推送失败，请手动检查"
 fi
 
-# 最后输出版本号
 echo "发布版本: $new_version"
