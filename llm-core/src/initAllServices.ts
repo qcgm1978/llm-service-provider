@@ -31,6 +31,10 @@ export async function initAllServices(): Promise<void> {
     const { streamDefinition: doubaoStream } = await import('./doubaoService');
     registerServiceProvider(ServiceProvider.DOUBAO, { streamDefinition: doubaoStream });
     
+    // 注册OpenRouter服务
+    const { streamDefinition: openrouterStream } = await import('./openrouterService');
+    registerServiceProvider(ServiceProvider.OPENROUTER, { streamDefinition: openrouterStream });
+    
     console.log('All services initialized successfully');
   } catch (error) {
     console.error('Failed to initialize services:', error);

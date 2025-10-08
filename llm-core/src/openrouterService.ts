@@ -1,66 +1,105 @@
-import { generatePrompt } from './llmService'
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
+// const OPENROUTER_MODEL = 'openai/gpt-4o'
+// const OPENROUTER_MODEL = 'qwen/qwen3-coder:free'
+const OPENROUTER_MODEL = 'openai/gpt-oss-20b:free'
 
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const GROQ_MODEL = 'meta-llama/llama-4-maverick-17b-128e-instruct'
+// 定义可用模型
+export const OPENROUTER_MODELS = {
+  'openai/gpt-4o': 'OpenAI GPT-4o',
+  'qwen/qwen3-coder:free': 'Qwen3 Coder (Free)',
+  'openai/gpt-oss-20b:free': 'OpenAI GPT-OSS-20B (Free)'
+};
 
-function getApiKey (): string | undefined {
+// 获取默认模型
+export const getDefaultModel = (): string => 'qwen/qwen3-coder:free';
+
+// 获取用户选择的模型
+export function getSelectedModel(): string {
   if (typeof window !== 'undefined' && window.localStorage) {
-    const savedApiKey = localStorage.getItem('GROQ_API_KEY')
+    const savedModel = localStorage.getItem('OPENROUTER_SELECTED_MODEL');
+    if (savedModel && Object.keys(OPENROUTER_MODELS).includes(savedModel)) {
+      return savedModel;
+    }
+  }
+  return getDefaultModel();
+}
+
+// 设置用户选择的模型
+export function setSelectedModel(model: string): void {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    localStorage.setItem('OPENROUTER_SELECTED_MODEL', model);
+  }
+}
+
+// 获取所有可用模型
+export function getAvailableModels(): Record<string, string> {
+  return OPENROUTER_MODELS;
+}
+
+function getApiKey(): string | undefined {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const savedApiKey = localStorage.getItem('OPENROUTER_API_KEY')
     if (savedApiKey) {
       return savedApiKey
     }
   }
 
   if (typeof process !== 'undefined' && process.env) {
-    return process.env.GROQ_API_KEY
+    return process.env.OPENROUTER_API_KEY
   }
 
   return undefined
 }
 
-export function setApiKey (apiKey: string): void {
+export function setApiKey(apiKey: string): void {
   if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.setItem('GROQ_API_KEY', apiKey)
+    localStorage.setItem('OPENROUTER_API_KEY', apiKey)
   }
 }
 
-export function clearApiKey (): void {
+export function clearApiKey(): void {
   if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.removeItem('GROQ_API_KEY')
+    localStorage.removeItem('OPENROUTER_API_KEY')
   }
 }
 
-export function hasApiKey (): boolean {
+export function hasApiKey(): boolean {
   return !!getApiKey()
 }
 
-export async function* streamDefinition (
+import { generatePrompt } from './llmService';
+
+// 修改streamDefinition函数使用选定的模型
+export async function* streamDefinition(
   topic: string,
   language: 'zh' | 'en' = 'zh',
   category?: string,
   context?: string
 ): AsyncGenerator<string, void, undefined> {
-  const apiKey = getApiKey()
-  let accumulatedContent = ''
+  const apiKey = getApiKey();
+  const model = getSelectedModel(); // 使用选定的模型
+  let accumulatedContent = '';
   if (!apiKey) {
     const errorMsg = 
       language === 'zh'
-        ? 'Error: GROQ_API_KEY is not configured. Please configure your API key in the settings to continue.'
-        : 'Error: GROQ_API_KEY is not configured. Please configure your API key in the settings to continue.'
+        ? 'Error: OPENROUTER_API_KEY is not configured. Please configure your API key in the settings to continue.'
+        : 'Error: OPENROUTER_API_KEY is not configured. Please configure your API key in the settings to continue.'
     yield errorMsg
     return
   }
 
   const prompt = generatePrompt(topic, language, category, context)
   try {
-    const response = await fetch(GROQ_API_URL, {
+    const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
+        Authorization: `Bearer ${apiKey}`,
+        // 'HTTP-Referer': 'https://example.com', // 可配置的站点URL
+        // 'X-Title': 'LLM Service Provider', // 可配置的站点标题
       },
       body: JSON.stringify({
-        model: GROQ_MODEL,
+        model: model, // 使用选定的模型
         messages: [
           {
             role: 'user',
@@ -72,7 +111,7 @@ export async function* streamDefinition (
         temperature: 0.7,
         top_p: 0.95
       })
-    })
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
@@ -129,57 +168,14 @@ export async function* streamDefinition (
     if (accumulatedContent) {
       yield accumulatedContent
     }
-    console.error('Error streaming from Groq:', error)
+    console.error('Error streaming from OpenRouter:', error)
     const errorMessage = 
       error instanceof Error ? error.message : 'An unknown error occurred.'
     const msg = 
       language === 'zh'
-        ? `请配置GROQ_API_KEY`
-        : `Please configure GROQ_API_KEY`
+        ? `请配置OPENROUTER_API_KEY`
+        : `Please configure OPENROUTER_API_KEY`
     yield `Error: ${errorMessage}. ${msg}`
     throw new Error(errorMessage)
-  }
-}
-
-export async function getRandomWord (): Promise<string> {
-  const apiKey = getApiKey()
-  if (!apiKey) {
-    throw new Error('GROQ_API_KEY is not configured.')
-  }
-
-  const prompt = `请生成一个有趣的中文词汇或概念，可以是名词、动词、形容词或专有名词。请只回复词汇或概念本身，不要额外的文字、标点符号或格式。`
-
-  try {
-    const response = await fetch(GROQ_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        stream: false,
-        max_tokens: 50,
-        temperature: 0.8
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data.choices?.[0]?.message?.content?.trim() || ''
-  } catch (error) {
-    console.error('Error getting random word from Groq:', error)
-    const errorMessage = 
-      error instanceof Error ? error.message : 'An unknown error occurred.'
-    throw new Error(`Could not get random word: ${errorMessage}`)
   }
 }
