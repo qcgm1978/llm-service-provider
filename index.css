@@ -10,6 +10,8 @@
 }
 
 .api-key-manager-container {
+  max-height: 80%;
+  overflow: scroll;
   background-color: white;
   padding: 2rem;
   border-radius: 12px;
@@ -198,7 +200,7 @@
 
 /* Comic Sans MS 样式方案1：活泼卡通风格 */
 .api-key-manager-comic1 {
-  font-family: 'Comic Sans MS', cursive;
+  font-family: "Comic Sans MS", cursive;
   background-color: #fff9c4;
   border-radius: 16px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -215,7 +217,7 @@
   border: 3px solid #4caf50;
   border-radius: 12px;
   background-color: #ffffff;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: "Comic Sans MS", cursive;
   font-size: 1.1rem;
 }
 
@@ -228,14 +230,14 @@
 .api-key-manager-comic1 .api-key-manager-provider-btn,
 .api-key-manager-comic1 .api-key-manager-clear-btn,
 .api-key-manager-comic1 .api-key-manager-save-btn {
-  font-family: 'Comic Sans MS', cursive;
+  font-family: "Comic Sans MS", cursive;
   border-radius: 12px;
   font-weight: bold;
 }
 
 /* Comic Sans MS 样式方案2：复古漫画风格 */
 .api-key-manager-comic2 {
-  font-family: 'Comic Sans MS', cursive;
+  font-family: "Comic Sans MS", cursive;
   background-color: #f0e68c;
   border: 4px solid #000000;
   border-radius: 0;
@@ -254,7 +256,7 @@
   border: 4px solid #000000;
   border-radius: 0;
   background-color: #ffffff;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: "Comic Sans MS", cursive;
   font-size: 1.1rem;
 }
 
@@ -268,7 +270,7 @@
 .api-key-manager-comic2 .api-key-manager-provider-btn,
 .api-key-manager-comic2 .api-key-manager-clear-btn,
 .api-key-manager-comic2 .api-key-manager-save-btn {
-  font-family: 'Comic Sans MS', cursive;
+  font-family: "Comic Sans MS", cursive;
   border: 3px solid #000000;
   border-radius: 0;
   font-weight: bold;
