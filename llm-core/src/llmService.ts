@@ -165,7 +165,7 @@ export async function* streamDefinition(
 ): AsyncGenerator<string, void, undefined> {
   const provider = getSelectedServiceProvider();
   const implementation = serviceProvidersRegistry[provider];
-
+  // todo 统一的异常处理
   try {
     let implementationStream: AsyncGenerator<string, void, undefined>;
 

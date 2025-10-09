@@ -663,7 +663,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               : selectedProvider === ServiceProvider.GROQ
               ? "Groq"
               : selectedProvider === ServiceProvider.YOUCHAT
-              ? "YouChat"
+              ? "YouChat(需代理)"
               : selectedProvider === ServiceProvider.OPENAI
               ? "OpenAI"
               : selectedProvider === ServiceProvider.DOUBAO
