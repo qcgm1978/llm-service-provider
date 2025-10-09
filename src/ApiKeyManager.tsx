@@ -3,7 +3,6 @@ import "../index.css";
 import { getPromptsByLanguage, getLanguages } from "./prompts";
 import {
   getDefaultModel,
-  getSelectedModel,
   OPENROUTER_MODELS,
   setSelectedModel,
 } from "../llm-core/src/openrouterService";
