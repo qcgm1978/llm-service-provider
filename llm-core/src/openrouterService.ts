@@ -5,6 +5,7 @@ export const OPENROUTER_MODELS = {
   "openai/gpt-4o": "OpenAI GPT-4o",
   "qwen/qwen3-coder:free": "Qwen3 Coder (Free)",
   "openai/gpt-oss-20b:free": "OpenAI GPT-OSS-20B (Free)",
+  "z-ai/glm-4.5-air:free": "GLM-4.5-Air (Free)",
 };
 
 // 获取默认模型
