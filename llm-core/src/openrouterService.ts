@@ -27,7 +27,6 @@ export function setSelectedModel(model: string): void {
   localStorage.setItem("OPENROUTER_SELECTED_MODEL", model);
 }
 
-// 获取所有可用模型
 export function getAvailableModels(): Record<string, string> {
   return OPENROUTER_MODELS;
 }
