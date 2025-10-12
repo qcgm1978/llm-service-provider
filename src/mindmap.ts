@@ -1,4 +1,6 @@
-import { getPromptByName } from './prompts';
+import { getPromptByName } from '../llm-core/src/prompts';
+
+
 
 // 获取思维导图生成提示
 export const getChapterMindMapPrompt = () => {

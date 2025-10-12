@@ -28,7 +28,7 @@ import {
   getPromptByName,
   formatPrompt,
   getPromptsByLanguage,
-} from "../../src/prompts";
+} from "../../llm-core/src/prompts";
 import PromptManager from "./PromptManager";
 import "./styles.css";
 
@@ -278,7 +278,7 @@ function App() {
       let prompt = "";
       const replacements: Record<string, string> = { topic };
       
-      if (selectedPromptType === "wiki" && category) {
+      if ((selectedPromptType === "wiki" || selectedPromptType === "JSON") && category) {
         replacements.category = category;
       } else if (selectedPromptType === "带上下文回答" && context) {
         replacements.context = context;
@@ -435,7 +435,7 @@ function App() {
           </select>
         </div>
 
-        {selectedPromptType === "wiki" && (
+        {selectedPromptType === "wiki" || selectedPromptType === "JSON" && (
           <input
             type="text"
             value={category}

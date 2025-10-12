@@ -16,6 +16,8 @@ import {
   setDoubaoApiKey,
   setOpenRouterApiKey,
   hasOpenRouterApiKey,
+  setMoonshotApiKey,
+  hasMoonshotApiKey,
 } from '../llm-core/src/index';
 
 // 定义接口
@@ -62,6 +64,10 @@ export const getProviderCredentials = (provider: ServiceProvider): ProviderState
     case ServiceProvider.OPENROUTER:
       state.apiKey = localStorage.getItem('OPENROUTER_API_KEY') || '';
       state.isValid = hasOpenRouterApiKey();
+      break;
+    case ServiceProvider.MOONSHOT:
+      state.apiKey = localStorage.getItem('MOONSHOT_API_KEY') || '';
+      state.isValid = hasMoonshotApiKey();
       break;
     case ServiceProvider.YOUCHAT:
       state.isValid = true;
@@ -121,6 +127,12 @@ export const saveProviderCredentials = (provider: ServiceProvider, apiKey: strin
         saved = true;
       }
       break;
+    case ServiceProvider.MOONSHOT:
+      if (apiKey.trim()) {
+        setMoonshotApiKey(apiKey.trim());
+        saved = true;
+      }
+      break;
     default:
       break;
   }
@@ -146,6 +158,9 @@ export const clearProviderCredentials = (provider: ServiceProvider): void => {
       break;
     case ServiceProvider.OPENROUTER:
       setOpenRouterApiKey('');
+      break;
+    case ServiceProvider.MOONSHOT:
+      setMoonshotApiKey('');
       break;
     default:
       break;
@@ -179,23 +194,16 @@ export const getProviderApiKeyLink = (provider: ServiceProvider): string => {
       return 'https://console.volcengine.com/vei/aigateway/overview?region=cn-beijing';
     case ServiceProvider.OPENROUTER:
       return 'https://openrouter.ai/settings/keys';
+    case ServiceProvider.MOONSHOT:
+      return 'https://platform.moonshot.cn/console/api-keys';
     default:
       return '#';
   }
 };
 
+import { providerNamesConfig } from './providerNamesConfig';
+
 // 获取服务提供商的显示名称
 export const getProviderDisplayName = (provider: ServiceProvider, language: 'zh' | 'en' = 'zh'): string => {
-  const names: Record<ServiceProvider, Record<'zh' | 'en', string>> = {
-    [ServiceProvider.XUNFEI]: { zh: '讯飞星火', en: 'Xunfei' },
-    [ServiceProvider.DEEPSEEK]: { zh: 'DeepSeek', en: 'DeepSeek' },
-    [ServiceProvider.GEMINI]: { zh: 'Gemini', en: 'Gemini' },
-    [ServiceProvider.GROQ]: { zh: 'Meta', en: 'Meta' }, // 注意：这里保持原来的显示名称为Meta
-    [ServiceProvider.OPENAI]: { zh: 'OpenAI', en: 'OpenAI' },
-    [ServiceProvider.DOUBAO]: { zh: '豆包', en: 'Doubao' },
-    [ServiceProvider.OPENROUTER]: { zh: 'OpenRouter', en: 'OpenRouter' },
-    [ServiceProvider.YOUCHAT]: { zh: 'YouChat', en: 'YouChat' }
-  };
-
-  return names[provider]?.[language] || provider;
+  return providerNamesConfig[provider]?.[language] || provider;
 };

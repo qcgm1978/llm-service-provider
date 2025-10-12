@@ -35,6 +35,11 @@ const defaultPrompts: PromptsCollection = {
         '请用中文为{category}类别里的术语"{topic}"提供一个简洁、百科全书式的定义。请提供信息丰富且中立的内容。不要使用markdown、标题或任何特殊格式。只返回定义本身的文本。'
     },
     {
+      act: 'JSON',
+      prompt:
+        '请生成一条关于{category}的"{topic}"。要求包含标题和简洁的内容解释。返回格式为JSON对象，包含title和content字段。请直接返回JSON内容，不要包含任何格式说明（如```json等标记）。'
+    },
+    {
       act: '带上下文回答',
       prompt: '请用中文回答"{topic}"。\n\n上下文信息：{context}'
     },
@@ -61,6 +66,11 @@ const defaultPrompts: PromptsCollection = {
       act: 'Category Definition',
       prompt:
         'Please provide a concise, encyclopedia-style definition for the term: "{topic}" in the category of {category} in English. Please provide informative and neutral content. Do not use markdown, headings, or any special formatting. Return only the text of the definition itself.'
+    },
+    {
+      act: 'JSON',
+      prompt:
+        'Please generate a "{topic}" about {category}. Include a title and a concise explanation. Return in JSON format with title and content fields. Please return only the JSON content without any formatting instructions (such as ```json tags).'
     },
     {
       act: 'Answer with Context',
@@ -119,7 +129,8 @@ export const formatPrompt = (
     const regex = new RegExp(`\\{${key}\\}`, 'g')
     result = result.replace(regex, value)
   }
-  return result
+  const s = result.replace('{category}的', '')
+  return s
 }
 
 // 添加或更新提示模板

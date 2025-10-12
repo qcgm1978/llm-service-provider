@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../index.css";
-import { getPromptsByLanguage, getLanguages } from "./prompts";
+import { getPromptsByLanguage, getLanguages } from "../llm-core/src/prompts";
 import {
   getDefaultModel,
   OPENROUTER_MODELS,
@@ -158,7 +158,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
       provider !== ServiceProvider.XUNFEI &&
       provider !== ServiceProvider.OPENAI &&
       provider !== ServiceProvider.DOUBAO &&
-      provider !== ServiceProvider.OPENROUTER
+      provider !== ServiceProvider.OPENROUTER &&
+      provider !== ServiceProvider.MOONSHOT
     ) {
       onSave("");
     }
@@ -251,7 +252,15 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 selectedProvider === ServiceProvider.GROQ ? "active" : ""
               }`}
             >
-              Meta
+              Groq
+            </button>
+            <button
+              onClick={() => handleProviderChange(ServiceProvider.MOONSHOT)}
+              className={`api-key-manager-provider-btn ${
+                selectedProvider === ServiceProvider.MOONSHOT ? "active" : ""
+              }`}
+            >
+              {currentLanguage === 'zh' ? '月之暗面' : 'Moonshot'}
             </button>
 
             <button
@@ -268,7 +277,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 selectedProvider === ServiceProvider.DOUBAO ? "active" : ""
               }`}
             >
-              豆包
+              {currentLanguage === "zh" ? "豆包" : "Doubao"}
             </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.OPENROUTER)}
@@ -317,6 +326,10 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   ? currentLanguage === "zh"
                     ? "OpenRouter API 密钥(通义千问3)"
                     : "OpenRouter API Key(Proxy Required)"
+                  : selectedProvider === ServiceProvider.MOONSHOT
+                  ? currentLanguage === "zh"
+                    ? "Moonshot API 密钥"
+                    : "Moonshot API Key"
                   : currentLanguage === "zh"
                   ? "讯飞 API Key"
                   : "Xunfei API Key"}
@@ -346,7 +359,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                             ? "豆包"
                             : selectedProvider === ServiceProvider.OPENROUTER
                             ? "OpenRouter"
-                            : "OpenAI"
+                          : selectedProvider === ServiceProvider.MOONSHOT
+                          ? "Moonshot"
+                          : "OpenAI"
                         } ${
                           selectedProvider === ServiceProvider.XUNFEI
                             ? "API Key"
@@ -509,6 +524,19 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 ? "提示模板设置"
                 : "Prompt Template Settings"}
             </h3>
+            <div className="api-key-manager-section">
+              <label className="api-key-manager-label">
+                {currentLanguage === "zh" ? "语言 / Language" : "Language / 语言"}
+              </label>
+              <select
+                value={currentLanguage}
+                onChange={(e) => handleLanguageChange(e.target.value as "zh" | "en")}
+                className="api-key-manager-select"
+              >
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+              </select>
+            </div>
             <div>
               <label className="api-key-manager-label">
                 {currentLanguage === "zh"
@@ -532,30 +560,32 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         )}
 
         {isValid && (
-          <div className="api-key-manager-success-message">
-            ✅{" "}
-            {selectedProvider === ServiceProvider.DEEPSEEK
-              ? "DeepSeek"
-              : selectedProvider === ServiceProvider.GEMINI
-              ? "Gemini"
-              : selectedProvider === ServiceProvider.GROQ
-              ? "Groq"
-              : selectedProvider === ServiceProvider.YOUCHAT
-              ? "YouChat(需代理)"
-              : selectedProvider === ServiceProvider.OPENAI
-              ? "OpenAI"
-              : selectedProvider === ServiceProvider.DOUBAO
-              ? "豆包"
-              : selectedProvider === ServiceProvider.OPENROUTER
-              ? "OpenRouter"
-              : currentLanguage === "zh"
-              ? "讯飞"
-              : "Xunfei"}{" "}
-            {currentLanguage === "zh"
-              ? "API 密钥已配置，应用可以正常使用"
-              : "API key has been configured, the application can be used normally"}
-          </div>
-        )}
+              <div className="api-key-manager-success-message">
+                ✅ {selectedProvider === ServiceProvider.DEEPSEEK
+                  ? "DeepSeek"
+                  : selectedProvider === ServiceProvider.GEMINI
+                  ? "Gemini"
+                  : selectedProvider === ServiceProvider.GROQ
+                  ? "Groq"
+                  : selectedProvider === ServiceProvider.YOUCHAT
+                  ? "YouChat(需代理)"
+                  : selectedProvider === ServiceProvider.OPENAI
+                  ? "OpenAI"
+                  : selectedProvider === ServiceProvider.DOUBAO
+                  ? "豆包"
+                  : selectedProvider === ServiceProvider.OPENROUTER
+                  ? "OpenRouter"
+                  : selectedProvider === ServiceProvider.MOONSHOT
+                  ? currentLanguage === "zh"
+                    ? "月之暗面"
+                    : "Moonshot"
+                  : currentLanguage === "zh"
+                  ? "讯飞"
+                  : "Xunfei"}{" "} {currentLanguage === "zh"
+                  ? "API 密钥已配置，应用可以正常使用"
+                  : "API key has been configured, the application can be used normally"}
+              </div>
+            )}
       </div>
     </div>
   );

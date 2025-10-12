@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPromptsByLanguage, getLanguages, updatePrompt, resetPrompts } from '../../src/prompts';
+import { getPromptsByLanguage, getLanguages, updatePrompt, resetPrompts } from '../../llm-core/src/prompts';
 import './styles/promptManager.css';
 
 interface PromptManagerProps {

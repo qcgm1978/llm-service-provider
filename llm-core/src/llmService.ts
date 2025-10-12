@@ -2,7 +2,7 @@
 import { getPromptByName, formatPrompt } from "./prompts";
 import { getChapterMindMapPrompt, getMindMapArrowPrompt } from "./mindmap";
 
-// 在ServiceProvider枚举中添加OPENROUTER
+// 在ServiceProvider枚举中添加OPENROUTER和MOONSHOT
 export enum ServiceProvider {
   DEEPSEEK = "deepseek",
   GEMINI = "gemini",
@@ -12,6 +12,7 @@ export enum ServiceProvider {
   OPENAI = "openai",
   DOUBAO = "doubao",
   OPENROUTER = "openrouter",
+  MOONSHOT = "moonshot",
 }
 
 export const serviceProvidersRegistry: Record<
@@ -26,6 +27,7 @@ export const serviceProvidersRegistry: Record<
   [ServiceProvider.OPENAI]: null,
   [ServiceProvider.DOUBAO]: null,
   [ServiceProvider.OPENROUTER]: null,
+  [ServiceProvider.MOONSHOT]: null,
 };
 
 // 在getSelectedServiceProvider函数中添加OPENROUTER的检查
@@ -52,6 +54,8 @@ export const getSelectedServiceProvider = (): ServiceProvider => {
     return ServiceProvider.DOUBAO;
   } else if (hasOpenRouterApiKey()) {
     return ServiceProvider.OPENROUTER;
+  } else if (hasMoonshotApiKey()) {
+    return ServiceProvider.MOONSHOT;
   } else {
     return ServiceProvider.XUNFEI;
   }
@@ -71,6 +75,20 @@ export const setOpenRouterApiKey = (key: string): void => {
   }
 };
 
+// 添加Moonshot的API密钥管理函数
+export const hasMoonshotApiKey = (): boolean => {
+  const key = localStorage.getItem("MOONSHOT_API_KEY");
+  return !!key && key.trim().length > 0;
+};
+
+export const setMoonshotApiKey = (key: string): void => {
+  if (key) {
+    localStorage.setItem("MOONSHOT_API_KEY", key);
+  } else {
+    localStorage.removeItem("MOONSHOT_API_KEY");
+  }
+};
+
 // 更新hasApiKey函数，添加hasOpenRouterApiKey检查
 export const hasApiKey = (): boolean => {
   return (
@@ -81,7 +99,8 @@ export const hasApiKey = (): boolean => {
     hasFreeApiKey() ||
     hasOpenAiApiKey() ||
     hasDoubaoApiKey() ||
-    hasOpenRouterApiKey()
+    hasOpenRouterApiKey() ||
+    hasMoonshotApiKey()
   );
 };
 
@@ -267,6 +286,17 @@ export async function* streamDefinition(
             );
             break;
           }
+        case ServiceProvider.MOONSHOT:
+          if (hasMoonshotApiKey()) {
+            const { streamDefinition } = await import("./moonshotService");
+            implementationStream = streamDefinition(
+              topic,
+              language,
+              category,
+              context
+            );
+            break;
+          }
         default:
           const { streamDefinition } = await import("./xunfeiService");
           implementationStream = streamDefinition(
@@ -309,6 +339,8 @@ export const clearAllApiKeys = (): void => {
   localStorage.removeItem("GROQ_API_KEY");
   localStorage.removeItem("OPENAI_API_KEY");
   localStorage.removeItem("DOUBAO_API_KEY");
+  localStorage.removeItem("OPENROUTER_API_KEY");
+  localStorage.removeItem("MOONSHOT_API_KEY");
 };
 
 export const generatePrompt = (
