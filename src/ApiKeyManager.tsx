@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../index.css";
 import { getPromptsByLanguage, getLanguages } from "../llm-core/src/prompts";
+import { providerNamesConfig } from './providerNamesConfig';
 import {
   getDefaultModel,
   OPENROUTER_MODELS,
@@ -302,37 +303,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           <>
             <div className="api-key-manager-input-group">
               <label htmlFor="apiKey" className="api-key-manager-label">
-                {selectedProvider === ServiceProvider.DEEPSEEK
-                  ? currentLanguage === "zh"
-                    ? "DeepSeek API 密钥"
-                    : "DeepSeek API Key"
-                  : selectedProvider === ServiceProvider.GEMINI
-                  ? currentLanguage === "zh"
-                    ? "Gemini API 密钥(需代理)"
-                    : "Gemini API Key(Proxy Required)"
-                  : selectedProvider === ServiceProvider.GROQ
-                  ? currentLanguage === "zh"
-                    ? "Groq API 密钥"
-                    : "Groq API Key"
-                  : selectedProvider === ServiceProvider.OPENAI
-                  ? currentLanguage === "zh"
-                    ? "OpenAI API 密钥(需代理)"
-                    : "OpenAI API Key(Proxy Required)"
-                  : selectedProvider === ServiceProvider.DOUBAO
-                  ? currentLanguage === "zh"
-                    ? "豆包 API 密钥"
-                    : "Doubao API Key"
-                  : selectedProvider === ServiceProvider.OPENROUTER
-                  ? currentLanguage === "zh"
-                    ? "OpenRouter API 密钥(通义千问3)"
-                    : "OpenRouter API Key(Proxy Required)"
-                  : selectedProvider === ServiceProvider.MOONSHOT
-                  ? currentLanguage === "zh"
-                    ? "Moonshot API 密钥"
-                    : "Moonshot API Key"
-                  : currentLanguage === "zh"
-                  ? "讯飞 API Key"
-                  : "Xunfei API Key"}
+                {providerNamesConfig[selectedProvider]?.[currentLanguage === 'zh' ? 'zh' : 'en']} API {currentLanguage === 'zh' ? '密钥' : 'Key'}{selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI || selectedProvider === ServiceProvider.OPENROUTER ? currentLanguage === 'zh' ? '(需代理)' : '(Proxy Required)' : ''}{selectedProvider === ServiceProvider.OPENROUTER && currentLanguage === 'zh' ? '(通义千问3)' : ''}
               </label>
               <div className="api-key-manager-input-wrapper">
                 <input
