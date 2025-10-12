@@ -11,24 +11,16 @@ import {
   ServiceProvider,
   getSelectedServiceProvider,
   setSelectedServiceProvider,
-  setDeepSeekApiKey,
-  setGeminiApiKey,
-  setXunfeiApiKey,
-  setXunfeiApiSecret,
-  setGroqApiKey,
-  setOpenAiApiKey,
-  hasDeepSeekApiKey,
-  hasGeminiApiKey,
-  hasXunfeiApiKey,
-  hasXunfeiApiSecret,
-  hasYouChatApiKey,
-  hasGroqApiKey,
-  hasOpenAiApiKey,
-  hasDoubaoApiKey,
-  setDoubaoApiKey,
-  setOpenRouterApiKey,
-  hasOpenRouterApiKey,
 } from "../llm-core/src/index";
+
+import {
+  getProviderCredentials,
+  saveProviderCredentials,
+  clearProviderCredentials,
+  validateCredentials,
+  getProviderApiKeyLink,
+  getProviderDisplayName
+} from "./providerManager";
 
 interface ApiKeyManagerProps {
   onSave: (apiKey: string) => void;
@@ -139,53 +131,10 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   // 辅助函数：处理服务提供商选择的逻辑
   const handleProviderSelection = (provider: ServiceProvider) => {
     setSelectedProvider(provider);
-
-    if (provider === ServiceProvider.DEEPSEEK) {
-      const key = localStorage.getItem("DEEPSEEK_API_KEY") || "";
-      setApiKey(key);
-      setIsValid(hasDeepSeekApiKey());
-      setApiSecret("");
-    } else if (provider === ServiceProvider.GEMINI) {
-      const key = localStorage.getItem("GEMINI_API_KEY") || "";
-      setApiKey(key);
-      setIsValid(hasGeminiApiKey());
-      setApiSecret("");
-    } else if (provider === ServiceProvider.GROQ) {
-      const key = localStorage.getItem("GROQ_API_KEY") || "";
-      setApiKey(key);
-      setIsValid(hasGroqApiKey());
-      setApiSecret("");
-    } else if (provider === ServiceProvider.XUNFEI) {
-      const key = localStorage.getItem("XUNFEI_API_KEY") || "";
-      const secret = localStorage.getItem("XUNFEI_API_SECRET") || "";
-      setApiKey(key);
-      setApiSecret(secret);
-      setIsValid(hasXunfeiApiKey() && hasXunfeiApiSecret());
-    } else if (provider === ServiceProvider.OPENAI) {
-      const key = localStorage.getItem("OPENAI_API_KEY") || "";
-      setApiKey(key);
-      setIsValid(hasOpenAiApiKey());
-      setApiSecret("");
-    } else if (provider === ServiceProvider.DOUBAO) {
-      const key = localStorage.getItem("DOUBAO_API_KEY") || "";
-      setApiKey(key);
-      setIsValid(hasDoubaoApiKey());
-      setApiSecret("");
-    } else if (provider === ServiceProvider.OPENROUTER) {
-      const key = localStorage.getItem("OPENROUTER_API_KEY") || "";
-      const model = localStorage.getItem("OPENROUTER_SELECTED_MODEL") || "";
-      setApiKey(key);
-      setIsValid(hasOpenRouterApiKey());
-      setApiSecret("");
-    } else if (provider === ServiceProvider.YOUCHAT) {
-      setApiKey("");
-      setApiSecret("");
-      setIsValid(true);
-    } else {
-      setApiKey("");
-      setApiSecret("");
-      setIsValid(false);
-    }
+    const credentials = getProviderCredentials(provider);
+    setApiKey(credentials.apiKey);
+    setApiSecret(credentials.apiSecret);
+    setIsValid(credentials.isValid);
   };
 
   // 修改useEffect函数，添加OpenAI和Doubao的处理
@@ -216,49 +165,11 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   };
 
   const handleSave = () => {
-    if (selectedProvider === ServiceProvider.DEEPSEEK) {
-      if (apiKey.trim()) {
-        setDeepSeekApiKey(apiKey.trim());
-        setIsValid(true);
-        onSave(apiKey.trim());
-      }
-    } else if (selectedProvider === ServiceProvider.GEMINI) {
-      if (apiKey.trim()) {
-        setGeminiApiKey(apiKey.trim());
-        setIsValid(true);
-        onSave(apiKey.trim());
-      }
-    } else if (selectedProvider === ServiceProvider.GROQ) {
-      if (apiKey.trim()) {
-        setGroqApiKey(apiKey.trim());
-        setIsValid(true);
-        onSave(apiKey.trim());
-      }
-    } else if (selectedProvider === ServiceProvider.XUNFEI) {
-      if (apiKey.trim() && apiSecret.trim()) {
-        setXunfeiApiKey(apiKey.trim());
-        setXunfeiApiSecret(apiSecret.trim());
-        setIsValid(true);
-        onSave(apiKey.trim());
-      }
-    } else if (selectedProvider === ServiceProvider.OPENAI) {
-      if (apiKey.trim()) {
-        setOpenAiApiKey(apiKey.trim());
-        setIsValid(true);
-        onSave(apiKey.trim());
-      }
-    } else if (selectedProvider === ServiceProvider.DOUBAO) {
-      if (apiKey.trim()) {
-        setDoubaoApiKey(apiKey.trim());
-        setIsValid(true);
-        onSave(apiKey.trim());
-      }
-    } else if (selectedProvider === ServiceProvider.OPENROUTER) {
-      if (apiKey.trim()) {
-        setOpenRouterApiKey(apiKey.trim());
-        setIsValid(true);
-        onSave(apiKey.trim());
-      }
+    const saved = saveProviderCredentials(selectedProvider, apiKey, apiSecret);
+    
+    if (saved) {
+      setIsValid(true);
+      onSave(apiKey.trim());
     }
 
     onClose();
@@ -271,18 +182,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
   };
 
   const handleClear = () => {
-    if (selectedProvider === ServiceProvider.DEEPSEEK) {
-      setDeepSeekApiKey("");
-    } else if (selectedProvider === ServiceProvider.GEMINI) {
-      setGeminiApiKey("");
-    } else if (selectedProvider === ServiceProvider.GROQ) {
-      setGroqApiKey("");
-    } else if (selectedProvider === ServiceProvider.XUNFEI) {
-      setXunfeiApiKey("");
-      setXunfeiApiSecret("");
-    } else if (selectedProvider === ServiceProvider.OPENROUTER) {
-      setOpenRouterApiKey("");
-    }
+    clearProviderCredentials(selectedProvider);
     setApiKey("");
     setApiSecret("");
     setIsValid(false);
@@ -403,8 +303,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                     : "Gemini API Key(Proxy Required)"
                   : selectedProvider === ServiceProvider.GROQ
                   ? currentLanguage === "zh"
-                    ? "Meta API 密钥(需代理)"
-                    : "Meta API Key(Proxy Required)"
+                    ? "Groq API 密钥"
+                    : "Groq API Key"
                   : selectedProvider === ServiceProvider.OPENAI
                   ? currentLanguage === "zh"
                     ? "OpenAI API 密钥(需代理)"
@@ -428,13 +328,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   value={apiKey}
                   onChange={(e) => {
                     setApiKey(e.target.value);
-                    if (selectedProvider === ServiceProvider.XUNFEI) {
-                      setIsValid(
-                        e.target.value.length > 0 && apiSecret.length > 0
-                      );
-                    } else {
-                      setIsValid(e.target.value.length > 0);
-                    }
+                    setIsValid(validateCredentials(selectedProvider, e.target.value, apiSecret));
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder={
@@ -500,9 +394,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                     value={apiSecret}
                     onChange={(e) => {
                       setApiSecret(e.target.value);
-                      setIsValid(
-                        apiKey.length > 0 && e.target.value.length > 0
-                      );
+                      setIsValid(validateCredentials(selectedProvider, apiKey, e.target.value));
                     }}
                     onKeyPress={handleKeyPress}
                     placeholder={
@@ -538,21 +430,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 </a>
               ) : (
                 <a
-                  href={
-                    selectedProvider === ServiceProvider.DEEPSEEK
-                      ? "https://platform.deepseek.com/"
-                      : selectedProvider === ServiceProvider.GEMINI
-                      ? "https://makersuite.google.com/app/apikey"
-                      : selectedProvider === ServiceProvider.GROQ
-                      ? "https://console.groq.com/keys"
-                      : selectedProvider === ServiceProvider.OPENAI
-                      ? "https://platform.openai.com/api-keys"
-                      : selectedProvider === ServiceProvider.DOUBAO
-                      ? "https://console.volcengine.com/vei/aigateway/overview?region=cn-beijing"
-                      : selectedProvider === ServiceProvider.OPENROUTER
-                      ? "https://openrouter.ai/settings/keys"
-                      : "#"
-                  }
+                  href={getProviderApiKeyLink(selectedProvider)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
