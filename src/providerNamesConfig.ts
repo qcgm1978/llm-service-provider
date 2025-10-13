@@ -13,5 +13,5 @@ export const providerNamesConfig: ProviderNames = {
   [ServiceProvider.DOUBAO]: { zh: '豆包', en: 'Doubao' },
   [ServiceProvider.OPENROUTER]: { zh: 'OpenRouter', en: 'OpenRouter' },
   [ServiceProvider.YOUCHAT]: { zh: '优聊', en: 'YouChat' },
-  [ServiceProvider.MOONSHOT]: { zh: '月之暗面', en: 'Moonshot' }
+  [ServiceProvider.MOONSHOT]: { zh: '月之暗面', en: 'Kimi' }
 };
