@@ -105,6 +105,10 @@ export async function* streamDefinition(
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : '豆包服务请求失败';
-    yield `错误: ${errorMessage}`;
+    const msg =
+      language === "zh"
+        ? `请配置有效的豆包 API Key`
+        : `Please configure valid Doubao API Key`;
+    yield `错误: ${errorMessage}. ${msg}`;
   }
 }

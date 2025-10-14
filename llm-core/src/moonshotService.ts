@@ -42,7 +42,7 @@ export async function* streamDefinition(
     });
     
     if (!response.ok) {
-      throw new Error(`Moonshot API request failed with status: ${response.status}`);
+      throw new Error(await response.json().then(json => json.error?.message || 'Moonshot API request failed'));
     }
     
     // 处理流式响应
@@ -89,7 +89,11 @@ export async function* streamDefinition(
     console.error('Moonshot service error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     const prefix = language === 'zh' ? '发生错误: ' : 'Error: ';
-    yield `${prefix}${errorMessage}`;
+    const msg =
+      language === "zh"
+        ? `请配置有效的Moonshot API Key`
+        : `Please configure valid Moonshot API Key`;
+    throw new Error(`${prefix}${errorMessage}. ${msg}`);
   }
 }
 
