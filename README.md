@@ -4,6 +4,8 @@
 
 一个提供多种 LLM（大型语言模型）服务集成的前端组件库，支持 DeepSeek、Gemini、Groq、讯飞星火和 YouChat 等服务提供商。
 
+[npm包地址](https://www.npmjs.com/package/llm-service-provider)
+
 ## 最新版本更新（v3.1.10）
 
 - **新增豆包服务支持**：集成了豆包（Doubao）大语言模型服务，用户可以通过配置豆包API密钥来使用该服务

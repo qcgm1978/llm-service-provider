@@ -2,6 +2,8 @@
 
 A frontend component library that integrates multiple LLM (Large Language Model) services, supporting DeepSeek, Gemini, Groq, Xunfei Xinghuo, and YouChat service providers.
 
+[npm Package](https://www.npmjs.com/package/llm-service-provider)
+
 ## Latest Version Update (v3.1.10)
 
 - **Added Doubao Service Support**: Integrated Doubao large language model service, users can use this service by configuring Doubao API key
