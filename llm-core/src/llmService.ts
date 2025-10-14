@@ -316,7 +316,7 @@ export async function* streamDefinition(
     const errorMessage =
       error instanceof Error ? error.message : "An unknown error occurred";
     const prefix = language === "zh" ? "发生错误: " : "Error: ";
-    yield `${prefix}${errorMessage}`;
+    throw new Error(`${prefix}${errorMessage}`);
   }
 }
 

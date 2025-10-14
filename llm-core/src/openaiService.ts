@@ -130,13 +130,11 @@ export async function* streamDefinition(
       yield accumulatedContent
     }
     console.error('Error streaming from OpenAI:', error)
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred.'
     const msg =
       language === 'zh'
-        ? `请配置OPENAI_API_KEY`
-        : `Please configure OPENAI_API_KEY`
-    yield `Error: ${errorMessage}. ${msg}`
-    throw new Error(errorMessage)
+        ? `请配置有效的OPENAI_API_KEY或检查VPN设置`
+        : `Please configure a valid OPENAI_API_KEY or check your VPN settings`
+    const message= `Error: ${error instanceof Error ? error.message : "An unknown error occurred."}. ${msg}`
+    throw new Error(message)
   }
 }

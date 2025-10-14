@@ -74,11 +74,10 @@ export async function* streamDefinition (
     yield `Error: ${errorPrefix}无法连接到讯飞API`
     throw new Error('无法连接到讯飞API')
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.'
-    const errorPrefix = language === 'zh'
-      ? `无法为"${topic}"生成内容: `
-      : `Could not generate content for "${topic}": `
-    yield `Error: ${errorPrefix}${errorMessage}`
-    throw new Error(errorMessage)
+     const msg =
+      language === "zh"
+        ? `请配置有效的XUNFEI_API_KEY和XUNFEI_API_SECRET`
+        : `Please configure valid XUNFEI_API_KEY and XUNFEI_API_SECRET`;
+    throw new Error(msg)
   }
 }

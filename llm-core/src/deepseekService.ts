@@ -63,7 +63,7 @@ export async function* streamDefinition (
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(await response.json().then(json => json.error.message))
     }
 
     const reader = response.body?.getReader()
@@ -107,10 +107,12 @@ export async function* streamDefinition (
       reader.releaseLock()
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-    const errorPrefix = language === 'zh'
-      ? `无法为"${topic}"生成内容: `
-      : `Could not generate content for "${topic}": `
-    yield `Error: ${errorPrefix}${errorMessage}`
+    console.error('Error in DeepSeek stream:', error instanceof Error ? error.message : 'An unknown error occurred')
+    const msg =
+      language === "zh"
+        ? `请配置DEEPSEEK_API_KEY`
+        : `Please configure DEEPSEEK_API_KEY`;
+    const errorMessage = `Error: ${error.message ? error.message : "An unknown error occurred."}. ${msg}`;
+    throw new Error(errorMessage);
   }
 }

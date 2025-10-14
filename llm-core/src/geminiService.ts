@@ -53,11 +53,13 @@ export async function* streamDefinition (
       }
     }
   } catch (error) {
-    const message = JSON.parse(JSON.parse(JSON.stringify(error)).message).error
-    console.error('Error streaming from Gemini:', error)
-    const errorMessage =
-      error instanceof Error ? message : 'An unknown error occurred.'
-    yield `Error: Could not generate content for "${topic}". ${errorMessage}`
-    throw new Error(errorMessage)
+    const msg = JSON.parse(JSON.stringify(error)).message
+    let message: string
+    if(msg) {
+      message = JSON.parse(msg).error
+    } else {
+      message = language === 'zh' ? '网络错误，请开启或检查VPN设置' : 'Please check your network connection or try enabling VPN'
+    }
+    throw new Error(message)
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../index.css";
 import { getPromptsByLanguage, getLanguages } from "../llm-core/src/prompts";
-import { providerNamesConfig } from './providerNamesConfig';
+import { providerNamesConfig } from "./providerNamesConfig";
 import {
   getDefaultModel,
   OPENROUTER_MODELS,
@@ -20,7 +20,7 @@ import {
   clearProviderCredentials,
   validateCredentials,
   getProviderApiKeyLink,
-  getProviderDisplayName
+  getProviderDisplayName,
 } from "./providerManager";
 
 interface ApiKeyManagerProps {
@@ -168,7 +168,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
 
   const handleSave = () => {
     const saved = saveProviderCredentials(selectedProvider, apiKey, apiSecret);
-    
+
     if (saved) {
       setIsValid(true);
       onSave(apiKey.trim());
@@ -199,6 +199,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
 
   if (!isOpen) return null;
 
+  const enable_vpn = selectedProvider === ServiceProvider.YOUCHAT || selectedProvider === ServiceProvider.GROQ || selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI;
   return (
     <div id="api-key-manager" onClick={onClose}>
       <div
@@ -261,7 +262,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                 selectedProvider === ServiceProvider.MOONSHOT ? "active" : ""
               }`}
             >
-              {currentLanguage === 'zh' ? '月之暗面' : 'Moonshot'}
+              {currentLanguage === "zh" ? "月之暗面" : "Moonshot"}
             </button>
 
             <button
@@ -303,7 +304,18 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
           <>
             <div className="api-key-manager-input-group">
               <label htmlFor="apiKey" className="api-key-manager-label">
-                {providerNamesConfig[selectedProvider]?.[currentLanguage === 'zh' ? 'zh' : 'en']} API {currentLanguage === 'zh' ? '密钥' : 'Key'}{selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI || selectedProvider === ServiceProvider.OPENROUTER ? currentLanguage === 'zh' ? '(需代理)' : '(Proxy Required)' : ''}{selectedProvider === ServiceProvider.OPENROUTER && currentLanguage === 'zh' ? '(通义千问3)' : ''}
+                {
+                  providerNamesConfig[selectedProvider]?.[
+                    currentLanguage === "zh" ? "zh" : "en"
+                  ]
+                }{" "}
+                API {currentLanguage === "zh" ? "密钥" : "Key"}
+                {selectedProvider === ServiceProvider.GEMINI ||
+                  selectedProvider === ServiceProvider.OPENAI}
+                {selectedProvider === ServiceProvider.OPENROUTER &&
+                currentLanguage === "zh"
+                  ? "(通义千问3)"
+                  : ""}
               </label>
               <div className="api-key-manager-input-wrapper">
                 <input
@@ -312,7 +324,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   value={apiKey}
                   onChange={(e) => {
                     setApiKey(e.target.value);
-                    setIsValid(validateCredentials(selectedProvider, e.target.value, apiSecret));
+                    setIsValid(
+                      validateCredentials(
+                        selectedProvider,
+                        e.target.value,
+                        apiSecret
+                      )
+                    );
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder={
@@ -330,9 +348,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                             ? "豆包"
                             : selectedProvider === ServiceProvider.OPENROUTER
                             ? "OpenRouter"
-                          : selectedProvider === ServiceProvider.MOONSHOT
-                          ? "Moonshot"
-                          : "OpenAI"
+                            : selectedProvider === ServiceProvider.MOONSHOT
+                            ? "Moonshot"
+                            : "OpenAI"
                         } ${
                           selectedProvider === ServiceProvider.XUNFEI
                             ? "API Key"
@@ -380,7 +398,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                     value={apiSecret}
                     onChange={(e) => {
                       setApiSecret(e.target.value);
-                      setIsValid(validateCredentials(selectedProvider, apiKey, e.target.value));
+                      setIsValid(
+                        validateCredentials(
+                          selectedProvider,
+                          apiKey,
+                          e.target.value
+                        )
+                      );
                     }}
                     onKeyPress={handleKeyPress}
                     placeholder={
@@ -450,6 +474,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             </p>
           </>
         )}
+        {(enable_vpn) && (
+          <div className="api-key-manager-input-group">
+            <label htmlFor="apiKey" className="api-key-manager-label">
+              {currentLanguage === "zh" ? "(需代理)" : "(Proxy Required)"}
+            </label>
+          </div>
+        )}
         {selectedProvider === ServiceProvider.OPENROUTER && (
           <div className="api-key-manager-model-section">
             <label className="api-key-manager-label">
@@ -497,11 +528,15 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             </h3>
             <div className="api-key-manager-section">
               <label className="api-key-manager-label">
-                {currentLanguage === "zh" ? "语言 / Language" : "Language / 语言"}
+                {currentLanguage === "zh"
+                  ? "语言 / Language"
+                  : "Language / 语言"}
               </label>
               <select
                 value={currentLanguage}
-                onChange={(e) => handleLanguageChange(e.target.value as "zh" | "en")}
+                onChange={(e) =>
+                  handleLanguageChange(e.target.value as "zh" | "en")
+                }
                 className="api-key-manager-select"
               >
                 <option value="zh">中文</option>
@@ -531,32 +566,34 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         )}
 
         {isValid && (
-              <div className="api-key-manager-success-message">
-                ✅ {selectedProvider === ServiceProvider.DEEPSEEK
-                  ? "DeepSeek"
-                  : selectedProvider === ServiceProvider.GEMINI
-                  ? "Gemini"
-                  : selectedProvider === ServiceProvider.GROQ
-                  ? "Groq"
-                  : selectedProvider === ServiceProvider.YOUCHAT
-                  ? "YouChat(需代理)"
-                  : selectedProvider === ServiceProvider.OPENAI
-                  ? "OpenAI"
-                  : selectedProvider === ServiceProvider.DOUBAO
-                  ? "豆包"
-                  : selectedProvider === ServiceProvider.OPENROUTER
-                  ? "OpenRouter"
-                  : selectedProvider === ServiceProvider.MOONSHOT
-                  ? currentLanguage === "zh"
-                    ? "月之暗面"
-                    : "Moonshot"
-                  : currentLanguage === "zh"
-                  ? "讯飞"
-                  : "Xunfei"}{" "} {currentLanguage === "zh"
-                  ? "API 密钥已配置，应用可以正常使用"
-                  : "API key has been configured, the application can be used normally"}
-              </div>
-            )}
+          <div className="api-key-manager-success-message">
+            ✅{" "}
+            {selectedProvider === ServiceProvider.DEEPSEEK
+              ? "DeepSeek"
+              : selectedProvider === ServiceProvider.GEMINI
+              ? "Gemini"
+              : selectedProvider === ServiceProvider.GROQ
+              ? "Groq"
+              : selectedProvider === ServiceProvider.YOUCHAT
+              ? "YouChat(需代理)"
+              : selectedProvider === ServiceProvider.OPENAI
+              ? "OpenAI"
+              : selectedProvider === ServiceProvider.DOUBAO
+              ? "豆包"
+              : selectedProvider === ServiceProvider.OPENROUTER
+              ? "OpenRouter"
+              : selectedProvider === ServiceProvider.MOONSHOT
+              ? currentLanguage === "zh"
+                ? "月之暗面"
+                : "Moonshot"
+              : currentLanguage === "zh"
+              ? "讯飞"
+              : "Xunfei"}{" "}
+            {currentLanguage === "zh"
+              ? "API 密钥已配置，应用可以正常使用"
+              : "API key has been configured, the application can be used normally"}
+          </div>
+        )}
       </div>
     </div>
   );

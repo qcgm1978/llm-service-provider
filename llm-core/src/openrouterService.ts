@@ -165,13 +165,11 @@ export async function* streamDefinition(
       yield accumulatedContent;
     }
     console.error("Error streaming from OpenRouter:", error);
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred.";
     const msg =
       language === "zh"
         ? `请配置OPENROUTER_API_KEY`
         : `Please configure OPENROUTER_API_KEY`;
-    yield `Error: ${errorMessage}. ${msg}`;
+    const errorMessage = `Error: ${error instanceof Error ? error.message : "An unknown error occurred."}. ${msg}`;
     throw new Error(errorMessage);
   }
 }

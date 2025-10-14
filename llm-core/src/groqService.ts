@@ -106,7 +106,6 @@ export async function* streamDefinition (
               return
             }
 
-            try {
               const parsed = JSON.parse(data)
               if (parsed.choices?.[0]?.delta?.content) {
                 accumulatedContent += parsed.choices[0].delta.content
@@ -115,7 +114,6 @@ export async function* streamDefinition (
                   accumulatedContent = ''
                 }
               }
-            } catch (e) {}
           }
         }
       }
@@ -134,10 +132,10 @@ export async function* streamDefinition (
       error instanceof Error ? error.message : 'An unknown error occurred.'
     const msg = 
       language === 'zh'
-        ? `请配置GROQ_API_KEY`
-        : `Please configure GROQ_API_KEY`
-    yield `Error: ${errorMessage}. ${msg}`
-    throw new Error(errorMessage)
+        ? `请配置有效的GROQ_API_KEY或检查VPN设置`
+        : `Please configure a valid GROQ_API_KEY or check your VPN settings`
+    const message= `Error: ${errorMessage}. ${msg}`
+    throw new Error(message)
   }
 }
 

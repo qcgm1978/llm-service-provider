@@ -80,7 +80,9 @@ export async function* streamDefinition (
     let isDone = false
     let resolvePromise: (() => void) | null = null
     
-    const streamPromise = new Promise<void>((resolve, reject) => {
+    let streamError: Event | null = null
+    
+    const streamPromise = new Promise<void>((resolve) => {
       resolvePromise = resolve;
       try {
         const headers = {
@@ -94,7 +96,6 @@ export async function* streamDefinition (
           queryTraceId: contextData.chatId,
         }
         
-        // 只有在 allowChatField 为 true 时才包含 chat 字段
         if (allowChatField) {
           payload.chat = JSON.stringify(contextData.chatHistory)
         }
@@ -134,12 +135,16 @@ export async function* streamDefinition (
 
         source.addEventListener('error', (event: Event) => {
           console.error(event)
-          reject(event)
+          streamError = event
+          isDone = true
+          if (resolvePromise) resolvePromise();
         })
 
         source.stream()
       } catch (err) {
-        reject(err)
+        streamError = err as Event
+        isDone = true
+        if (resolvePromise) resolvePromise();
       }
     })
 
@@ -153,11 +158,13 @@ export async function* streamDefinition (
 
     await streamPromise;
 
+    if (streamError) {
+      throw streamError;
+    }
+
   } catch (error) {
     console.error('Error streaming from YouChat:', error)
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.'
-    const msg = language === 'zh' ? '请检查网络连接或稍后再试' : 'Please check your network connection or try again later'
-    yield `Error: ${errorMessage}. ${msg}`
-    throw new Error(errorMessage)
+    const msg = language === 'zh' ? '网络错误，请开启或检查VPN设置' : 'Please check your network connection or try enabling VPN'
+    throw new Error(`${msg}`)
   }
 }

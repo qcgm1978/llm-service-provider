@@ -296,7 +296,9 @@ function App() {
         category || undefined,
         context || undefined
       )) {
-        setContent((prev) => prev + chunk);
+        setContent((prev) => {
+          return prev + chunk;
+        });
       }
     } catch (error) {
       setContent(
