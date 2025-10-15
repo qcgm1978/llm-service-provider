@@ -445,30 +445,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   rel="noopener noreferrer"
                 >
                   {currentLanguage === "zh"
-                    ? `点击这里访问 ${
-                        selectedProvider === ServiceProvider.DEEPSEEK
-                          ? "DeepSeek"
-                          : selectedProvider === ServiceProvider.GEMINI
-                          ? "Gemini"
-                          : selectedProvider === ServiceProvider.GROQ
-                          ? "Groq"
-                          : selectedProvider === ServiceProvider.OPENROUTER
-                          ? "OpenRouter"
-                          : selectedProvider === ServiceProvider.DOUBAO
-                          ? "豆包"
-                          : "OpenAI"
-                      } 平台`
-                    : `Click here to visit ${
-                        selectedProvider === ServiceProvider.DEEPSEEK
-                          ? "DeepSeek"
-                          : selectedProvider === ServiceProvider.GEMINI
-                          ? "Gemini"
-                          : selectedProvider === ServiceProvider.GROQ
-                          ? "Groq"
-                          : selectedProvider === ServiceProvider.DOUBAO
-                          ? "Doubao"
-                          : "OpenAI"
-                      } platform`}
+                    ? `点击这里访问 ${providerNamesConfig[selectedProvider]?.zh || providerNamesConfig[selectedProvider]?.en} 平台`
+                    : `Click here to visit ${providerNamesConfig[selectedProvider]?.en || providerNamesConfig[selectedProvider]?.zh} platform`}
                 </a>
               )}
             </p>
