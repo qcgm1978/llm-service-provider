@@ -6,8 +6,12 @@
 
 [npm包地址](https://www.npmjs.com/package/llm-service-provider)
 
-## 最新版本更新（v3.1.10）
+## 最新版本更新（v3.6.24）
 
+- **服务配置统一管理**：新增getAllServiceConfigurations()函数，支持统一获取和管理所有服务提供商的配置数据
+- **API密钥安全显示**：在配置数据展示中使用星号(*)替代API Key和API Secret的实际值，增强安全性
+- **WebSocket错误处理增强**：优化了讯飞等服务的WebSocket连接错误处理，提供更详细的错误信息
+- **统一的服务提供商配置**：创建了providerNamesConfig统一管理服务提供商名称和配置，简化代码结构
 - **新增豆包服务支持**：集成了豆包（Doubao）大语言模型服务，用户可以通过配置豆包API密钥来使用该服务
 - **样式重构**：将ApiKeyManager组件中的所有内联样式移动到CSS文件中，使代码结构更清晰，便于维护
 - **主题样式支持**：新增基于Comic Sans MS字体的两种样式方案（活泼卡通风格和复古漫画风格）

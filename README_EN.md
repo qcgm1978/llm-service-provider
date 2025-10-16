@@ -4,8 +4,12 @@ A frontend component library that integrates multiple LLM (Large Language Model)
 
 [npm Package](https://www.npmjs.com/package/llm-service-provider)
 
-## Latest Version Update (v3.1.10)
+## Latest Version Update (v3.6.24)
 
+- **Unified Service Configuration Management**: Added getAllServiceConfigurations() function to support unified retrieval and management of configuration data for all service providers
+- **API Key Secure Display**: Uses asterisks (*) to replace actual API Key and API Secret values in configuration data display, enhancing security
+- **WebSocket Error Handling Enhancement**: Optimized WebSocket connection error handling for services like Xunfei, providing more detailed error information
+- **Unified Service Provider Configuration**: Created providerNamesConfig to centrally manage service provider names and configurations, simplifying code structure
 - **Added Doubao Service Support**: Integrated Doubao large language model service, users can use this service by configuring Doubao API key
 - **Style Refactoring**: Moved all inline styles from ApiKeyManager component to CSS files for clearer code structure and easier maintenance
 - **Theme Style Support**: Added two style schemes based on Comic Sans MS font (lively cartoon style and retro comic style)
