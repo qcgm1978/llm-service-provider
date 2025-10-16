@@ -28,7 +28,8 @@ export const {
   setGeminiApiKey,
   setGroqApiKey,
   setOpenAiApiKey,
-  setDoubaoApiKey
+  setDoubaoApiKey,
+  getAllServiceConfigurations
 } = llmCore;
 
 export const init = initServices;

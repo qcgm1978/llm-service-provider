@@ -15,6 +15,14 @@ export enum ServiceProvider {
   MOONSHOT = "moonshot",
 }
 
+export interface ServiceConfiguration {
+  provider: ServiceProvider;
+  name: string;
+  apiKey: string;
+  apiSecret: string;
+  isValid: boolean;
+}
+
 export const serviceProvidersRegistry: Record<
   ServiceProvider,
   ServiceProviderImplementation | null
@@ -102,6 +110,80 @@ export const hasApiKey = (): boolean => {
     hasOpenRouterApiKey() ||
     hasMoonshotApiKey()
   );
+};
+
+// 获取所有服务提供商的配置数据
+export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
+  const configurations: ServiceConfiguration[] = [];
+  
+  // 服务名称映射
+  const serviceNames: Record<ServiceProvider, string> = {
+    [ServiceProvider.DEEPSEEK]: 'DeepSeek',
+    [ServiceProvider.GEMINI]: 'Gemini',
+    [ServiceProvider.XUNFEI]: '讯飞',
+    [ServiceProvider.YOUCHAT]: 'YouChat',
+    [ServiceProvider.GROQ]: 'Groq',
+    [ServiceProvider.OPENAI]: 'OpenAI',
+    [ServiceProvider.DOUBAO]: '豆包',
+    [ServiceProvider.OPENROUTER]: 'OpenRouter',
+    [ServiceProvider.MOONSHOT]: 'Moonshot',
+  };
+  
+  // 遍历所有服务提供商
+  Object.values(ServiceProvider).forEach((provider) => {
+    const config: ServiceConfiguration = {
+      provider,
+      name: serviceNames[provider],
+      apiKey: '',
+      apiSecret: '',
+      isValid: false
+    };
+    
+    // 根据服务提供商类型获取相应的配置
+    switch (provider) {
+      case ServiceProvider.DEEPSEEK:
+        config.apiKey = localStorage.getItem('DEEPSEEK_API_KEY') || '';
+        config.isValid = hasDeepSeekApiKey();
+        break;
+      case ServiceProvider.GEMINI:
+        config.apiKey = localStorage.getItem('GEMINI_API_KEY') || '';
+        config.isValid = hasGeminiApiKey();
+        break;
+      case ServiceProvider.GROQ:
+        config.apiKey = localStorage.getItem('GROQ_API_KEY') || '';
+        config.isValid = hasGroqApiKey();
+        break;
+      case ServiceProvider.XUNFEI:
+        config.apiKey = localStorage.getItem('XUNFEI_API_KEY') || '';
+        config.apiSecret = localStorage.getItem('XUNFEI_API_SECRET') || '';
+        config.isValid = hasXunfeiApiKey() && hasXunfeiApiSecret();
+        break;
+      case ServiceProvider.OPENAI:
+        config.apiKey = localStorage.getItem('OPENAI_API_KEY') || '';
+        config.isValid = hasOpenAiApiKey();
+        break;
+      case ServiceProvider.DOUBAO:
+        config.apiKey = localStorage.getItem('DOUBAO_API_KEY') || '';
+        config.isValid = hasDoubaoApiKey();
+        break;
+      case ServiceProvider.OPENROUTER:
+        config.apiKey = localStorage.getItem('OPENROUTER_API_KEY') || '';
+        config.isValid = hasOpenRouterApiKey();
+        break;
+      case ServiceProvider.MOONSHOT:
+        config.apiKey = localStorage.getItem('MOONSHOT_API_KEY') || '';
+        config.isValid = hasMoonshotApiKey();
+        break;
+      case ServiceProvider.YOUCHAT:
+        config.apiKey = localStorage.getItem('YOUCHAT_API_KEY') || '';
+        config.isValid = hasYouChatApiKey();
+        break;
+    }
+    
+    configurations.push(config);
+  });
+  
+  return configurations;
 };
 
 export const setSelectedServiceProvider = (provider: ServiceProvider): void => {

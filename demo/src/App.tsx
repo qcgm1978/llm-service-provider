@@ -15,6 +15,7 @@ import {
   hasApiKey,
   getSelectedServiceProvider,
   setSelectedServiceProvider,
+  getAllServiceConfigurations
 } from "../../src";
 // 修改导入语句
 import ApiKeyManager, { updateSelectedPromptType } from "../../src/ApiKeyManager";
@@ -102,6 +103,7 @@ function App() {
   const [availablePrompts, setAvailablePrompts] = useState<string[]>([
     "简洁定义",
   ]);
+  const [serviceConfigurations, setServiceConfigurations] = useState<any[]>([]);
 
   // 内容生成状态
   const [content, setContent] = useState("");
@@ -135,6 +137,10 @@ function App() {
     const prompts = getPromptsByLanguage("zh");
     const promptTypes = prompts.map((prompt) => prompt.act);
     setAvailablePrompts(promptTypes);
+    
+    // 获取所有服务配置数据
+    const configs = getAllServiceConfigurations();
+    setServiceConfigurations(configs);
   }, []);
 
   // 解析思维导图数据
@@ -527,6 +533,44 @@ function App() {
             {isGeneratingArrows && "正在生成箭头连接...\n"}
             {arrows}
           </pre>
+        </div>
+      </div>
+
+      {/* 服务配置数据展示 */}
+      <div className="section">
+        <h2>服务配置数据</h2>
+        <div className="result-container">
+          <h3>所有数据服务配置:</h3>
+          <div className="configurations-table">
+            <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px', textAlign: 'left' }}>服务提供商</th>
+                  <th style={{ padding: '8px', textAlign: 'left' }}>API Key</th>
+                  <th style={{ padding: '8px', textAlign: 'left' }}>API Secret</th>
+                  <th style={{ padding: '8px', textAlign: 'left' }}>是否有效</th>
+                </tr>
+              </thead>
+              <tbody>
+                {serviceConfigurations.map((config, index) => (
+                  <tr key={index}>
+                    <td style={{ padding: '8px' }}>{config.name}</td>
+                    <td style={{ padding: '8px' }}>
+                      {config.apiKey ? (config.apiKey.length > 0 ? '*'.repeat(Math.min(config.apiKey.length, 10)) : '-') : '-'}
+                    </td>
+                    <td style={{ padding: '8px' }}>
+                      {config.apiSecret ? (config.apiSecret.length > 0 ? '*'.repeat(Math.min(config.apiSecret.length, 10)) : '-') : '-'}
+                    </td>
+                    <td style={{ padding: '8px' }}>
+                      <span style={{ color: config.isValid ? 'green' : 'red' }}>
+                        {config.isValid ? '✓' : '✗'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
