@@ -455,7 +455,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         {(enable_vpn) && (
           <div className="api-key-manager-input-group">
             <label htmlFor="apiKey" className="api-key-manager-label">
-              {currentLanguage === "zh" ? "(需代理)" : "(Proxy Required)"}
+              {currentLanguage === "zh" ? "(需代理)" : ""}
             </label>
           </div>
         )}
@@ -553,7 +553,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
               : selectedProvider === ServiceProvider.GROQ
               ? "Groq"
               : selectedProvider === ServiceProvider.YOUCHAT
-              ? "YouChat(需代理)"
+              ? "YouChat"
               : selectedProvider === ServiceProvider.OPENAI
               ? "OpenAI"
               : selectedProvider === ServiceProvider.DOUBAO
