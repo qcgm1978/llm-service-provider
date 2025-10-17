@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
@@ -15,10 +15,12 @@ import {
   hasApiKey,
   getSelectedServiceProvider,
   setSelectedServiceProvider,
-  getAllServiceConfigurations
+  getAllServiceConfigurations,
 } from "../../src";
 // 修改导入语句
-import ApiKeyManager, { updateSelectedPromptType } from "../../src/ApiKeyManager";
+import ApiKeyManager, {
+  updateSelectedPromptType,
+} from "../../src/ApiKeyManager";
 import MindMapVisualizer from "../../src/MindMapVisualizer";
 import {
   getChapterMindMapPrompt,
@@ -137,7 +139,7 @@ function App() {
     const prompts = getPromptsByLanguage("zh");
     const promptTypes = prompts.map((prompt) => prompt.act);
     setAvailablePrompts(promptTypes);
-    
+
     // 获取所有服务配置数据
     const configs = getAllServiceConfigurations();
     setServiceConfigurations(configs);
@@ -278,24 +280,27 @@ function App() {
     if (!topic || !hasApiKey()) return;
     setIsGeneratingContent(true);
     setContent("");
-    
+
     try {
       let prompt = "";
       const replacements: Record<string, string> = { topic };
-      
-      if ((selectedPromptType === "wiki" || selectedPromptType === "JSON") && category) {
+
+      if (
+        (selectedPromptType === "wiki" || selectedPromptType === "JSON") &&
+        category
+      ) {
         replacements.category = category;
       } else if (selectedPromptType === "带上下文回答" && context) {
         replacements.context = context;
       }
-      
+
       const promptTemplate = getPromptByName(selectedPromptType, "zh");
       if (promptTemplate) {
         prompt = formatPrompt(promptTemplate, replacements);
       } else {
         prompt = topic;
       }
-      
+
       for await (const chunk of streamDefinition(
         topic,
         "zh",
@@ -353,12 +358,6 @@ function App() {
     }
   };
 
-  // 切换服务提供商
-  const handleProviderChange = (provider: ServiceProvider) => {
-    setSelectedProvider(provider);
-    setSelectedServiceProvider(provider);
-  };
-
   return (
     <div className="app-container">
       <h1>LLM Service Provider 演示</h1>
@@ -396,26 +395,6 @@ function App() {
       </div>
 
       <div className="section">
-        <h2>服务提供商选择</h2>
-        <div className="provider-selector">
-          {Object.values(ServiceProvider).map((provider) => (
-            <button
-              key={provider}
-              onClick={() => handleProviderChange(provider)}
-              style={{
-                backgroundColor:
-                  selectedProvider === provider ? "#007bff" : "#f0f0f0",
-                color: selectedProvider === provider ? "white" : "black",
-              }}
-            >
-              {provider}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 内容生成 */}
-      <div className="section">
         <h2>内容生成</h2>
         <input
           type="text"
@@ -426,14 +405,14 @@ function App() {
 
         <div className="prompt-type-selector">
           <label>选择提示类型:</label>
-                <select
-                value={selectedPromptType}
-                onChange={(e) => {
-                  setSelectedPromptType(e.target.value);
-                  updateSelectedPromptType(e.target.value);
-                }}
-                style={{ padding: "5px", marginLeft: "10px" }}
-              >
+          <select
+            value={selectedPromptType}
+            onChange={(e) => {
+              setSelectedPromptType(e.target.value);
+              updateSelectedPromptType(e.target.value);
+            }}
+            style={{ padding: "5px", marginLeft: "10px" }}
+          >
             {availablePrompts.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -442,14 +421,15 @@ function App() {
           </select>
         </div>
 
-        {selectedPromptType === "wiki" || selectedPromptType === "JSON" && (
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            placeholder="输入类别..."
-          />
-        )}
+        {selectedPromptType === "wiki" ||
+          (selectedPromptType === "JSON" && (
+            <input
+              type="text"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="输入类别..."
+            />
+          ))}
 
         {selectedPromptType === "带上下文回答" && (
           <textarea
@@ -542,28 +522,45 @@ function App() {
         <div className="result-container">
           <h3>所有数据服务配置:</h3>
           <div className="configurations-table">
-            <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <table
+              border="1"
+              style={{ width: "100%", borderCollapse: "collapse" }}
+            >
               <thead>
                 <tr>
-                  <th style={{ padding: '8px', textAlign: 'left' }}>服务提供商</th>
-                  <th style={{ padding: '8px', textAlign: 'left' }}>API Key</th>
-                  <th style={{ padding: '8px', textAlign: 'left' }}>API Secret</th>
-                  <th style={{ padding: '8px', textAlign: 'left' }}>是否有效</th>
+                  <th style={{ padding: "8px", textAlign: "left" }}>
+                    服务提供商
+                  </th>
+                  <th style={{ padding: "8px", textAlign: "left" }}>API Key</th>
+                  <th style={{ padding: "8px", textAlign: "left" }}>
+                    API Secret
+                  </th>
+                  <th style={{ padding: "8px", textAlign: "left" }}>
+                    是否有效
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {serviceConfigurations.map((config, index) => (
                   <tr key={index}>
-                    <td style={{ padding: '8px' }}>{config.name}</td>
-                    <td style={{ padding: '8px' }}>
-                      {config.apiKey ? (config.apiKey.length > 0 ? '*'.repeat(Math.min(config.apiKey.length, 10)) : '-') : '-'}
+                    <td style={{ padding: "8px" }}>{config.name}</td>
+                    <td style={{ padding: "8px" }}>
+                      {config.apiKey
+                        ? config.apiKey.length > 0
+                          ? "*".repeat(Math.min(config.apiKey.length, 10))
+                          : "-"
+                        : "-"}
                     </td>
-                    <td style={{ padding: '8px' }}>
-                      {config.apiSecret ? (config.apiSecret.length > 0 ? '*'.repeat(Math.min(config.apiSecret.length, 10)) : '-') : '-'}
+                    <td style={{ padding: "8px" }}>
+                      {config.apiSecret
+                        ? config.apiSecret.length > 0
+                          ? "*".repeat(Math.min(config.apiSecret.length, 10))
+                          : "-"
+                        : "-"}
                     </td>
-                    <td style={{ padding: '8px' }}>
-                      <span style={{ color: config.isValid ? 'green' : 'red' }}>
-                        {config.isValid ? '✓' : '✗'}
+                    <td style={{ padding: "8px" }}>
+                      <span style={{ color: config.isValid ? "green" : "red" }}>
+                        {config.isValid ? "✓" : "✗"}
                       </span>
                     </td>
                   </tr>
