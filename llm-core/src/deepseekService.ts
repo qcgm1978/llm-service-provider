@@ -1,7 +1,7 @@
 import { generatePrompt } from './llmService'
 
-// const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions'
-const DEEPSEEK_API_URL='https://api.deepseek.com/v3.1_terminus_expires_on_20251015/chat/completions'
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions'
+// const DEEPSEEK_API_URL='https://api.deepseek.com/v3.1_terminus_expires_on_20251015/chat/completions'
 const DEEPSEEK_MODEL = 'deepseek-chat'
 
 function getApiKey (): string | undefined {
