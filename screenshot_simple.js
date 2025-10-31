@@ -11,7 +11,7 @@ async function takeScreenshot() {
   let browser;
   
   try {
-    console.log('正在访问http://localhost:5174/并截取页面...');
+    console.log('正在访问http://localhost:5174/?simple=true并截取页面...');
     browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -20,7 +20,7 @@ async function takeScreenshot() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1920, height: 1080 });
     
-    await page.goto('http://localhost:5174/', {
+    await page.goto('http://localhost:5174/?simple=true', {
       waitUntil: 'networkidle0'
     });
     
