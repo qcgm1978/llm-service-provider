@@ -277,6 +277,9 @@ function cleanContent(content: string): string {
   let cleaned = content.replace(/#{2,}/g, "");
   // 删除连续的*字符
   cleaned = cleaned.replace(/\*{2,}/g, "");
+  // 检查并移除重复的句子模式（针对混元模型返回的重复内容）
+  // 使用正则表达式检测重复的句子或段落
+  cleaned = cleaned.replace(/([^.!。！?？\n]{20,}([.!。！?？]|\n))\1+/g, '$1');
   return cleaned;
 }
 

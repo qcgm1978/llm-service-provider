@@ -113,7 +113,7 @@ export async function* streamDefinition(
                 const content = parsed.choices[0].delta.content || '';
                 if (content) {
                   accumulatedContent += content;
-                  yield accumulatedContent;
+                  yield content; // 只返回新增的内容，而不是累积的完整内容
                 }
               }
             } catch (e) {

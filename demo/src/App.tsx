@@ -265,39 +265,16 @@ function App() {
     setContent("");
 
     try {
-      let prompt = "";
-      const replacements: Record<string, string> = { topic };
-
-      if (
-        (selectedPromptType === "wiki" || selectedPromptType === "JSON") &&
-        category
-      ) {
-        replacements.category = category;
-      } else if (selectedPromptType === "带上下文回答" && context) {
-        replacements.context = context;
-      }
-
-      const promptTemplate = getPromptByName(selectedPromptType, "zh");
-      if (promptTemplate) {
-        prompt = formatPrompt(promptTemplate, replacements);
-      } else {
-        prompt = topic;
-      }
-
       for await (const chunk of streamDefinition(
         topic,
         "zh",
         category || undefined,
         context || undefined
       )) {
-        setContent((prev) => {
-          return prev + chunk;
-        });
+        setContent(prev => prev + chunk);
       }
     } catch (error) {
-      setContent(
-        `生成失败: ${error instanceof Error ? error.message : "未知错误"}`
-      );
+      setContent(`生成失败: ${error instanceof Error ? error.message : "未知错误"}`);
     } finally {
       setIsGeneratingContent(false);
     }
@@ -337,7 +314,7 @@ function App() {
         `生成失败: ${error instanceof Error ? error.message : "未知错误"}`
       );
     } finally {
-      setIsGeneratingArrows(false);
+      setIsGeneratingContent(false);
     }
   };
 
