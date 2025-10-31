@@ -1,6 +1,6 @@
 {
   "name": "llm-service-provider",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "index.ts"
   ],
   "scripts": {
-    "build": "tsc && cp index.css dist/",
+    "build": "cd llm-core && npm install && npm run build && cd .. && tsc && cp index.css dist/",
     "publish:patch": "./publish.sh patch",
     "publish:minor": "./publish.sh minor",
     "publish:major": "./publish.sh major",
