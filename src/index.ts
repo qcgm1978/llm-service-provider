@@ -47,7 +47,7 @@ export const {
 
 export const init = initAllServices;
 
-export { setHasShownApiKeyPrompt } from '../llm-core';
+export { setHasShownApiKeyPrompt } from '../llm-core/src';
 
 export { default as ApiKeyManager } from './ApiKeyManager';
 export { updateSelectedPromptType } from './ApiKeyManager';
