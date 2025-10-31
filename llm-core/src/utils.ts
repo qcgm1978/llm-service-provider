@@ -38,3 +38,73 @@ export function getEnvironmentType(): 'browser' | 'extension' | 'node' {
   // 否则认为是浏览器页面环境
   return 'browser';
 }
+
+// 存储管理模块，兼容不支持localStorage的环境
+
+// 内存存储对象，作为localStorage的备选
+const memoryStorage: Record<string, string> = {};
+
+// 检测localStorage是否可用
+function isLocalStorageAvailable(): boolean {
+  try {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    const testKey = '__test_local_storage__';
+    localStorage.setItem(testKey, testKey);
+    localStorage.removeItem(testKey);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// 统一的存储获取函数
+export function getItem(key: string): string | null {
+  try {
+    if (isLocalStorageAvailable()) {
+      return localStorage.getItem(key);
+    }
+    return memoryStorage[key] || null;
+  } catch (e) {
+    return memoryStorage[key] || null;
+  }
+}
+
+// 统一的存储设置函数
+export function setItem(key: string, value: string): void {
+  try {
+    if (isLocalStorageAvailable()) {
+      localStorage.setItem(key, value);
+    } else {
+      memoryStorage[key] = value;
+    }
+  } catch (e) {
+    memoryStorage[key] = value;
+  }
+}
+
+// 统一的存储移除函数
+export function removeItem(key: string): void {
+  try {
+    if (isLocalStorageAvailable()) {
+      localStorage.removeItem(key);
+    } else {
+      delete memoryStorage[key];
+    }
+  } catch (e) {
+    delete memoryStorage[key];
+  }
+}
+
+// 获取环境变量
+export function getEnv(key: string): string | undefined {
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env[key];
+    }
+  } catch (e) {
+    // 忽略错误
+  }
+  return undefined;
+}

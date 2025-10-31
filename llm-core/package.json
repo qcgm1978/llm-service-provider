@@ -1,0 +1,53 @@
+{
+  "name": "@qcgm1978/llm-core",
+  "version": "3.6.32",
+  "description": "Core functionality for LLM service providers",
+  "main": "dist/index.js",
+  "browser": "dist/browser.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "browser": "./dist/browser.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "webpack --config webpack.config.js && webpack --config webpack.config.js --env target=browser && tsc",
+    "login": "npm login",
+    "publish": "npm publish --access public",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "publish-patch": "npm version patch && npm publish --access public",
+    "publish-minor": "npm version minor && npm publish --access public",
+    "publish-major": "npm version major && npm publish --access public"
+  },
+  "keywords": [
+    "llm",
+    "core",
+    "service",
+    "provider"
+  ],
+  "author": "qcgm1978",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^1.7.0",
+    "query-string": "^9.3.1",
+    "sse.js": "^2.7.1",
+    "uuid": "^13.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.5.4",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1"
+  }
+}

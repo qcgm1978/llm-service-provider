@@ -1,10 +1,11 @@
-import { ServiceProvider } from '../llm-core/src/index';
+import { ServiceProvider } from './llmService';
 
 export interface ProviderNames {
   [key: string]: Record<'zh' | 'en', string>;
 }
 
-export const providerNamesConfig: ProviderNames = {
+// 直接导出，不通过index中转
+export const providerNamesConfig = {
   [ServiceProvider.XUNFEI]: { zh: '讯飞星火', en: 'Xunfei' },
   [ServiceProvider.DEEPSEEK]: { zh: '深度求索', en: 'DeepSeek' },
   [ServiceProvider.GEMINI]: { zh: 'Gemini', en: 'Gemini' },
@@ -13,5 +14,7 @@ export const providerNamesConfig: ProviderNames = {
   [ServiceProvider.DOUBAO]: { zh: '豆包', en: 'Doubao' },
   [ServiceProvider.OPENROUTER]: { zh: 'OpenRouter', en: 'OpenRouter' },
   [ServiceProvider.YOUCHAT]: { zh: '优聊', en: 'YouChat' },
-  [ServiceProvider.MOONSHOT]: { zh: '月之暗面', en: 'Kimi' }
+  [ServiceProvider.MOONSHOT]: { zh: '月之暗面', en: 'Kimi' },
+  [ServiceProvider.IFLOW]: { zh: '心流', en: 'iFlow' },
+  [ServiceProvider.HUNYUAN]: { zh: '混元', en: 'Hunyuan' }
 };

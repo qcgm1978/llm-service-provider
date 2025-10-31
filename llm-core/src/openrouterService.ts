@@ -1,4 +1,6 @@
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+import { generatePrompt } from './llmService';
+import { getItem, getEnv } from './utils';
 
 // 定义可用模型
 export const OPENROUTER_MODELS = {
@@ -33,18 +35,7 @@ export function getAvailableModels(): Record<string, string> {
 }
 
 function getApiKey(): string | undefined {
-  if (typeof window !== "undefined" && window.localStorage) {
-    const savedApiKey = localStorage.getItem("OPENROUTER_API_KEY");
-    if (savedApiKey) {
-      return savedApiKey;
-    }
-  }
-
-  if (typeof process !== "undefined" && process.env) {
-    return process.env.OPENROUTER_API_KEY;
-  }
-
-  return undefined;
+  return getItem('OPENROUTER_API_KEY') || getEnv('OPENROUTER_API_KEY');
 }
 
 export function setApiKey(apiKey: string): void {
@@ -62,8 +53,6 @@ export function clearApiKey(): void {
 export function hasApiKey(): boolean {
   return !!getApiKey();
 }
-
-import { generatePrompt } from "./llmService";
 
 // 修改streamDefinition函数使用选定的模型
 export async function* streamDefinition(

@@ -1,4 +1,5 @@
 import { generatePrompt } from './llmService';
+import { getItem, getEnv } from './utils';
 
 // 豆包 API 配置
 const DOUBAO_API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
@@ -6,7 +7,7 @@ const DOUBAO_MODEL = 'doubao-1-5-pro-32k-250115';
 
 // 获取 API Key
 const getApiKey = (): string => {
-  return localStorage.getItem('DOUBAO_API_KEY') || '';
+  return getItem('DOUBAO_API_KEY') || getEnv('DOUBAO_API_KEY') || '';
 };
 
 // 更新 API Key

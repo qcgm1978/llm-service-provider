@@ -1,5 +1,6 @@
 import { generatePrompt } from './llmService'
 import request_xunfei from './xunfei'
+import { getItem, getEnv } from './utils'
 
 export async function* streamDefinition (
   topic: string,
@@ -7,16 +8,22 @@ export async function* streamDefinition (
   category?: string,
   context?: string
 ): AsyncGenerator<string, void, undefined> {
+  // 获取API密钥
+  const getApiKey = (): string => {
+    return getItem('XUNFEI_API_KEY') || getEnv('VITE_XUNFEI_API_KEY') || '';
+  };
+
+  // 获取API密钥
+  const getApiSecret = (): string => {
+    return getItem('XUNFEI_API_SECRET') || getEnv('VITE_XUNFEI_API_SECRET') || '';
+  };
+
   try {
     const prompt = generatePrompt(topic, language, category, context)
 
     const reader = await request_xunfei(
-      localStorage.getItem('XUNFEI_API_KEY') ||
-        (typeof process !== 'undefined' && process.env?.VITE_XUNFEI_API_KEY) ||
-        '',
-      localStorage.getItem('XUNFEI_API_SECRET') ||
-        (typeof process !== 'undefined' && process.env?.VITE_XUNFEI_API_SECRET) ||
-        '',
+      getApiKey(),
+      getApiSecret(),
       'wss://spark-api.xf-yun.com/v1/x1',
       prompt
     )

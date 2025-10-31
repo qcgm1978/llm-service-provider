@@ -1,26 +1,19 @@
 import { generatePrompt } from './llmService'
+import { getItem, setItem, removeItem, getEnv } from './utils';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
 const OPENAI_MODEL = 'gpt-3.5-turbo'
 
+// 获取API密钥
 function getApiKey(): string | undefined {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    const savedApiKey = localStorage.getItem('OPENAI_API_KEY')
-    if (savedApiKey) {
-      return savedApiKey
-    }
-  }
-
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env.OPENAI_API_KEY
-  }
-
-  return undefined
+  return getItem('OPENAI_API_KEY') || getEnv('OPENAI_API_KEY') || undefined
 }
 
 export function setApiKey(apiKey: string): void {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.setItem('OPENAI_API_KEY', apiKey)
+  if (apiKey) {
+    setItem('OPENAI_API_KEY', apiKey)
+  } else {
+    removeItem('OPENAI_API_KEY')
   }
 }
 

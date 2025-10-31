@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>llm-core 简单测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #output { white-space: pre-wrap; font-family: monospace; margin-top: 20px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>llm-core 浏览器测试</h1>
+    <h2>测试步骤</h2>
+    <ol>
+        <li>加载browser.js文件</li>
+        <li>检查全局变量llmCore是否存在</li>
+        <li>测试访问导出的功能</li>
+    </ol>
+    
+    <h2>测试结果</h2>
+    <div id="output"></div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const line = document.createElement('div');
+            line.textContent = message;
+            if (type === 'error') line.className = 'error';
+            if (type === 'success') line.className = 'success';
+            output.appendChild(line);
+            console.log('[llm-core测试]', message);
+        }
+        
+        log('开始加载llm-core...');
+        
+        // 记录加载前的全局对象状态
+        log('加载前 window对象属性数量: ' + Object.keys(window).length);
+        
+        // 使用动态脚本加载，便于错误处理
+        const script = document.createElement('script');
+        script.src = 'dist/browser.js';
+        script.onload = function() {
+            log('browser.js 加载完成', 'success');
+            log('加载后 window对象属性数量: ' + Object.keys(window).length);
+            
+            // 检查llmCore是否在window对象中
+            log('window.llmCore 是否存在: ' + ('llmCore' in window));
+            log('llmCore 是否存在: ' + (typeof llmCore !== 'undefined'));
+            
+            if (typeof llmCore !== 'undefined') {
+                log('llmCore类型: ' + typeof llmCore, 'success');
+                
+                // 检查llmCore的内容
+                if (typeof llmCore === 'object' && llmCore !== null) {
+                    const properties = Object.keys(llmCore);
+                    log('llmCore导出的属性数量: ' + properties.length, 'success');
+                    if (properties.length > 0) {
+                        log('llmCore导出的属性: ' + properties.join(', '), 'success');
+                    }
+                    
+                    // 测试providerNamesConfig
+                    if (llmCore.providerNamesConfig) {
+                        log('找到providerNamesConfig!', 'success');
+                        log('providerNamesConfig类型: ' + typeof llmCore.providerNamesConfig);
+                        if (typeof llmCore.providerNamesConfig === 'object') {
+                            log('可用的provider名称: ' + Object.keys(llmCore.providerNamesConfig).join(', '));
+                        }
+                    } else {
+                        log('未找到providerNamesConfig', 'error');
+                    }
+                }
+            } else {
+                log('llmCore未定义，检查webpack配置是否正确', 'error');
+                
+                // 尝试查找可能的全局变量
+                const possibleGlobals = Object.keys(window).filter(key => 
+                    key.toLowerCase().includes('llm') || 
+                    key.toLowerCase().includes('core')
+                );
+                
+                if (possibleGlobals.length > 0) {
+                    log('找到可能相关的全局变量: ' + possibleGlobals.join(', '));
+                }
+            }
+        };
+        
+        script.onerror = function(event) {
+            log('browser.js 加载失败: ' + event.message, 'error');
+        };
+        
+        document.body.appendChild(script);
+    </script>
+</body>
+</html>

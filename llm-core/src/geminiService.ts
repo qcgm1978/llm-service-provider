@@ -1,10 +1,12 @@
 import { GoogleGenAI } from '@google/genai'
 import { generatePrompt } from './llmService'
+import { getItem, setItem, removeItem, getEnv } from "./utils"
 
 let apiKey: string | null = null
 
 if (typeof window !== 'undefined') {
-  apiKey = localStorage.getItem('GEMINI_API_KEY')
+  const key = getItem('GEMINI_API_KEY') || getEnv('GEMINI_API_KEY');
+  apiKey = key !== undefined ? key : null;
 }
 
 

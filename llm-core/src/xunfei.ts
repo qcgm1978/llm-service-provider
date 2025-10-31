@@ -54,6 +54,12 @@ class XunfeiWebSocketParams {
 
   async generateHmac(key: string, data: string): Promise<ArrayBuffer | null> {
     try {
+      // 检查环境是否支持crypto.subtle API
+      if (typeof window === 'undefined' || !window.crypto || !window.crypto.subtle) {
+        console.warn("Web Crypto API is not available in this environment");
+        return null;
+      }
+      
       const encoder = new TextEncoder();
       const keyData = encoder.encode(key);
       const dataData = encoder.encode(data);
@@ -73,8 +79,11 @@ class XunfeiWebSocketParams {
       );
       return signature;
     } catch (error) {
-      console.error("Error generating HMAC:", error);
-
+      console.log("Error generating HMAC:", error);
+      // 在Chrome扩展环境中可能会遇到DOMException，这里提供更详细的错误信息
+      if (error instanceof DOMException) {
+        console.error(`DOMException details: name=${error.name}, message=${error.message}`);
+      }
       return null;
     }
   }

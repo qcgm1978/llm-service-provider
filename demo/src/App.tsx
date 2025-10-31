@@ -5,32 +5,21 @@ import ReactFlow, {
   addEdge,
   Connection,
   Handle,
+  Position
 } from "react-flow-renderer";
 import "react-flow-renderer/dist/style.css";
+// 从TypeScript文件直接导入
 import {
-  ServiceProvider,
-  streamDefinition,
-  streamMindMap,
-  streamMindMapArrows,
   hasApiKey,
   getSelectedServiceProvider,
-  setSelectedServiceProvider,
   getAllServiceConfigurations,
-} from "../../src";
-// 修改导入语句
-import ApiKeyManager, {
-  updateSelectedPromptType,
-} from "../../src/ApiKeyManager";
+  streamMindMap,
+  streamMindMapArrows,
+  streamDefinition
+} from "../../llm-core/src/index";
+import { getPromptByName, formatPrompt, getPromptsByLanguage, getChapterMindMapPrompt, getMindMapArrowPrompt } from "../../src/prompts";
+import ApiKeyManager, { updateSelectedPromptType } from "../../src/ApiKeyManager";
 import MindMapVisualizer from "../../src/MindMapVisualizer";
-import {
-  getChapterMindMapPrompt,
-  getMindMapArrowPrompt,
-} from "../../src/mindmap";
-import {
-  getPromptByName,
-  formatPrompt,
-  getPromptsByLanguage,
-} from "../../llm-core/src/prompts";
 import PromptManager from "./PromptManager";
 import "./styles.css";
 
@@ -72,7 +61,7 @@ interface ArrowsData {
 const MindMapNode = ({ id, data }: { id: string; data: any }) => {
   return (
     <div className="mindmap-node">
-      <Handle type="target" position="top" />
+      <Handle type="target" position={Position.Top} />
       <div className="node-content">
         <h4>{data.topic}</h4>
         {data.tags && (
@@ -85,7 +74,7 @@ const MindMapNode = ({ id, data }: { id: string; data: any }) => {
           </div>
         )}
       </div>
-      <Handle type="source" position="bottom" />
+      <Handle type="source" position={Position.Bottom} />
     </div>
   );
 };
@@ -270,12 +259,6 @@ function App() {
     setEdges((prevEdges) => [...prevEdges, ...arrowEdges]);
   };
 
-  // 处理新的连接
-  const onConnect = (params: Connection) => {
-    setEdges((prevEdges) => addEdge(params, prevEdges));
-  };
-
-  // 生成内容
   const generateContent = async () => {
     if (!topic || !hasApiKey()) return;
     setIsGeneratingContent(true);
@@ -523,8 +506,7 @@ function App() {
           <h3>所有数据服务配置:</h3>
           <div className="configurations-table">
             <table
-              border="1"
-              style={{ width: "100%", borderCollapse: "collapse" }}
+              style={{ width: "100%", borderCollapse: "collapse", border: 1 }}
             >
               <thead>
                 <tr>

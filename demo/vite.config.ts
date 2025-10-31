@@ -18,12 +18,7 @@ export default defineConfig({
     cache: false
   },
   build: {
-    cacheDir: false,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined
-      }
-    }
+    cacheDir: false
   },
   envDir: './'
 });

@@ -1,26 +1,19 @@
-import { generatePrompt } from './llmService'
+import { generatePrompt } from './llmService';
+import { getItem, setItem, removeItem, getEnv } from './utils';
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const GROQ_MODEL = 'meta-llama/llama-4-maverick-17b-128e-instruct'
 
-function getApiKey (): string | undefined {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    const savedApiKey = localStorage.getItem('GROQ_API_KEY')
-    if (savedApiKey) {
-      return savedApiKey
-    }
-  }
-
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env.GROQ_API_KEY
-  }
-
-  return undefined
-}
+// 获取API密钥
+const getApiKey = (): string => {
+  return getItem('GROQ_API_KEY') || getEnv('GROQ_API_KEY') || '';
+};
 
 export function setApiKey (apiKey: string): void {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.setItem('GROQ_API_KEY', apiKey)
+  if (apiKey) {
+    setItem('GROQ_API_KEY', apiKey)
+  } else {
+    removeItem('GROQ_API_KEY')
   }
 }
 

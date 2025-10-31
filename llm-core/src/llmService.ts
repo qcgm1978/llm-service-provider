@@ -1,8 +1,20 @@
 // 添加缺少的导入语句
-import { getPromptByName, formatPrompt } from "./prompts";
 import { getChapterMindMapPrompt, getMindMapArrowPrompt } from "./mindmap";
+import { getItem, setItem, removeItem } from "./utils";
+// 静态导入所有服务模块
+import { streamDefinition as deepseekStreamDefinition } from "./deepseekService";
+import { streamDefinition as openaiStreamDefinition } from "./openaiService";
+import { streamDefinition as geminiStreamDefinition, updateApiKey as updateGeminiApiKey } from "./geminiService";
+import { streamDefinition as groqStreamDefinition } from "./groqService";
+import { streamDefinition as youChatStreamDefinition } from "./youChatService";
+import { streamDefinition as xunfeiStreamDefinition } from "./xunfeiService";
+import { streamDefinition as doubaoStreamDefinition } from "./doubaoService";
+import { streamDefinition as openrouterStreamDefinition } from "./openrouterService";
+import { streamDefinition as moonshotStreamDefinition } from "./moonshotService";
+import { streamDefinition as iflowStreamDefinition } from "./iflowService";
+import { streamDefinition as hunyuanStreamDefinition } from "./hunyuanService";
 
-// 在ServiceProvider枚举中添加OPENROUTER和MOONSHOT
+// 添加心流模型服务
 export enum ServiceProvider {
   DEEPSEEK = "deepseek",
   GEMINI = "gemini",
@@ -13,6 +25,8 @@ export enum ServiceProvider {
   DOUBAO = "doubao",
   OPENROUTER = "openrouter",
   MOONSHOT = "moonshot",
+  IFLOW = "iflow",
+  HUNYUAN = "hunyuan",
 }
 
 export interface ServiceConfiguration {
@@ -23,24 +37,9 @@ export interface ServiceConfiguration {
   isValid: boolean;
 }
 
-export const serviceProvidersRegistry: Record<
-  ServiceProvider,
-  ServiceProviderImplementation | null
-> = {
-  [ServiceProvider.DEEPSEEK]: null,
-  [ServiceProvider.GEMINI]: null,
-  [ServiceProvider.XUNFEI]: null,
-  [ServiceProvider.YOUCHAT]: null,
-  [ServiceProvider.GROQ]: null,
-  [ServiceProvider.OPENAI]: null,
-  [ServiceProvider.DOUBAO]: null,
-  [ServiceProvider.OPENROUTER]: null,
-  [ServiceProvider.MOONSHOT]: null,
-};
-
 // 在getSelectedServiceProvider函数中添加OPENROUTER的检查
 export const getSelectedServiceProvider = (): ServiceProvider => {
-  const saved = localStorage.getItem("selected_service_provider");
+  const saved = getItem("selected_service_provider");
   if (
     saved &&
     Object.values(ServiceProvider).includes(saved as ServiceProvider)
@@ -64,6 +63,10 @@ export const getSelectedServiceProvider = (): ServiceProvider => {
     return ServiceProvider.OPENROUTER;
   } else if (hasMoonshotApiKey()) {
     return ServiceProvider.MOONSHOT;
+  } else if (hasIflowApiKey()) {
+    return ServiceProvider.IFLOW;
+  } else if (hasHunyuanApiKey()) {
+    return ServiceProvider.HUNYUAN;
   } else {
     return ServiceProvider.XUNFEI;
   }
@@ -71,29 +74,29 @@ export const getSelectedServiceProvider = (): ServiceProvider => {
 
 // 添加OpenRouter的API密钥管理函数
 export const hasOpenRouterApiKey = (): boolean => {
-  const key = localStorage.getItem("OPENROUTER_API_KEY");
+  const key = getItem("OPENROUTER_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
 export const setOpenRouterApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("OPENROUTER_API_KEY", key);
+    setItem("OPENROUTER_API_KEY", key);
   } else {
-    localStorage.removeItem("OPENROUTER_API_KEY");
+    removeItem("OPENROUTER_API_KEY");
   }
 };
 
 // 添加Moonshot的API密钥管理函数
 export const hasMoonshotApiKey = (): boolean => {
-  const key = localStorage.getItem("MOONSHOT_API_KEY");
+  const key = getItem("MOONSHOT_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
 export const setMoonshotApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("MOONSHOT_API_KEY", key);
+    setItem("MOONSHOT_API_KEY", key);
   } else {
-    localStorage.removeItem("MOONSHOT_API_KEY");
+    removeItem("MOONSHOT_API_KEY");
   }
 };
 
@@ -108,7 +111,8 @@ export const hasApiKey = (): boolean => {
     hasOpenAiApiKey() ||
     hasDoubaoApiKey() ||
     hasOpenRouterApiKey() ||
-    hasMoonshotApiKey()
+    hasMoonshotApiKey() ||
+    hasHunyuanApiKey()
   );
 };
 
@@ -127,6 +131,8 @@ export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
     [ServiceProvider.DOUBAO]: '豆包',
     [ServiceProvider.OPENROUTER]: 'OpenRouter',
     [ServiceProvider.MOONSHOT]: 'Moonshot',
+    [ServiceProvider.IFLOW]: '心流',
+    [ServiceProvider.HUNYUAN]: '混元',
   };
   
   // 遍历所有服务提供商
@@ -142,40 +148,48 @@ export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
     // 根据服务提供商类型获取相应的配置
     switch (provider) {
       case ServiceProvider.DEEPSEEK:
-        config.apiKey = localStorage.getItem('DEEPSEEK_API_KEY') || '';
+        config.apiKey = getItem('DEEPSEEK_API_KEY') || '';
         config.isValid = hasDeepSeekApiKey();
         break;
       case ServiceProvider.GEMINI:
-        config.apiKey = localStorage.getItem('GEMINI_API_KEY') || '';
+        config.apiKey = getItem('GEMINI_API_KEY') || '';
         config.isValid = hasGeminiApiKey();
         break;
       case ServiceProvider.GROQ:
-        config.apiKey = localStorage.getItem('GROQ_API_KEY') || '';
+        config.apiKey = getItem('GROQ_API_KEY') || '';
         config.isValid = hasGroqApiKey();
         break;
       case ServiceProvider.XUNFEI:
-        config.apiKey = localStorage.getItem('XUNFEI_API_KEY') || '';
-        config.apiSecret = localStorage.getItem('XUNFEI_API_SECRET') || '';
+        config.apiKey = getItem('XUNFEI_API_KEY') || '';
+        config.apiSecret = getItem('XUNFEI_API_SECRET') || '';
         config.isValid = hasXunfeiApiKey() && hasXunfeiApiSecret();
         break;
       case ServiceProvider.OPENAI:
-        config.apiKey = localStorage.getItem('OPENAI_API_KEY') || '';
+        config.apiKey = getItem('OPENAI_API_KEY') || '';
         config.isValid = hasOpenAiApiKey();
         break;
       case ServiceProvider.DOUBAO:
-        config.apiKey = localStorage.getItem('DOUBAO_API_KEY') || '';
+        config.apiKey = getItem('DOUBAO_API_KEY') || '';
         config.isValid = hasDoubaoApiKey();
         break;
       case ServiceProvider.OPENROUTER:
-        config.apiKey = localStorage.getItem('OPENROUTER_API_KEY') || '';
+        config.apiKey = getItem('OPENROUTER_API_KEY') || '';
         config.isValid = hasOpenRouterApiKey();
         break;
       case ServiceProvider.MOONSHOT:
-        config.apiKey = localStorage.getItem('MOONSHOT_API_KEY') || '';
+        config.apiKey = getItem('MOONSHOT_API_KEY') || '';
         config.isValid = hasMoonshotApiKey();
         break;
+      case ServiceProvider.IFLOW:
+        config.apiKey = getItem('IFLOW_API_KEY') || '';
+        config.isValid = hasIflowApiKey();
+        break;
+      case ServiceProvider.HUNYUAN:
+        config.apiKey = getItem('HUNYUAN_API_KEY') || '';
+        config.isValid = hasHunyuanApiKey();
+        break;
       case ServiceProvider.YOUCHAT:
-        config.apiKey = localStorage.getItem('YOUCHAT_API_KEY') || '';
+        config.apiKey = getItem('YOUCHAT_API_KEY') || '';
         config.isValid = hasYouChatApiKey();
         break;
     }
@@ -187,16 +201,21 @@ export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
 };
 
 export const setSelectedServiceProvider = (provider: ServiceProvider): void => {
-  localStorage.setItem("selected_service_provider", provider);
+  setItem("selected_service_provider", provider);
 };
 
 export const hasDeepSeekApiKey = (): boolean => {
-  const key = localStorage.getItem("DEEPSEEK_API_KEY");
+  const key = getItem("DEEPSEEK_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
 export const hasGeminiApiKey = (): boolean => {
-  const key = localStorage.getItem("GEMINI_API_KEY");
+  const key = getItem("GEMINI_API_KEY");
+  return !!key && key.trim().length > 0;
+};
+
+export const hasIflowApiKey = (): boolean => {
+  const key = getItem("IFLOW_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
@@ -206,9 +225,17 @@ export const hasFreeApiKey = (): boolean => {
 
 export const setDeepSeekApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("DEEPSEEK_API_KEY", key);
+    setItem("DEEPSEEK_API_KEY", key);
   } else {
-    localStorage.removeItem("DEEPSEEK_API_KEY");
+    removeItem("DEEPSEEK_API_KEY");
+  }
+};
+
+export const setIflowApiKey = (key: string): void => {
+  if (key) {
+    setItem("IFLOW_API_KEY", key);
+  } else {
+    removeItem("IFLOW_API_KEY");
   }
 };
 
@@ -222,29 +249,25 @@ export interface ServiceProviderImplementation {
   ) => AsyncGenerator<string, void, undefined>;
 }
 
+// 提示模板相关接口
+export interface Prompt {
+  act: string;
+  prompt: string;
+}
 
-export const registerServiceProvider = (
-  provider: ServiceProvider,
-  implementation: ServiceProviderImplementation
-) => {
-  serviceProvidersRegistry[provider] = implementation;
-};
+export interface PromptConfig {
+  getPromptByName?: (name?: string, language?: string) => string | undefined;
+  formatPrompt?: (prompt: string, replacements: Record<string, string>) => string;
+}
+
 
 export const setGeminiApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("GEMINI_API_KEY", key);
-
-    // 更新 Gemini API 密钥
-    try {
-      // 动态导入以避免循环依赖
-      import("./geminiService").then(({ updateApiKey }) => {
-        updateApiKey(key);
-      });
-    } catch (e) {
-      console.error("Failed to update Gemini API key:", e);
-    }
+    setItem("GEMINI_API_KEY", key);
+    // 直接调用更新函数
+    updateGeminiApiKey(key);
   } else {
-    localStorage.removeItem("GEMINI_API_KEY");
+    removeItem("GEMINI_API_KEY");
   }
 };
 
@@ -262,132 +285,64 @@ export async function* streamDefinition(
   language: "zh" | "en" = "zh",
   category?: string,
   context?: string,
-  allowChatField: boolean = false
+  promptConfig?: PromptConfig
 ): AsyncGenerator<string, void, undefined> {
   const provider = getSelectedServiceProvider();
-  const implementation = serviceProvidersRegistry[provider];
-  // todo 统一的异常处理
   try {
     let implementationStream: AsyncGenerator<string, void, undefined>;
-
-    if (implementation) {
-      implementationStream = implementation.streamDefinition(
-        topic,
-        language,
-        category,
-        context
-      );
-    } else {
-      switch (provider) {
-        case ServiceProvider.DEEPSEEK:
-          if (hasDeepSeekApiKey()) {
-            const { streamDefinition } = await import("./deepseekService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.OPENAI:
-          if (hasOpenAiApiKey()) {
-            const { streamDefinition } = await import("./openaiService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.GEMINI:
-          if (hasGeminiApiKey()) {
-            const { streamDefinition } = await import("./geminiService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.GROQ:
-          if (hasGroqApiKey()) {
-            const { streamDefinition } = await import("./groqService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.YOUCHAT:
-          if (hasYouChatApiKey()) {
-            const { streamDefinition } = await import("./youChatService");
-            // 我们需要修改 youChatService.ts 来接受这个参数
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.XUNFEI:
-          if (hasFreeApiKey()) {
-            const { streamDefinition } = await import("./xunfeiService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.DOUBAO:
-          if (hasDoubaoApiKey()) {
-            const { streamDefinition } = await import("./doubaoService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.OPENROUTER:
-          if (hasOpenRouterApiKey()) {
-            const { streamDefinition } = await import("./openrouterService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        case ServiceProvider.MOONSHOT:
-          if (hasMoonshotApiKey()) {
-            const { streamDefinition } = await import("./moonshotService");
-            implementationStream = streamDefinition(
-              topic,
-              language,
-              category,
-              context
-            );
-            break;
-          }
-        default:
-          const { streamDefinition } = await import("./xunfeiService");
-          implementationStream = streamDefinition(
-            topic,
-            language,
-            category,
-            context
-          );
-      }
+    
+    // 首先检查是否有指定服务的API密钥，如果没有则使用默认的youchat
+    switch (provider) {
+      case ServiceProvider.DEEPSEEK:
+        implementationStream = hasDeepSeekApiKey() ? 
+          deepseekStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.OPENAI:
+        implementationStream = hasOpenAiApiKey() ? 
+          openaiStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.GEMINI:
+        implementationStream = hasGeminiApiKey() ? 
+          geminiStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.GROQ:
+        implementationStream = hasGroqApiKey() ? 
+          groqStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.YOUCHAT:
+        implementationStream = youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.DOUBAO:
+        implementationStream = hasDoubaoApiKey() ? 
+          doubaoStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.OPENROUTER:
+        implementationStream = hasOpenRouterApiKey() ? 
+          openrouterStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.MOONSHOT:
+        implementationStream = hasMoonshotApiKey() ? 
+          moonshotStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.IFLOW:
+        implementationStream = hasIflowApiKey() ? 
+          iflowStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      case ServiceProvider.HUNYUAN:
+        implementationStream = hasHunyuanApiKey() ? 
+          hunyuanStreamDefinition(topic, language, category, context) : 
+          youChatStreamDefinition(topic, language, category, context);
+        break;
+      default:
+        implementationStream = youChatStreamDefinition(topic, language, category, context);
     }
 
     // 遍历实现的流，应用清理函数
@@ -403,15 +358,15 @@ export async function* streamDefinition(
 }
 
 export const hasGroqApiKey = (): boolean => {
-  const key = localStorage.getItem("GROQ_API_KEY");
+  const key = getItem("GROQ_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
 export const setGroqApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("GROQ_API_KEY", key);
+    setItem("GROQ_API_KEY", key);
   } else {
-    localStorage.removeItem("GROQ_API_KEY");
+    removeItem("GROQ_API_KEY");
   }
 };
 
@@ -423,22 +378,52 @@ export const clearAllApiKeys = (): void => {
   localStorage.removeItem("DOUBAO_API_KEY");
   localStorage.removeItem("OPENROUTER_API_KEY");
   localStorage.removeItem("MOONSHOT_API_KEY");
+  localStorage.removeItem("HUNYUAN_API_KEY");
 };
 
 export const generatePrompt = (
   topic: string,
   language: "zh" | "en" = "zh",
   category?: string,
-  context?: string
+  context?: string,
+  promptConfig?: PromptConfig
 ): string => {
+  // 使用传入的promptConfig或创建默认实现
+  const getPromptByNameFn = promptConfig?.getPromptByName || ((name?: string) => {
+    // 默认提示模板作为后备
+    const defaultTemplates: Record<string, Record<string, string>> = {
+      zh: {
+        '带上下文回答': '{topic}\n\n上下文信息：{context}',
+        'wiki': '{topic}',
+        '简洁定义': '{topic}'
+      },
+      en: {
+        'Answer with Context': '{topic}\n\nContext information: {context}',
+        'Category Definition': '{topic}',
+        'Concise Definition': '{topic}'
+      }
+    };
+    return defaultTemplates[language]?.[name || ''] || '{topic}';
+  });
+  
+  const formatPromptFn = promptConfig?.formatPrompt || ((prompt: string, replacements: Record<string, string>) => {
+    let result = prompt;
+    for (const [key, value] of Object.entries(replacements)) {
+      const regex = new RegExp(`\\{${key}\\}`, 'g');
+      result = result.replace(regex, value);
+    }
+    return result.replace('{category}的', '');
+  });
+
   let promptTemplate: string | undefined;
 
   // 首先检查是否有用户手动选择的模板类型
-  const selectedTemplate = localStorage.getItem("SELECTED_PROMPT_TEMPLATE");
+  const selectedTemplate = typeof window !== 'undefined' && window.localStorage ? 
+    localStorage.getItem("SELECTED_PROMPT_TEMPLATE") : undefined;
 
   if (selectedTemplate) {
     // 如果有用户选择的模板，优先使用
-    promptTemplate = getPromptByName(selectedTemplate, language);
+    promptTemplate = getPromptByNameFn(selectedTemplate, language);
 
     // 特殊处理wiki模板，当category为空时使用简化版本
     if (selectedTemplate === "wiki" && !category && language === "zh") {
@@ -451,19 +436,19 @@ export const generatePrompt = (
   if (!promptTemplate) {
     if (language === "zh") {
       if (context) {
-        promptTemplate = getPromptByName("带上下文回答", "zh");
+        promptTemplate = getPromptByNameFn("带上下文回答", language);
       } else if (category) {
-        promptTemplate = getPromptByName("wiki", "zh");
+        promptTemplate = getPromptByNameFn("wiki", language);
       } else {
-        promptTemplate = getPromptByName("简洁定义", "zh");
+        promptTemplate = getPromptByNameFn("简洁定义", language);
       }
     } else {
       if (context) {
-        promptTemplate = getPromptByName("Answer with Context", "en");
+        promptTemplate = getPromptByNameFn("Answer with Context", language);
       } else if (category) {
-        promptTemplate = getPromptByName("Category Definition", "en");
+        promptTemplate = getPromptByNameFn("Category Definition", language);
       } else {
-        promptTemplate = getPromptByName("Concise Definition", "en");
+        promptTemplate = getPromptByNameFn("Concise Definition", language);
       }
     }
   }
@@ -495,32 +480,32 @@ export const generatePrompt = (
   if (category) replacements.category = category;
   if (context) replacements.context = context;
 
-  return formatPrompt(promptTemplate, replacements);
+  return formatPromptFn(promptTemplate, replacements);
 };
 
 export const hasXunfeiApiKey = (): boolean => {
-  const key = localStorage.getItem("XUNFEI_API_KEY");
+  const key = getItem("XUNFEI_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
 export const hasXunfeiApiSecret = (): boolean => {
-  const secret = localStorage.getItem("XUNFEI_API_SECRET");
+  const secret = getItem("XUNFEI_API_SECRET");
   return !!secret && secret.trim().length > 0;
 };
 
 export const setXunfeiApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("XUNFEI_API_KEY", key);
+    setItem("XUNFEI_API_KEY", key);
   } else {
-    localStorage.removeItem("XUNFEI_API_KEY");
+    removeItem("XUNFEI_API_KEY");
   }
 };
 
 export const setXunfeiApiSecret = (secret: string): void => {
   if (secret) {
-    localStorage.setItem("XUNFEI_API_SECRET", secret);
+    setItem("XUNFEI_API_SECRET", secret);
   } else {
-    localStorage.removeItem("XUNFEI_API_SECRET");
+    removeItem("XUNFEI_API_SECRET");
   }
 };
 
@@ -534,34 +519,36 @@ export const setHasShownApiKeyPrompt = (shown: boolean): void => {
 };
 
 export const hasYouChatApiKey = (): boolean => {
-  return true;
+  const key = getItem("YOUCHAT_API_KEY");
+  return !!key && key.trim().length > 0;
 };
 
 export const setYouChatApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("YOUCHAT_API_KEY", key);
+    setItem("YOUCHAT_API_KEY", key);
   } else {
-    localStorage.removeItem("YOUCHAT_API_KEY");
+    removeItem("YOUCHAT_API_KEY");
   }
 };
 
 export const hasOpenAiApiKey = (): boolean => {
-  const key = localStorage.getItem("OPENAI_API_KEY");
+  const key = getItem("OPENAI_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
 export const setOpenAiApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("OPENAI_API_KEY", key);
+    setItem("OPENAI_API_KEY", key);
   } else {
-    localStorage.removeItem("OPENAI_API_KEY");
+    removeItem("OPENAI_API_KEY");
   }
 };
 
 // 思维导图生成函数
 export async function* streamMindMap(
   content: string,
-  language: "zh" | "en" = "zh"
+  language: "zh" | "en" = "zh",
+  promptConfig?: PromptConfig
 ): AsyncGenerator<string, void, undefined> {
   const prompt = getChapterMindMapPrompt();
 
@@ -569,7 +556,7 @@ export async function* streamMindMap(
     // 将内容和思维导图提示结合
     const fullPrompt = `${content}\n\n${prompt}`;
 
-    yield* streamDefinition(fullPrompt, language, "mindmap");
+    yield* streamDefinition(fullPrompt, language, "mindmap", undefined, promptConfig);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "An unknown error occurred";
@@ -584,7 +571,8 @@ export async function* streamMindMap(
 // 思维导图箭头生成函数
 export async function* streamMindMapArrows(
   mindMapData: string,
-  language: "zh" | "en" = "zh"
+  language: "zh" | "en" = "zh",
+  promptConfig?: PromptConfig
 ): AsyncGenerator<string, void, undefined> {
   const prompt = getMindMapArrowPrompt();
 
@@ -593,7 +581,7 @@ export async function* streamMindMapArrows(
     const fullPrompt = `${mindMapData}\n\n${prompt}`;
 
     // 使用streamDefinition函数来生成箭头，但更改category以区分
-    yield* streamDefinition(fullPrompt, language, "mindmap_arrows");
+    yield* streamDefinition(fullPrompt, language, "mindmap_arrows", undefined, promptConfig);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "An unknown error occurred";
@@ -607,16 +595,31 @@ export async function* streamMindMapArrows(
 
 // 添加 hasDoubaoApiKey 函数
 export const hasDoubaoApiKey = (): boolean => {
-  const key = localStorage.getItem("DOUBAO_API_KEY");
+  const key = getItem("DOUBAO_API_KEY");
   return !!key && key.trim().length > 0;
 };
 
 // 添加 setDoubaoApiKey 函数
 export const setDoubaoApiKey = (key: string): void => {
   if (key) {
-    localStorage.setItem("DOUBAO_API_KEY", key);
+    setItem("DOUBAO_API_KEY", key);
   } else {
-    localStorage.removeItem("DOUBAO_API_KEY");
+    removeItem("DOUBAO_API_KEY");
+  }
+};
+
+// 添加 hasHunyuanApiKey 函数
+export const hasHunyuanApiKey = (): boolean => {
+  const key = getItem("HUNYUAN_API_KEY");
+  return !!key && key.trim().length > 0;
+};
+
+// 添加 setHunyuanApiKey 函数
+export const setHunyuanApiKey = (key: string): void => {
+  if (key) {
+    setItem("HUNYUAN_API_KEY", key);
+  } else {
+    removeItem("HUNYUAN_API_KEY");
   }
 };
 

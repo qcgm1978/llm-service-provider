@@ -6,6 +6,7 @@ import {
   setXunfeiApiSecret,
   setGroqApiKey,
   setOpenAiApiKey,
+  setIflowApiKey,
   hasDeepSeekApiKey,
   hasGeminiApiKey,
   hasXunfeiApiKey,
@@ -18,7 +19,9 @@ import {
   hasOpenRouterApiKey,
   setMoonshotApiKey,
   hasMoonshotApiKey,
-} from '../llm-core/src/index';
+  hasIflowApiKey
+} from './index';
+import { setApiKey as setHunyuanApiKey, hasApiKey as hasHunyuanApiKey, clearApiKey as clearHunyuanApiKey } from './hunyuanService';
 
 // 定义接口
 export interface ProviderState {
@@ -69,8 +72,16 @@ export const getProviderCredentials = (provider: ServiceProvider): ProviderState
       state.apiKey = localStorage.getItem('MOONSHOT_API_KEY') || '';
       state.isValid = hasMoonshotApiKey();
       break;
+    case ServiceProvider.IFLOW:
+      state.apiKey = localStorage.getItem('IFLOW_API_KEY') || '';
+      state.isValid = hasIflowApiKey();
+      break;
     case ServiceProvider.YOUCHAT:
       state.isValid = true;
+      break;
+    case ServiceProvider.HUNYUAN:
+      state.apiKey = localStorage.getItem('HUNYUAN_API_KEY') || '';
+      state.isValid = hasHunyuanApiKey();
       break;
     default:
       break;
@@ -79,8 +90,15 @@ export const getProviderCredentials = (provider: ServiceProvider): ProviderState
   return state;
 };
 
-// 保存服务提供商的API密钥
-export const saveProviderCredentials = (provider: ServiceProvider, apiKey: string, apiSecret?: string): boolean => {
+// 简化的服务初始化函数，不再需要动态注册
+async function initializeService(provider: ServiceProvider): Promise<void> {
+  // 由于使用静态导入，这里不再需要动态注册
+  // 各服务的streamDefinition已在llmService.ts中静态导入
+  return Promise.resolve();
+}
+
+// 保存服务提供商的API密钥并自动注册服务
+export const saveProviderCredentials = async (provider: ServiceProvider, apiKey: string, apiSecret?: string): Promise<boolean> => {
   let saved = false;
   
   switch (provider) {
@@ -133,8 +151,25 @@ export const saveProviderCredentials = (provider: ServiceProvider, apiKey: strin
         saved = true;
       }
       break;
+    case ServiceProvider.IFLOW:
+      if (apiKey.trim()) {
+        setIflowApiKey(apiKey.trim());
+        saved = true;
+      }
+      break;
+    case ServiceProvider.HUNYUAN:
+      if (apiKey.trim()) {
+        setHunyuanApiKey(apiKey.trim());
+        saved = true;
+      }
+      break;
     default:
       break;
+  }
+
+  // 如果保存成功，初始化对应的服务
+  if (saved) {
+    await initializeService(provider);
   }
 
   return saved;
@@ -156,11 +191,23 @@ export const clearProviderCredentials = (provider: ServiceProvider): void => {
       setXunfeiApiKey('');
       setXunfeiApiSecret('');
       break;
+    case ServiceProvider.OPENAI:
+      setOpenAiApiKey('');
+      break;
+    case ServiceProvider.DOUBAO:
+      setDoubaoApiKey('');
+      break;
     case ServiceProvider.OPENROUTER:
       setOpenRouterApiKey('');
       break;
     case ServiceProvider.MOONSHOT:
       setMoonshotApiKey('');
+      break;
+    case ServiceProvider.IFLOW:
+      setIflowApiKey('');
+      break;
+    case ServiceProvider.HUNYUAN:
+      clearHunyuanApiKey();
       break;
     default:
       break;
@@ -196,6 +243,10 @@ export const getProviderApiKeyLink = (provider: ServiceProvider): string => {
       return 'https://openrouter.ai/settings/keys';
     case ServiceProvider.MOONSHOT:
       return 'https://platform.moonshot.cn/console/api-keys';
+    case ServiceProvider.IFLOW:
+      return 'https://platform.iflow.cn/profile?tab=apiKey';
+    case ServiceProvider.HUNYUAN:
+      return 'https://cloud.tencent.com/product/hunyuan';
     default:
       return '#';
   }

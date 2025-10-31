@@ -1,4 +1,4 @@
-import { initAllServices } from '../llm-core/src/index';
+import { initAllServices } from './initAllServices';
 
 export default initAllServices;
 export { initAllServices };

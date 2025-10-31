@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "build": "tsc && cp index.css dist/",
-    "prepare": "npm run build",
     "publish:patch": "./publish.sh patch",
     "publish:minor": "./publish.sh minor",
     "publish:major": "./publish.sh major",

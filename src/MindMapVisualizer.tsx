@@ -182,7 +182,7 @@ const MindMapVisualizer: React.FC<MindMapVisualizerProps> = ({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default MindMapVisualizer

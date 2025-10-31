@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from "react";
 import "../index.css";
-import { getPromptsByLanguage, getLanguages } from "../llm-core/src/prompts";
-import { providerNamesConfig } from "./providerNamesConfig";
-import {
-  getDefaultModel,
-  OPENROUTER_MODELS,
-  setSelectedModel,
-} from "../llm-core/src/openrouterService";
-
-import {
+import { 
+  getPromptsByLanguage, 
+  getLanguages
+} from "./prompts";
+import { 
   ServiceProvider,
+  providerNamesConfig,
   getSelectedServiceProvider,
   setSelectedServiceProvider,
-} from "../llm-core/src/index";
-
-import {
   getProviderCredentials,
   saveProviderCredentials,
   clearProviderCredentials,
   validateCredentials,
   getProviderApiKeyLink,
-  getProviderDisplayName,
-} from "./providerManager";
+  getProviderDisplayName
+} from "../llm-core/src";
+import { HUNYUAN_MODELS } from "../llm-core/src/hunyuanService";
+
+import {
+  getDefaultModel,
+  OPENROUTER_MODELS,
+  setSelectedModel,
+} from "../llm-core/src/openrouterService";
 
 interface ApiKeyManagerProps {
   onSave: (apiKey: string) => void;
@@ -160,7 +161,9 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
       provider !== ServiceProvider.OPENAI &&
       provider !== ServiceProvider.DOUBAO &&
       provider !== ServiceProvider.OPENROUTER &&
-      provider !== ServiceProvider.MOONSHOT
+      provider !== ServiceProvider.MOONSHOT &&
+      provider !== ServiceProvider.IFLOW &&
+      provider !== ServiceProvider.HUNYUAN
     ) {
       onSave("");
     }
@@ -172,6 +175,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
     if (saved) {
       setIsValid(true);
       onSave(apiKey.trim());
+      // 确保保存API密钥后切换到相应的服务提供商
+      setSelectedServiceProvider(selectedProvider);
     }
 
     onClose();
@@ -199,7 +204,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
 
   if (!isOpen) return null;
 
-  const enable_vpn = selectedProvider === ServiceProvider.YOUCHAT || selectedProvider === ServiceProvider.GROQ || selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI;
+  const enable_vpn = selectedProvider === ServiceProvider.YOUCHAT || selectedProvider === ServiceProvider.GROQ || selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI || selectedProvider === ServiceProvider.IFLOW;
   return (
     <div id="api-key-manager" onClick={onClose}>
       <div
@@ -297,6 +302,22 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             >
               YouChat
             </button>
+            <button
+              onClick={() => handleProviderChange(ServiceProvider.IFLOW)}
+              className={`api-key-manager-provider-btn ${
+                selectedProvider === ServiceProvider.IFLOW ? "active" : ""
+              }`}
+            >
+              {currentLanguage === "zh" ? "心流" : "iFlow"}
+            </button>
+            <button
+              onClick={() => handleProviderChange(ServiceProvider.HUNYUAN)}
+              className={`api-key-manager-provider-btn ${
+                selectedProvider === ServiceProvider.HUNYUAN ? "active" : ""
+              }`}
+            >
+              {currentLanguage === "zh" ? "混元" : "Hunyuan"}
+            </button>
           </div>
         </div>
 
@@ -335,8 +356,7 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                   onKeyPress={handleKeyPress}
                   placeholder={
                     currentLanguage === "zh"
-                      ? `请输入你的 ${
-                          selectedProvider === ServiceProvider.XUNFEI
+                      ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI
                             ? "讯飞"
                             : selectedProvider === ServiceProvider.DEEPSEEK
                             ? "DeepSeek"
@@ -350,14 +370,13 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                             ? "OpenRouter"
                             : selectedProvider === ServiceProvider.MOONSHOT
                             ? "Moonshot"
+                            : selectedProvider === ServiceProvider.IFLOW
+                            ? "心流"
                             : "OpenAI"
-                        } ${
-                          selectedProvider === ServiceProvider.XUNFEI
+                        } ${selectedProvider === ServiceProvider.XUNFEI
                             ? "API Key"
-                            : "API 密钥"
-                        }`
-                      : `Please enter your ${
-                          selectedProvider === ServiceProvider.XUNFEI
+                            : "API 密钥"}`
+                      : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI
                             ? "Xunfei"
                             : selectedProvider === ServiceProvider.DEEPSEEK
                             ? "DeepSeek"
@@ -369,6 +388,8 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
                             ? "Doubao"
                             : selectedProvider === ServiceProvider.OPENROUTER
                             ? "OpenRouter"
+                            : selectedProvider === ServiceProvider.IFLOW
+                            ? "iFlow"
                             : "OpenAI"
                         } API Key`
                   }
@@ -477,6 +498,24 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
             </select>
           </div>
         )}
+        {selectedProvider === ServiceProvider.HUNYUAN && (
+          <div className="api-key-manager-model-section">
+            <label className="api-key-manager-label">
+              {currentLanguage === "zh" ? "选择模型" : "Select Model"}
+            </label>
+            <select
+              value={selectedOpenrouterModel}
+              onChange={(e) => customSetSelectedOpenrouterModel(e.target.value)}
+              className="api-key-manager-select"
+            >
+              {Object.entries(HUNYUAN_MODELS).map(([model, label]) => (
+                <option key={model} value={model}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="api-key-manager-actions">
           {selectedProvider !== ServiceProvider.XUNFEI &&
@@ -498,80 +537,78 @@ const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
         </div>
 
         {!compactTemplate && (
-          <div className="api-key-manager-template-section">
-            <h3 className="api-key-manager-template-title">
-              {currentLanguage === "zh"
-                ? "提示模板设置"
-                : "Prompt Template Settings"}
-            </h3>
-            <div className="api-key-manager-section">
-              <label className="api-key-manager-label">
+            <div className="api-key-manager-template-section">
+              <h3 className="api-key-manager-template-title">
                 {currentLanguage === "zh"
-                  ? "语言 / Language"
-                  : "Language / 语言"}
-              </label>
+                  ? "提示模板设置"
+                  : "Prompt Template Settings"}
+              </h3>
+              <div className="api-key-manager-section">
+                <label className="api-key-manager-label">
+                  {currentLanguage === "zh"
+                    ? "语言 / Language"
+                    : "Language / 语言"}
+                </label>
+                <select
+                  value={currentLanguage}
+                  onChange={(e) =>
+                    handleLanguageChange(e.target.value as "zh" | "en")
+                  }
+                  className="api-key-manager-select"
+                >
+                  <option value="zh">中文</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div>
+                <label className="api-key-manager-label">
+                  {currentLanguage === "zh"
+                    ? "选择提示类型"
+                    : "Select Prompt Type"}
+                </label>
+              </div>
+
               <select
-                value={currentLanguage}
-                onChange={(e) =>
-                  handleLanguageChange(e.target.value as "zh" | "en")
-                }
+                value={selectedPromptType}
+                onChange={handlePromptTypeChange}
                 className="api-key-manager-select"
               >
-                <option value="zh">中文</option>
-                <option value="en">English</option>
+                {availablePrompts.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
               </select>
             </div>
-            <div>
-              <label className="api-key-manager-label">
-                {currentLanguage === "zh"
-                  ? "选择提示类型"
-                  : "Select Prompt Type"}
-              </label>
-            </div>
-
-            <select
-              value={selectedPromptType}
-              onChange={handlePromptTypeChange}
-              className="api-key-manager-select"
-            >
-              {availablePrompts.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+          )}
 
         {isValid && (
-          <div className="api-key-manager-success-message">
-            ✅{" "}
-            {selectedProvider === ServiceProvider.DEEPSEEK
-              ? "DeepSeek"
-              : selectedProvider === ServiceProvider.GEMINI
-              ? "Gemini"
-              : selectedProvider === ServiceProvider.GROQ
-              ? "Groq"
-              : selectedProvider === ServiceProvider.YOUCHAT
-              ? "YouChat"
-              : selectedProvider === ServiceProvider.OPENAI
-              ? "OpenAI"
-              : selectedProvider === ServiceProvider.DOUBAO
-              ? "豆包"
-              : selectedProvider === ServiceProvider.OPENROUTER
-              ? "OpenRouter"
-              : selectedProvider === ServiceProvider.MOONSHOT
-              ? currentLanguage === "zh"
-                ? "月之暗面"
-                : "Moonshot"
-              : currentLanguage === "zh"
-              ? "讯飞"
-              : "Xunfei"}{" "}
-            {currentLanguage === "zh"
-              ? "API 密钥已配置，应用可以正常使用"
-              : "API key has been configured, the application can be used normally"}
-          </div>
-        )}
+            <div className="api-key-manager-success-message">
+              ✅
+              {selectedProvider === ServiceProvider.DEEPSEEK && "DeepSeek"}
+              {selectedProvider === ServiceProvider.GEMINI && "Gemini"}
+              {selectedProvider === ServiceProvider.GROQ && "Groq"}
+              {selectedProvider === ServiceProvider.YOUCHAT && "YouChat"}
+              {selectedProvider === ServiceProvider.OPENAI && "OpenAI"}
+              {selectedProvider === ServiceProvider.DOUBAO && "豆包"}
+              {selectedProvider === ServiceProvider.OPENROUTER && "OpenRouter"}
+              {selectedProvider === ServiceProvider.MOONSHOT && 
+                (currentLanguage === "zh" ? "月之暗面" : "Moonshot")
+              }
+              {selectedProvider === ServiceProvider.IFLOW && 
+                (currentLanguage === "zh" ? "心流" : "iFlow")
+              }
+              {selectedProvider === ServiceProvider.XUNFEI && 
+                (currentLanguage === "zh" ? "讯飞" : "Xunfei")
+              }
+              {selectedProvider === ServiceProvider.HUNYUAN && 
+                (currentLanguage === "zh" ? "混元" : "Hunyuan")
+              }
+              {" "}{currentLanguage === "zh" 
+                ? "API 密钥已配置，应用可以正常使用" 
+                : "API key has been configured, the application can be used normally"}
+            </div>
+          )}
       </div>
     </div>
   );

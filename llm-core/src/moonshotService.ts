@@ -1,4 +1,5 @@
-import { generatePrompt } from "./llmService"; 
+import { generatePrompt } from './llmService';
+import { getItem, getEnv } from './utils';
 
 // 定义Moonshot服务的流定义函数
 export async function* streamDefinition(
@@ -12,7 +13,10 @@ export async function* streamDefinition(
     const prompt = generatePrompt(topic, language, category, context);
     
     // 获取API密钥
-    const llmApiKey = localStorage.getItem('MOONSHOT_API_KEY') || '';
+    const getApiKey = (): string => {
+      return getItem('MOONSHOT_API_KEY') || getEnv('MOONSHOT_API_KEY') || '';
+    };
+    const llmApiKey = getApiKey();
     
     if (!llmApiKey.trim()) {
       throw new Error('Moonshot API key is not set');

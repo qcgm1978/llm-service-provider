@@ -1,4 +1,5 @@
 import { generatePrompt } from './llmService'
+import { getItem, getEnv } from './utils'
 import queryString from 'query-string'
 import { SSE } from 'sse.js'
 import { v4 as uuidv4 } from 'uuid'
@@ -6,18 +7,7 @@ import { v4 as uuidv4 } from 'uuid'
 const YOUCHAT_API_URL = 'https://you.com/api/streamingSearch'
 
 function getApiKey (): string | undefined {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    const savedApiKey = localStorage.getItem('YOUCHAT_API_KEY')
-    if (savedApiKey) {
-      return savedApiKey
-    }
-  }
-
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env.YOUCHAT_API_KEY
-  }
-
-  return undefined
+  return getItem('YOUCHAT_API_KEY') || getEnv('YOUCHAT_API_KEY')
 }
 
 export function setApiKey (apiKey: string): void {
