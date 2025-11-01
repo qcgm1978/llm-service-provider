@@ -36,7 +36,7 @@ Please output JSON directly without any other text or explanations(like \`\`\`js
     const fullPrompt = `${content}\n\n${prompt}`;
 
     // 使用streamDefinition函数来生成思维导图
-    yield* streamDefinition(fullPrompt, language, "mindmap", undefined, promptConfig);
+    yield* streamDefinition(fullPrompt, language);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "An unknown error occurred";
@@ -82,7 +82,7 @@ Please output JSON directly without any other text or explanations(like \`\`\`js
     const fullPrompt = `${mindMapData}\n\n${prompt}`;
 
     // 使用streamDefinition函数来生成箭头
-    yield* streamDefinition(fullPrompt, language, "mindmap_arrows", undefined, promptConfig);
+    yield* streamDefinition(fullPrompt, language);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "An unknown error occurred";

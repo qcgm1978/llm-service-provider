@@ -4,7 +4,10 @@ import { getItem, setItem, removeItem } from "./utils";
 // 静态导入所有服务模块
 import { streamDefinition as deepseekStreamDefinition } from "./deepseekService";
 import { streamDefinition as openaiStreamDefinition } from "./openaiService";
-import { streamDefinition as geminiStreamDefinition, updateApiKey as updateGeminiApiKey } from "./geminiService";
+import {
+  streamDefinition as geminiStreamDefinition,
+  updateApiKey as updateGeminiApiKey,
+} from "./geminiService";
 import { streamDefinition as groqStreamDefinition } from "./groqService";
 import { streamDefinition as youChatStreamDefinition } from "./youChatService";
 import { streamDefinition as xunfeiStreamDefinition } from "./xunfeiService";
@@ -119,84 +122,84 @@ export const hasApiKey = (): boolean => {
 // 获取所有服务提供商的配置数据
 export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
   const configurations: ServiceConfiguration[] = [];
-  
+
   // 服务名称映射
   const serviceNames: Record<ServiceProvider, string> = {
-    [ServiceProvider.DEEPSEEK]: 'DeepSeek',
-    [ServiceProvider.GEMINI]: 'Gemini',
-    [ServiceProvider.XUNFEI]: '讯飞',
-    [ServiceProvider.YOUCHAT]: 'YouChat',
-    [ServiceProvider.GROQ]: 'Groq',
-    [ServiceProvider.OPENAI]: 'OpenAI',
-    [ServiceProvider.DOUBAO]: '豆包',
-    [ServiceProvider.OPENROUTER]: 'OpenRouter',
-    [ServiceProvider.MOONSHOT]: 'Moonshot',
-    [ServiceProvider.IFLOW]: '心流',
-    [ServiceProvider.HUNYUAN]: '混元',
+    [ServiceProvider.DEEPSEEK]: "DeepSeek",
+    [ServiceProvider.GEMINI]: "Gemini",
+    [ServiceProvider.XUNFEI]: "讯飞",
+    [ServiceProvider.YOUCHAT]: "YouChat",
+    [ServiceProvider.GROQ]: "Groq",
+    [ServiceProvider.OPENAI]: "OpenAI",
+    [ServiceProvider.DOUBAO]: "豆包",
+    [ServiceProvider.OPENROUTER]: "OpenRouter",
+    [ServiceProvider.MOONSHOT]: "Moonshot",
+    [ServiceProvider.IFLOW]: "心流",
+    [ServiceProvider.HUNYUAN]: "混元",
   };
-  
+
   // 遍历所有服务提供商
   Object.values(ServiceProvider).forEach((provider) => {
     const config: ServiceConfiguration = {
       provider,
       name: serviceNames[provider],
-      apiKey: '',
-      apiSecret: '',
-      isValid: false
+      apiKey: "",
+      apiSecret: "",
+      isValid: false,
     };
-    
+
     // 根据服务提供商类型获取相应的配置
     switch (provider) {
       case ServiceProvider.DEEPSEEK:
-        config.apiKey = getItem('DEEPSEEK_API_KEY') || '';
+        config.apiKey = getItem("DEEPSEEK_API_KEY") || "";
         config.isValid = hasDeepSeekApiKey();
         break;
       case ServiceProvider.GEMINI:
-        config.apiKey = getItem('GEMINI_API_KEY') || '';
+        config.apiKey = getItem("GEMINI_API_KEY") || "";
         config.isValid = hasGeminiApiKey();
         break;
       case ServiceProvider.GROQ:
-        config.apiKey = getItem('GROQ_API_KEY') || '';
+        config.apiKey = getItem("GROQ_API_KEY") || "";
         config.isValid = hasGroqApiKey();
         break;
       case ServiceProvider.XUNFEI:
-        config.apiKey = getItem('XUNFEI_API_KEY') || '';
-        config.apiSecret = getItem('XUNFEI_API_SECRET') || '';
+        config.apiKey = getItem("XUNFEI_API_KEY") || "";
+        config.apiSecret = getItem("XUNFEI_API_SECRET") || "";
         config.isValid = hasXunfeiApiKey() && hasXunfeiApiSecret();
         break;
       case ServiceProvider.OPENAI:
-        config.apiKey = getItem('OPENAI_API_KEY') || '';
+        config.apiKey = getItem("OPENAI_API_KEY") || "";
         config.isValid = hasOpenAiApiKey();
         break;
       case ServiceProvider.DOUBAO:
-        config.apiKey = getItem('DOUBAO_API_KEY') || '';
+        config.apiKey = getItem("DOUBAO_API_KEY") || "";
         config.isValid = hasDoubaoApiKey();
         break;
       case ServiceProvider.OPENROUTER:
-        config.apiKey = getItem('OPENROUTER_API_KEY') || '';
+        config.apiKey = getItem("OPENROUTER_API_KEY") || "";
         config.isValid = hasOpenRouterApiKey();
         break;
       case ServiceProvider.MOONSHOT:
-        config.apiKey = getItem('MOONSHOT_API_KEY') || '';
+        config.apiKey = getItem("MOONSHOT_API_KEY") || "";
         config.isValid = hasMoonshotApiKey();
         break;
       case ServiceProvider.IFLOW:
-        config.apiKey = getItem('IFLOW_API_KEY') || '';
+        config.apiKey = getItem("IFLOW_API_KEY") || "";
         config.isValid = hasIflowApiKey();
         break;
       case ServiceProvider.HUNYUAN:
-        config.apiKey = getItem('HUNYUAN_API_KEY') || '';
+        config.apiKey = getItem("HUNYUAN_API_KEY") || "";
         config.isValid = hasHunyuanApiKey();
         break;
       case ServiceProvider.YOUCHAT:
-        config.apiKey = getItem('YOUCHAT_API_KEY') || '';
+        config.apiKey = getItem("YOUCHAT_API_KEY") || "";
         config.isValid = hasYouChatApiKey();
         break;
     }
-    
+
     configurations.push(config);
   });
-  
+
   return configurations;
 };
 
@@ -257,9 +260,11 @@ export interface Prompt {
 
 export interface PromptConfig {
   getPromptByName?: (name?: string, language?: string) => string | undefined;
-  formatPrompt?: (prompt: string, replacements: Record<string, string>) => string;
+  formatPrompt?: (
+    prompt: string,
+    replacements: Record<string, string>
+  ) => string;
 }
-
 
 export const setGeminiApiKey = (key: string): void => {
   if (key) {
@@ -279,73 +284,79 @@ function cleanContent(content: string): string {
   cleaned = cleaned.replace(/\*{2,}/g, "");
   // 检查并移除重复的句子模式（针对混元模型返回的重复内容）
   // 使用正则表达式检测重复的句子或段落
-  cleaned = cleaned.replace(/([^.!。！?？\n]{20,}([.!。！?？]|\n))\1+/g, '$1');
+  cleaned = cleaned.replace(/([^.!。！?？\n]{20,}([.!。！?？]|\n))\1+/g, "$1");
   return cleaned;
 }
 
 export async function* streamDefinition(
   topic: string,
   language: "zh" | "en" = "zh",
-  category?: string,
-  context?: string,
-  promptConfig?: PromptConfig
+  context?: string
 ): AsyncGenerator<string, void, undefined> {
   const provider = getSelectedServiceProvider();
   try {
     let implementationStream: AsyncGenerator<string, void, undefined>;
-    
+
     // 首先检查是否有指定服务的API密钥，如果没有则使用默认的youchat
     switch (provider) {
       case ServiceProvider.DEEPSEEK:
-        implementationStream = hasDeepSeekApiKey() ? 
-          deepseekStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasDeepSeekApiKey()
+          ? deepseekStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.OPENAI:
-        implementationStream = hasOpenAiApiKey() ? 
-          openaiStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasOpenAiApiKey()
+          ? openaiStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.GEMINI:
-        implementationStream = hasGeminiApiKey() ? 
-          geminiStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasGeminiApiKey()
+          ? geminiStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.GROQ:
-        implementationStream = hasGroqApiKey() ? 
-          groqStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasGroqApiKey()
+          ? groqStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.YOUCHAT:
-        implementationStream = youChatStreamDefinition(topic, language, category, context);
+        implementationStream = youChatStreamDefinition(
+          topic,
+          language,
+          context
+        );
         break;
       case ServiceProvider.DOUBAO:
-        implementationStream = hasDoubaoApiKey() ? 
-          doubaoStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasDoubaoApiKey()
+          ? doubaoStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.OPENROUTER:
-        implementationStream = hasOpenRouterApiKey() ? 
-          openrouterStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasOpenRouterApiKey()
+          ? openrouterStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.MOONSHOT:
-        implementationStream = hasMoonshotApiKey() ? 
-          moonshotStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasMoonshotApiKey()
+          ? moonshotStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.IFLOW:
-        implementationStream = hasIflowApiKey() ? 
-          iflowStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasIflowApiKey()
+          ? iflowStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       case ServiceProvider.HUNYUAN:
-        implementationStream = hasHunyuanApiKey() ? 
-          hunyuanStreamDefinition(topic, language, category, context) : 
-          youChatStreamDefinition(topic, language, category, context);
+        implementationStream = hasHunyuanApiKey()
+          ? hunyuanStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
         break;
       default:
-        implementationStream = youChatStreamDefinition(topic, language, category, context);
+        implementationStream = youChatStreamDefinition(
+          topic,
+          language,
+          context
+        );
     }
 
     // 遍历实现的流，应用清理函数
@@ -391,14 +402,13 @@ export const generatePrompt = (
 ): string => {
   // 简化的提示生成逻辑
   if (context) {
-    return language === "zh" 
-      ? `${topic}\n\n上下文信息：${context}`
-      : `${topic}\n\nContext information: ${context}`;
+    topic =
+      language === "zh"
+        ? `${topic}\n\n上下文信息：${context}`
+        : `${topic}\n\nContext information: ${context}`;
   }
-  
-  // 默认返回topic
-  return topic;
-}
+  return language === "zh" ? `${topic}\n\n使用中文` : `${topic}\n\nby English`;
+};
 
 export const hasXunfeiApiKey = (): boolean => {
   const key = getItem("XUNFEI_API_KEY");
@@ -461,8 +471,6 @@ export const setOpenAiApiKey = (key: string): void => {
   }
 };
 
-
-
 // 添加 hasDoubaoApiKey 函数
 export const hasDoubaoApiKey = (): boolean => {
   const key = getItem("DOUBAO_API_KEY");
@@ -495,19 +503,19 @@ export const setHunyuanApiKey = (key: string): void => {
 
 // 在文件顶部添加模型常量
 const OPENROUTER_MODELS = {
-  'openai/gpt-4o': 'OpenAI GPT-4o',
-  'qwen/qwen3-coder:free': 'Qwen3 Coder (Free)',
-  'openai/gpt-oss-20b:free': 'OpenAI GPT-OSS-20B (Free)'
+  "openai/gpt-4o": "OpenAI GPT-4o",
+  "qwen/qwen3-coder:free": "Qwen3 Coder (Free)",
+  "openai/gpt-oss-20b:free": "OpenAI GPT-OSS-20B (Free)",
 };
 
 // 获取默认模型
-const getDefaultOpenRouterModel = (): string => 'openai/gpt-oss-20b:free';
+const getDefaultOpenRouterModel = (): string => "openai/gpt-oss-20b:free";
 
 // 在已有函数后添加以下函数
 // 获取用户选择的OpenRouter模型
 export const getSelectedModel = (): string => {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    const savedModel = localStorage.getItem('OPENROUTER_SELECTED_MODEL');
+  if (typeof window !== "undefined" && window.localStorage) {
+    const savedModel = localStorage.getItem("OPENROUTER_SELECTED_MODEL");
     if (savedModel && Object.keys(OPENROUTER_MODELS).includes(savedModel)) {
       return savedModel;
     }
@@ -517,8 +525,8 @@ export const getSelectedModel = (): string => {
 
 // 设置用户选择的OpenRouter模型
 export const setSelectedModel = (model: string): void => {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.setItem('OPENROUTER_SELECTED_MODEL', model);
+  if (typeof window !== "undefined" && window.localStorage) {
+    localStorage.setItem("OPENROUTER_SELECTED_MODEL", model);
   }
 };
 

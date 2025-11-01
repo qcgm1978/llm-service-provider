@@ -60,7 +60,7 @@ export async function* streamDefinition(
   category?: string,
   context?: string
 ): AsyncGenerator<string, void, undefined> {
-  yield* llmCore.streamDefinition(topic, language, category, context, promptConfig);
+  yield* llmCore.streamDefinition(topic, language, context);
 }
 
 
