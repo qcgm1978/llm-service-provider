@@ -40,7 +40,7 @@ interface ApiKeyManagerProps {
   styleVariant?: "default" | "comic1" | "comic2";
 }
 
-const ApiKeyManager: React.FC<ApiKeyManagerProps> = ({
+const ApiKeyManager = ({
   onSave,
   onClose,
   onNavigateToWiki,

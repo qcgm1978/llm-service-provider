@@ -109,27 +109,7 @@ export function formatPrompt(prompt: Prompt, context?: string, query?: string): 
   return formatted;
 }
 
-/**
- * 更新特定语言的提示模板
- */
-export function updatePrompt(language: string, prompt: Prompt): void {
-  if (!currentPrompts[language]) {
-    currentPrompts[language] = [];
-  }
-  const index = currentPrompts[language].findIndex(p => p.act === prompt.act);
-  if (index >= 0) {
-    currentPrompts[language][index] = prompt;
-  } else {
-    currentPrompts[language].push(prompt);
-  }
-}
 
-/**
- * 重置提示模板为默认状态
- */
-export function resetPrompts(): void {
-  currentPrompts = { ...defaultPrompts };
-}
 
 /**
  * 获取章节思维导图提示模板

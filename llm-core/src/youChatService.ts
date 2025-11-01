@@ -61,7 +61,7 @@ export async function* streamDefinition (
   category?: string,
   context?: string
 ): AsyncGenerator<string, void, undefined> {
-  const prompt = generatePrompt(topic, language, category, context)
+  const prompt = generatePrompt(topic, language, context);
   const contextData = getChatContext()
   let text = ''
 

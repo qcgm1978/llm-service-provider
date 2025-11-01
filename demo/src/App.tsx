@@ -6,17 +6,16 @@ import ReactFlow, {
   Connection,
   Handle,
   Position
-} from "react-flow-renderer";
-import "react-flow-renderer/dist/style.css";
+} from "reactflow";
+import "reactflow/dist/style.css";
 // 从TypeScript文件直接导入
 import {
   hasApiKey,
   getSelectedServiceProvider,
   getAllServiceConfigurations,
-  streamMindMap,
-  streamMindMapArrows,
   streamDefinition
 } from "../../llm-core/src/index";
+import { streamMindMap, streamMindMapArrows } from "./mindMapUtils";
 import { getPromptByName, formatPrompt, getPromptsByLanguage, getChapterMindMapPrompt, getMindMapArrowPrompt } from "../../src/prompts";
 import ApiKeyManager, { updateSelectedPromptType } from "../../src/ApiKeyManager";
 import MindMapVisualizer from "../../src/MindMapVisualizer";
@@ -280,7 +279,6 @@ function App() {
     }
   };
 
-  // 生成思维导图
   const generateMindMapFromContent = async () => {
     if (!content || !hasApiKey()) return;
     setIsGeneratingMindMap(true);
@@ -329,14 +327,16 @@ function App() {
           配置 API Key
         </button>
         <ApiKeyManager
-          onSave={() => {}}
-          onClose={() => setIsApiKeyManagerOpen(false)}
-          isOpen={isApiKeyManagerOpen}
-          defaultPromptType={selectedPromptType}
-          language="zh"
-          compactTemplate={false}
-          styleVariant="comic2"
-        />
+                  onSave={() => {}}
+                  onClose={() => setIsApiKeyManagerOpen(false)}
+                  onNavigateToWiki={() => {}}
+                  onPromptTypeChange={() => {}}
+                  isOpen={isApiKeyManagerOpen}
+                  defaultPromptType={selectedPromptType}
+                  language="zh"
+                  compactTemplate={false}
+                  styleVariant="comic2"
+                />
       </div>
 
       {/* 提示模板管理 */}
@@ -449,6 +449,8 @@ function App() {
               <MindMapVisualizer
                 mindMapData={parsedMindMap}
                 arrowsData={parsedArrows}
+                mindMapError={mindMapError}
+                arrowsError={arrowsError}
               />
             ) : (
               <div className="empty-state">请先生成思维导图数据</div>

@@ -1,5 +1,5 @@
 import * as llmCore from '../llm-core/src';
-import { getPromptByName, formatPrompt, getPromptsByLanguage, updatePrompt, resetPrompts } from './prompts';
+import { getPromptByName, formatPrompt, getPromptsByLanguage } from './prompts';
 
 llmCore.initAllServices();
 
@@ -63,45 +63,27 @@ export async function* streamDefinition(
   yield* llmCore.streamDefinition(topic, language, category, context, promptConfig);
 }
 
-// 包装llm-core的streamMindMap函数，传递promptConfig
-export async function* streamMindMap(
-  content: string,
-  language: "zh" | "en" = "zh"
-): AsyncGenerator<string, void, undefined> {
-  yield* llmCore.streamMindMap(content, language, promptConfig);
-}
 
-// 包装llm-core的streamMindMapArrows函数，传递promptConfig
-export async function* streamMindMapArrows(
-  mindMapData: string,
-  language: "zh" | "en" = "zh"
-): AsyncGenerator<string, void, undefined> {
-  yield* llmCore.streamMindMapArrows(mindMapData, language, promptConfig);
-}
 
-// 包装llm-core的generatePrompt函数，传递promptConfig
+// 简化的generatePrompt函数
 export const generatePrompt = (
   topic: string,
   language: "zh" | "en" = "zh",
-  category?: string,
   context?: string
 ): string => {
-  return llmCore.generatePrompt(topic, language, category, context, promptConfig);
+  return llmCore.generatePrompt(topic, language, context);
 };
 
 // 默认导出一个不直接引用ApiKeyManager的对象
 export default {
   streamDefinition,
   hasApiKey,
-  streamMindMap,
-  streamMindMapArrows,
+
   generatePrompt,
   getPromptByName,
   formatPrompt,
   getPromptsByLanguage,
-  updatePrompt,
-  resetPrompts
 };
 
 // 导出prompts相关函数
-export { getPromptByName, formatPrompt, getPromptsByLanguage, updatePrompt, resetPrompts, getChapterMindMapPrompt, getMindMapArrowPrompt } from './prompts';
+export { getPromptByName, formatPrompt, getPromptsByLanguage, getChapterMindMapPrompt, getMindMapArrowPrompt } from './prompts';

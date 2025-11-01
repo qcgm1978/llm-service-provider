@@ -19,7 +19,7 @@ export async function* streamDefinition (
   };
 
   try {
-    const prompt = generatePrompt(topic, language, category, context)
+    const prompt = generatePrompt(topic, language, context);
 
     const reader = await request_xunfei(
       getApiKey(),

@@ -51,7 +51,7 @@ export async function* streamDefinition(
     return;
   }
 
-  const prompt = generatePrompt(topic, language, category, context);
+  const prompt = generatePrompt(topic, language, context);
   try {
     const response = await fetch(HUNYUAN_API_URL, {
       method: 'POST',

@@ -38,7 +38,7 @@ export async function* streamDefinition (
     return
   }
 
-  const prompt = generatePrompt(topic, language, category, context)
+  const prompt = generatePrompt(topic, language, context)
 
   try {
     const response = await ai.models.generateContentStream({

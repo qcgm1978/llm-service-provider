@@ -13,6 +13,5 @@ export default {
   hasApiKey: llmServiceProvider.hasApiKey,
   getChapterMindMapPrompt: llmServiceProvider.getChapterMindMapPrompt,
   getMindMapArrowPrompt: llmServiceProvider.getMindMapArrowPrompt,
-  streamMindMap: llmServiceProvider.streamMindMap,
-  streamMindMapArrows: llmServiceProvider.streamMindMapArrows
+
 };

@@ -23,6 +23,13 @@ interface MindMapVisualizerProps {
   arrowsError?: string
 }
 
+interface MindMapVisualizerProps {
+  mindMapData?: MindMapData | null
+  arrowsData?: ArrowsData | null
+  mindMapError?: string
+  arrowsError?: string
+}
+
 // 自定义节点组件
 const MindMapNode = ({ id, data }: { id: string; data: any }) => {
   return (
@@ -49,7 +56,7 @@ const nodeTypes = {
   mindmap: MindMapNode
 }
 
-const MindMapVisualizer: React.FC<MindMapVisualizerProps> = ({
+const MindMapVisualizer = ({
   mindMapData,
   arrowsData,
   mindMapError,

@@ -10,7 +10,7 @@ export async function* streamDefinition(
 ): AsyncGenerator<string, void, undefined> {
   try {
     // 生成提示词
-    const prompt = generatePrompt(topic, language, category, context);
+    const prompt = generatePrompt(topic, language, context);
     
     // 获取API密钥
     const getApiKey = (): string => {

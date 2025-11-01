@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPromptsByLanguage, getLanguages, updatePrompt, resetPrompts } from '../../llm-core/src/prompts';
+import { getPromptsByLanguage, getLanguages } from '../../llm-core/src/prompts';
 import './styles/promptManager.css';
 
 interface PromptManagerProps {
@@ -40,16 +40,12 @@ const PromptManager: React.FC<PromptManagerProps> = ({ isOpen, onClose, onSave }
   };
   
   const handleSave = () => {
-    prompts.forEach(prompt => {
-      updatePrompt(prompt.act, prompt.prompt, selectedLanguage as 'zh' | 'en');
-    });
     onSave();
     onClose();
   };
   
   const handleReset = () => {
     if (window.confirm('确定要重置所有提示模板到默认值吗？这将丢失您的所有自定义修改。')) {
-      resetPrompts();
       loadPrompts();
     }
   };
