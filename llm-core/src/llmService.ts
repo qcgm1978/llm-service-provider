@@ -120,7 +120,8 @@ export const hasApiKey = (): boolean => {
     hasDoubaoApiKey() ||
     hasOpenRouterApiKey() ||
     hasMoonshotApiKey() ||
-    hasHunyuanApiKey()
+    hasHunyuanApiKey() ||
+    (hasXunfeiApiKey() && hasXunfeiApiSecret())
   );
 };
 
@@ -354,6 +355,11 @@ export async function* streamDefinition(
       case ServiceProvider.HUNYUAN:
         implementationStream = hasHunyuanApiKey()
           ? hunyuanStreamDefinition(topic, language, context)
+          : youChatStreamDefinition(topic, language, context);
+        break;
+      case ServiceProvider.XUNFEI:
+        implementationStream = (hasXunfeiApiKey() && hasXunfeiApiSecret())
+          ? xunfeiStreamDefinition(topic, language, context)
           : youChatStreamDefinition(topic, language, context);
         break;
       default:

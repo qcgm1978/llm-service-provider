@@ -46,3 +46,4 @@ coverage/
 
 llm-core/*.json
 llm-core/*.md
+llm-core/*.sh

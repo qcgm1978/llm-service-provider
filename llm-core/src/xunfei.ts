@@ -1,3 +1,5 @@
+import CryptoJS from 'crypto-js';
+
 class XunfeiWebSocketParams {
   APIKey: string;
   APISecret: string;
@@ -54,36 +56,21 @@ class XunfeiWebSocketParams {
 
   async generateHmac(key: string, data: string): Promise<ArrayBuffer | null> {
     try {
-      // 检查环境是否支持crypto.subtle API
-      if (typeof window === 'undefined' || !window.crypto || !window.crypto.subtle) {
-        console.warn("Web Crypto API is not available in this environment");
-        return null;
+      // 使用crypto-js库生成HMAC-SHA256
+      const hmac = CryptoJS.HmacSHA256(data, key);
+      const hmacHex = hmac.toString(CryptoJS.enc.Hex);
+      
+      // 将Hex字符串转换为ArrayBuffer
+      const buffer = new ArrayBuffer(hmacHex.length / 2);
+      const view = new Uint8Array(buffer);
+      
+      for (let i = 0; i < hmacHex.length; i += 2) {
+        view[i / 2] = parseInt(hmacHex.substr(i, 2), 16);
       }
       
-      const encoder = new TextEncoder();
-      const keyData = encoder.encode(key);
-      const dataData = encoder.encode(data);
-
-      const cryptoKey = await window.crypto.subtle.importKey(
-        "raw",
-        keyData,
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["sign"]
-      );
-
-      const signature = await window.crypto.subtle.sign(
-        "HMAC",
-        cryptoKey,
-        dataData
-      );
-      return signature;
+      return buffer;
     } catch (error) {
       console.log("Error generating HMAC:", error);
-      // 在Chrome扩展环境中可能会遇到DOMException，这里提供更详细的错误信息
-      if (error instanceof DOMException) {
-        console.error(`DOMException details: name=${error.name}, message=${error.message}`);
-      }
       return null;
     }
   }
