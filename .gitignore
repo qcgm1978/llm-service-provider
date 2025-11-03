@@ -43,3 +43,6 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
+llm-core/*.json
+llm-core/*.md
