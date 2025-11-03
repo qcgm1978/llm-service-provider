@@ -2,7 +2,6 @@ import { generatePrompt } from './llmService'
 import { getItem, getEnv } from './utils'
 import queryString from 'query-string'
 import { SSE } from 'sse.js'
-import { v4 as uuidv4 } from 'uuid'
 
 const YOUCHAT_API_URL = 'https://you.com/api/streamingSearch'
 
@@ -31,8 +30,17 @@ interface ChatMessage {
   answer: string;
 }
 
+// 生成UUID的简单函数
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 let chatContext = {
-  chatId: uuidv4(),
+  chatId: generateUUID(),
   chatHistory: [] as ChatMessage[]
 }
 

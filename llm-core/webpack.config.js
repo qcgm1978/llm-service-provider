@@ -16,7 +16,10 @@ module.exports = (env = {}) => {
       iife: true
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.js']
+      extensions: ['.ts', '.tsx', '.js'],
+      alias: env.target === 'browser' ? {
+        'crypto': 'crypto-js'
+      } : {}
     },
     module: {
       rules: [
@@ -42,6 +45,13 @@ module.exports = (env = {}) => {
       react: 'react',
       'react-dom': 'react-dom'
     } : {},
+    // 解决crypto模块在浏览器环境中的问题
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js'],
+      alias: env.target === 'browser' ? {
+        'crypto': 'crypto-js'
+      } : {}
+    },
     // 确保正确处理ES模块导出
     experiments: {
       outputModule: true
