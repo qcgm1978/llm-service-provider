@@ -1,6 +1,6 @@
 {
   "name": "llm-service-provider",
-  "version": "3.8.6",
+  "version": "3.8.7",
   "description": "LLM service provider with API key management and streaming capabilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -44,6 +44,7 @@
     "query-string": "^9.3.1",
     "reactflow": "^11.11.4",
     "sse.js": "^2.7.1",
+    "crypto-js": "^4.2.0",
     "uuid": "^13.0.0"
   },
   "peerDependencies": {
@@ -51,6 +52,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.10",
     "puppeteer": "^24.22.3",
