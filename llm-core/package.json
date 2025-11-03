@@ -1,6 +1,6 @@
 {
   "name": "@qcgm1978/llm-core",
-  "version": "3.6.32",
+  "version": "3.6.40",
   "description": "Core functionality for LLM service providers",
   "main": "dist/index.js",
   "browser": "dist/browser.js",
@@ -23,9 +23,9 @@
     "publish": "npm publish --access public",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
-    "publish-patch": "npm version patch && npm publish --access public",
-    "publish-minor": "npm version minor && npm publish --access public",
-    "publish-major": "npm version major && npm publish --access public"
+    "publish-patch": "npm config set registry https://registry.npmjs.org/ && npm version patch && npm publish --access public --force",
+    "publish-minor": "npm config set registry https://registry.npmjs.org/ && npm version minor && npm publish --access public --force",
+    "publish-major": "npm config set registry https://registry.npmjs.org/ && npm version major && npm publish --access public --force"
   },
   "keywords": [
     "llm",

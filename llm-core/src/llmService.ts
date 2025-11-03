@@ -11,7 +11,12 @@ import {
 import { streamDefinition as groqStreamDefinition } from "./groqService";
 import { streamDefinition as youChatStreamDefinition } from "./youChatService";
 import { streamDefinition as xunfeiStreamDefinition } from "./xunfeiService";
-import { streamDefinition as doubaoStreamDefinition } from "./doubaoService";
+import { 
+  streamDefinition as doubaoStreamDefinition,
+  chat as doubaoChat,
+  streamChat as doubaoStreamChat,
+  setModel as setDoubaoModel
+} from "./doubaoService";
 import { streamDefinition as openrouterStreamDefinition } from "./openrouterService";
 import { streamDefinition as moonshotStreamDefinition } from "./moonshotService";
 import { streamDefinition as iflowStreamDefinition } from "./iflowService";
@@ -534,3 +539,80 @@ export const setSelectedModel = (model: string): void => {
 export const getAvailableModels = (): Record<string, string> => {
   return OPENROUTER_MODELS;
 };
+
+// 创建llmService对象，包含所有函数
+export const llmService = {
+  // 获取选择的服务提供商
+  getSelectedServiceProvider: getSelectedServiceProvider,
+  
+  // 设置选择的服务提供商
+  setSelectedServiceProvider: setSelectedServiceProvider,
+  
+  // 聊天函数
+  chat: async (prompt: string): Promise<string> => {
+    const provider = getSelectedServiceProvider();
+    
+    switch (provider) {
+      case ServiceProvider.DOUBAO:
+        if (hasDoubaoApiKey()) {
+          return doubaoChat(prompt);
+        } else {
+          return "豆包服务未配置API Key";
+        }
+      default:
+        // 对于其他服务，这里可以添加相应的实现
+        return "该服务的聊天功能暂未实现";
+    }
+  },
+
+  // 流式聊天函数
+  streamChat: async function* (prompt: string): AsyncGenerator<string, void, undefined> {
+    const provider = getSelectedServiceProvider();
+    
+    switch (provider) {
+      case ServiceProvider.DOUBAO:
+        if (hasDoubaoApiKey()) {
+          const stream = doubaoStreamChat(prompt);
+          for await (const chunk of stream) {
+            yield cleanContent(chunk);
+          }
+        } else {
+          yield "豆包服务未配置API Key";
+        }
+        break;
+      default:
+        // 对于其他服务，这里可以添加相应的实现
+        yield "该服务的流式聊天功能暂未实现";
+    }
+  },
+
+  // 处理流的辅助函数
+  handleStream: async (
+    stream: AsyncGenerator<string, void, undefined>,
+    callbacks: {
+      onChunk: (chunk: string) => void;
+      onComplete: () => void;
+    }
+  ): Promise<void> => {
+    let fullContent = '';
+    for await (const chunk of stream) {
+      fullContent += chunk;
+      callbacks.onChunk(fullContent);
+    }
+    callbacks.onComplete();
+  },
+
+  // 添加setDoubaoModel到服务对象
+  setDoubaoModel,
+  
+  // 添加hasDoubaoApiKey方法
+  hasDoubaoApiKey: hasDoubaoApiKey,
+  
+  // 添加setDoubaoApiKey方法
+  setDoubaoApiKey: setDoubaoApiKey
+};
+
+// 为了兼容，同时保留单独的导出
+export const chat = llmService.chat;
+export const streamChat = llmService.streamChat;
+export const handleStream = llmService.handleStream;

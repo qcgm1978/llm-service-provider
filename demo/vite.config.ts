@@ -12,6 +12,14 @@ export default defineConfig({
     },
     hmr: {
       timeout: 3000
+    },
+    // 添加代理配置解决CORS问题
+    proxy: {
+      '/api/doubao': {
+        target: 'https://ark.cn-beijing.volces.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/doubao/, '/api/v3/chat/completions')
+      }
     }
   },
   optimizeDeps: {

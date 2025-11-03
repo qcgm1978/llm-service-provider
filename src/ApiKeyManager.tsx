@@ -139,7 +139,6 @@ const ApiKeyManager = ({
     setIsValid(credentials.isValid);
   };
 
-  // 修改useEffect函数，添加OpenAI和Doubao的处理
   useEffect(() => {
     if (isOpen) {
       const provider = getSelectedServiceProvider();

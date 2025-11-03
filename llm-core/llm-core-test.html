@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>llm-core 完整功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output {
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .info {
+            color: blue;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background-color: #f1f1f1;
+            margin-right: 5px;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .api-key-group {
+            margin-bottom: 10px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>llm-core 完整功能测试</h1>
+    
+    <div class="section">
+        <h2>1. 库加载状态</h2>
+        <div id="library-status" class="output">加载中...</div>
+    </div>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('init')">服务初始化</div>
+        <div class="tab" onclick="switchTab('chat')">对话测试</div>
+        <div class="tab" onclick="switchTab('definition')">定义生成</div>
+        <div class="tab" onclick="switchTab('management')">服务管理</div>
+        <div class="tab" onclick="switchTab('doubao')">豆包服务</div>
+    </div>
+    
+    <div class="section">
+        <div id="init" class="tab-content active">
+            <h2>2. 服务初始化</h2>
+            <div class="api-key-group">
+                <h3>API Key 设置</h3>
+                <div id="api-key-fields"></div>
+                <button onclick="initSelectedServices()">初始化选中服务</button>
+                <button onclick="initAllServices()">初始化所有服务</button>
+            </div>
+            <div id="init-result" class="output"></div>
+        </div>
+        
+        <div id="chat" class="tab-content">
+            <h2>3. 对话功能测试</h2>
+            <div>
+                <label>选择服务提供商:</label>
+                <select id="chat-provider"></select>
+            </div>
+              <div>
+                <label>输入提示:</label>
+                <textarea id="chat-prompt" rows="3" placeholder="请输入您的问题..."></textarea>
+            </div>
+            <div>
+                <button onclick="testSyncChat()">同步对话</button>
+                <button onclick="testStreamChat()">流式对话</button>
+                <span id="chat-loading" style="display:none;"><div class="loading"></div> 处理中...</span>
+            </div>
+            <div id="chat-result" class="output"></div>
+        </div>
+        
+        <div id="definition" class="tab-content">
+            <h2>4. 定义生成测试</h2>
+            <div>
+                <label>选择服务提供商:</label>
+                <select id="def-provider"></select>
+            </div>
+            <div>
+                <label>主题:</label>
+                <input type="text" id="def-topic" placeholder="例如: 人工智能">
+            </div>
+            <div>
+                <label>语言:</label>
+                <select id="def-language">
+                    <option value="zh">中文</option>
+                    <option value="en">英文</option>
+                </select>
+            </div>
+            <div>
+                <label>上下文(可选):</label>
+                <input type="text" id="def-context" placeholder="例如: 为初学者提供简明解释">
+            </div>
+            <div>
+                <button onclick="testSyncDefinition()">同步生成定义</button>
+                <button onclick="testStreamDefinition()">流式生成定义</button>
+                <span id="def-loading" style="display:none;"><div class="loading"></div> 处理中...</span>
+            </div>
+            <div id="def-result" class="output"></div>
+        </div>
+        
+        <div id="management" class="tab-content">
+            <h2>5. 服务管理测试</h2>
+            <div>
+                <button onclick="checkActiveProviders()">检查活跃服务</button>
+                <button onclick="checkProviderStatus()">检查特定服务状态</button>
+                <button onclick="validateApiKeyTest()">验证API Key格式</button>
+            </div>
+            <div id="management-result" class="output"></div>
+        </div>
+        
+        <div id="doubao" class="tab-content">
+            <h2>6. 豆包服务测试</h2>
+            <div>
+                <label>豆包API Key:</label>
+                <input type="text" id="doubao-api-key" placeholder="请输入豆包API Key">
+              </div>
+              <div>
+                <label>模型选择:</label>
+                <select id="doubao-model">
+                    <option value="doubao-1-5-pro-32k-250115">doubao-1-5-pro-32k-250115</option>
+                    <!-- todo not work -->
+                    <option value="ERNIE-Bot">ERNIE-Bot</option>
+                    <option value="ERNIE-Bot-4">ERNIE-Bot-4</option>
+                    <option value="ERNIE-Bot-Turbo">ERNIE-Bot-Turbo</option>
+                </select>
+            </div>
+            <div>
+                <label>输入提示:</label>
+                <textarea id="doubao-prompt" rows="3" placeholder="请输入您的问题..."></textarea>
+            </div>
+            <div>
+                <button onclick="initDoubaoService()">初始化豆包服务</button>
+                <button onclick="testDoubaoChat()">豆包对话</button>
+                <button onclick="testDoubaoStreamChat()">豆包流式对话</button>
+                <span id="doubao-loading" style="display:none;"><div class="loading"></div> 处理中...</span>
+            </div>
+            <div id="doubao-result" class="output"></div>
+        </div>
+    </div>
+    
+    <script>
+        // 工具函数
+        function log(elementId, message, type = 'info') {
+            const output = document.getElementById(elementId);
+            const line = document.createElement('div');
+            line.textContent = message;
+            if (type === 'error') line.className = 'error';
+            if (type === 'success') line.className = 'success';
+            if (type === 'info') line.className = 'info';
+            output.appendChild(line);
+            console.log(`[llm-core测试]`, message);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearOutput(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+        
+        function switchTab(tabId) {
+            // 隐藏所有内容
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            
+            // 显示选中的内容和标签
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // 全局变量存储llmService实例
+        let llmServiceInstance = null;
+        
+        // 加载llm-core库
+        function loadLLMCore() {
+            const status = document.getElementById('library-status');
+            status.textContent = '正在加载llm-core库...';
+            
+            const script = document.createElement('script');
+            script.src = 'dist/browser.js';
+            script.onload = function() {
+                if (typeof llmCore !== 'undefined') {
+                    status.innerHTML = '<span class="success">✓ llm-core库加载成功</span><br>';
+                    status.innerHTML += '库类型: ' + typeof llmCore + '<br>';
+                    status.innerHTML += '导出属性数量: ' + Object.keys(llmCore).length + '<br>';
+                    status.innerHTML += '导出属性: ' + Object.keys(llmCore).join(', ') + '<br>';
+                    
+                    // 确保llmService可用
+                    if (llmCore.llmService) {
+                        llmServiceInstance = llmCore.llmService;
+                        status.innerHTML += '<span class="success">✓ llmService初始化成功</span><br>';
+                    } else {
+                        status.innerHTML += '<span class="warning">⚠️ llmService未找到，尝试创建实例</span><br>';
+                        // 尝试直接使用llmCore
+                        llmServiceInstance = llmCore;
+                    }
+                    
+                    if (llmCore.providerNamesConfig) {
+                        status.innerHTML += '<span class="success">✓ 找到providerNamesConfig</span><br>';
+                        status.innerHTML += '支持的服务提供商: ' + Object.keys(llmCore.providerNamesConfig).join(', ') + '<br>';
+                        
+                        // 初始化API Key输入字段
+                        initApiKeyFields();
+                        // 初始化提供商选择下拉框
+                        initProviderSelectors();
+                    }
+                } else {
+                    status.innerHTML = '<span class="error">✗ llm-core库加载失败</span>';
+                }
+            };
+            
+            script.onerror = function(event) {
+                status.innerHTML = '<span class="error">✗ 加载失败: ' + (event.message || '未知错误') + '</span>';
+            };
+            
+            document.body.appendChild(script);
+        }
+        
+        // 初始化API Key输入字段
+        function initApiKeyFields() {
+            const container = document.getElementById('api-key-fields');
+            const providers = Object.keys(llmCore.providerNamesConfig);
+            
+            providers.forEach(provider => {
+                const div = document.createElement('div');
+                div.className = 'api-key-group';
+                div.innerHTML = `
+                    <label><input type="checkbox" id="check-${provider}"> ${provider}</label>
+                    <input type="text" id="key-${provider}" placeholder="请输入${provider}的API Key">
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // 初始化提供商选择下拉框
+        function initProviderSelectors() {
+            const providers = Object.keys(llmCore.providerNamesConfig);
+            
+            // 初始化对话测试的提供商选择
+            const chatSelect = document.getElementById('chat-provider');
+            providers.forEach(provider => {
+                const option = document.createElement('option');
+                option.value = provider;
+                option.textContent = provider;
+                chatSelect.appendChild(option);
+            });
+            
+            // 初始化定义生成的提供商选择
+            const defSelect = document.getElementById('def-provider');
+            providers.forEach(provider => {
+                const option = document.createElement('option');
+                option.value = provider;
+                option.textContent = provider;
+                defSelect.appendChild(option);
+            });
+        }
+        
+        // 初始化选中的服务
+        function initSelectedServices() {
+            clearOutput('init-result');
+            log('init-result', '开始初始化选中的服务...', 'info');
+            
+            if (!llmServiceInstance) {
+                log('init-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            let hasSelected = false;
+            const providers = Object.keys(llmCore.providerNamesConfig || {});
+            
+            providers.forEach(provider => {
+                const checkbox = document.getElementById(`check-${provider}`);
+                const keyInput = document.getElementById(`key-${provider}`);
+                
+                if (checkbox && checkbox.checked && keyInput && keyInput.value.trim()) {
+                    hasSelected = true;
+                    const apiKey = keyInput.value.trim();
+                    
+                    if (llmCore.providerManager && llmCore.providerManager.saveProviderCredentials) {
+                        llmCore.providerManager.saveProviderCredentials(provider, { apiKey });
+                    } else {
+                        let setApiKeyMethod;
+                        if (provider === 'deepseek') {
+                            setApiKeyMethod = 'setDeepSeekApiKey';
+                        } else {
+                            setApiKeyMethod = `set${provider.charAt(0).toUpperCase() + provider.slice(1)}ApiKey`;
+                        }
+                        if (llmServiceInstance[setApiKeyMethod]) {
+                            llmServiceInstance[setApiKeyMethod](apiKey);
+                        }
+                    }
+                    
+                    log('init-result', `${provider}: API Key 已设置`, 'success');
+                }
+            });
+            
+            if (!hasSelected) {
+                log('init-result', '请选择至少一个服务并输入API Key', 'error');
+            } else {
+                log('init-result', '服务初始化完成', 'success');
+            }
+        }
+        
+        // 初始化所有服务
+        function initAllServices() {
+            clearOutput('init-result');
+            log('init-result', '开始初始化所有服务...', 'info');
+            
+            if (!llmServiceInstance) {
+                log('init-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            const providers = Object.keys(llmCore.providerNamesConfig || {});
+            let hasInitialized = false;
+            
+            providers.forEach(provider => {
+                const keyInput = document.getElementById(`key-${provider}`);
+                if (keyInput && keyInput.value.trim()) {
+                    hasInitialized = true;
+                    const apiKey = keyInput.value.trim();
+                    
+                    if (llmCore.providerManager && llmCore.providerManager.saveProviderCredentials) {
+                        llmCore.providerManager.saveProviderCredentials(provider, { apiKey });
+                    } else {
+                        let setApiKeyMethod;
+                        if (provider === 'deepseek') {
+                            setApiKeyMethod = 'setDeepSeekApiKey';
+                        } else {
+                            setApiKeyMethod = `set${provider.charAt(0).toUpperCase() + provider.slice(1)}ApiKey`;
+                        }
+                        if (llmServiceInstance[setApiKeyMethod]) {
+                            llmServiceInstance[setApiKeyMethod](apiKey);
+                        }
+                    }
+                    
+                    log('init-result', `${provider}: API Key 已设置`, 'success');
+                }
+            });
+            
+            if (!hasInitialized) {
+                log('init-result', '没有可用的API Key进行初始化', 'warning');
+            } else {
+                log('init-result', '所有服务初始化完成', 'success');
+            }
+        }
+        
+        // 测试同步对话
+        function testSyncChat() {
+            const provider = document.getElementById('chat-provider').value;
+            const prompt = document.getElementById('chat-prompt').value.trim();
+            
+            if (!prompt) {
+                log('chat-result', '请输入对话内容', 'error');
+                return;
+            }
+            
+            if (!llmServiceInstance) {
+                log('chat-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            clearOutput('chat-result');
+            log('chat-result', `开始同步对话测试 (${provider})...`, 'info');
+            document.getElementById('chat-loading').style.display = 'inline';
+            
+            llmServiceInstance.setSelectedServiceProvider(provider);
+            
+            // 使用streamDefinition方法并同步收集输出
+            (async function() {
+                try {
+                    let fullResponse = '';
+                    // 使用await和for循环来同步收集所有输出
+                    for await (const chunk of llmServiceInstance.streamDefinition(prompt, 'zh')) {
+                        fullResponse += chunk;
+                    }
+                    log('chat-result', '对话响应:', 'success');
+                    log('chat-result', fullResponse, 'info');
+                } catch (error) {
+                    log('chat-result', '对话错误: ' + error.message, 'error');
+                } finally {
+                    document.getElementById('chat-loading').style.display = 'none';
+                }
+            })();
+        }
+        
+        // 测试流式对话
+        function testStreamChat() {
+            const provider = document.getElementById('chat-provider').value;
+            const prompt = document.getElementById('chat-prompt').value.trim();
+            
+            if (!prompt) {
+                log('chat-result', '请输入对话内容', 'error');
+                return;
+            }
+            
+            if (!llmServiceInstance) {
+                log('chat-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            clearOutput('chat-result');
+            log('chat-result', `开始流式对话测试 (${provider})...`, 'info');
+            document.getElementById('chat-loading').style.display = 'inline';
+            
+            llmServiceInstance.setSelectedServiceProvider(provider);
+            const stream = llmServiceInstance.streamDefinition(prompt, 'zh');
+            
+            let fullResponse = '';
+            const streamOutput = document.createElement('div');
+            streamOutput.className = 'info';
+            document.getElementById('chat-result').appendChild(streamOutput);
+            
+            // 简化流式处理
+            if (llmServiceInstance.handleStream) {
+                llmServiceInstance.handleStream(stream, {
+                    onChunk: function(chunk) {
+                        fullResponse += chunk;
+                        streamOutput.textContent = fullResponse;
+                    },
+                    onComplete: function() {
+                        log('chat-result', '流式对话完成!', 'success');
+                        document.getElementById('chat-loading').style.display = 'none';
+                    }
+                });
+            } else {
+                // 如果handleStream方法不存在，使用async/await手动处理流
+                (async function() {
+                    try {
+                        for await (const chunk of stream) {
+                            fullResponse += chunk;
+                            streamOutput.textContent = fullResponse;
+                        }
+                        log('chat-result', '流式对话完成!', 'success');
+                    } catch (error) {
+                        log('chat-result', '流式对话出错: ' + error.message, 'error');
+                    } finally {
+                        document.getElementById('chat-loading').style.display = 'none';
+                    }
+                })();
+            }
+        }
+        
+        // 测试同步定义生成
+        function testSyncDefinition() {
+            const provider = document.getElementById('def-provider').value;
+            const topic = document.getElementById('def-topic').value.trim();
+            const language = document.getElementById('def-language').value;
+            const context = document.getElementById('def-context').value.trim();
+            
+            if (!topic) {
+                log('def-result', '请输入主题', 'error');
+                return;
+            }
+            
+            if (!llmServiceInstance) {
+                log('def-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            clearOutput('def-result');
+            log('def-result', `开始同步定义生成测试 (${provider})...`, 'info');
+            document.getElementById('def-loading').style.display = 'inline';
+            
+            llmServiceInstance.setSelectedServiceProvider(provider);
+            
+            (async function() {
+                let fullResponse = '';
+                for await (const chunk of llmServiceInstance.streamDefinition(topic, language, context)) {
+                    fullResponse += chunk;
+                }
+                log('def-result', '定义生成结果:', 'success');
+                log('def-result', fullResponse, 'info');
+                document.getElementById('def-loading').style.display = 'none';
+            })();
+        }
+        
+        // 测试流式定义生成
+        function testStreamDefinition() {
+            const provider = document.getElementById('def-provider').value;
+            const topic = document.getElementById('def-topic').value.trim();
+            const language = document.getElementById('def-language').value;
+            const context = document.getElementById('def-context').value.trim();
+            
+            if (!topic) {
+                log('def-result', '请输入主题', 'error');
+                return;
+            }
+            
+            if (!llmServiceInstance) {
+                log('def-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            clearOutput('def-result');
+            log('def-result', `开始流式定义生成测试 (${provider})...`, 'info');
+            document.getElementById('def-loading').style.display = 'inline';
+            
+            llmServiceInstance.setSelectedServiceProvider(provider);
+            const stream = llmServiceInstance.streamDefinition(topic, language, context);
+            
+            let fullDefinition = '';
+            const streamOutput = document.createElement('div');
+            streamOutput.className = 'info';
+            document.getElementById('def-result').appendChild(streamOutput);
+            
+            // 简化流式处理
+            if (llmServiceInstance.handleStream) {
+                llmServiceInstance.handleStream(stream, {
+                    onChunk: function(chunk) {
+                        fullDefinition += chunk;
+                        streamOutput.textContent = fullDefinition;
+                    },
+                    onComplete: function() {
+                        log('def-result', '流式定义生成完成!', 'success');
+                        document.getElementById('def-loading').style.display = 'none';
+                    }
+                });
+            } else {
+                // 如果handleStream方法不存在，使用async/await手动处理流
+                (async function() {
+                    try {
+                        for await (const chunk of stream) {
+                            fullDefinition += chunk;
+                            streamOutput.textContent = fullDefinition;
+                        }
+                        log('def-result', '流式定义生成完成!', 'success');
+                    } catch (error) {
+                        log('def-result', '流式定义生成出错: ' + error.message, 'error');
+                    } finally {
+                        document.getElementById('def-loading').style.display = 'none';
+                    }
+                })();
+            }
+        }
+        
+        // 检查活跃服务
+        function checkActiveProviders() {
+            clearOutput('management-result');
+            log('management-result', '检查活跃服务...', 'info');
+            
+            if (!llmServiceInstance) {
+                log('management-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            // 获取所有服务配置
+            if (llmServiceInstance.getAllServiceConfigurations) {
+                const configs = llmServiceInstance.getAllServiceConfigurations();
+                const activeProviders = configs.filter(config => config.apiKey || config.isValid).map(config => config.provider);
+                
+                log('management-result', '活跃服务数量: ' + activeProviders.length, 'info');
+                if (activeProviders.length > 0) {
+                    log('management-result', '活跃服务列表: ' + activeProviders.join(', '), 'success');
+                } else {
+                    log('management-result', '当前没有活跃的服务', 'info');
+                    log('management-result', '提示: 请切换到"服务初始化"标签页，选择服务并输入有效的API密钥，然后点击"初始化选中服务"按钮', 'info');
+                }
+            } else {
+                log('management-result', '无法获取服务配置信息', 'info');
+                log('management-result', '提示: 请确保先在"服务初始化"标签页设置API密钥', 'info');
+            }
+        }
+        
+        // 检查特定服务状态
+        function checkProviderStatus() {
+            clearOutput('management-result');
+            
+            const providers = Object.keys(llmCore.providerNamesConfig);
+            log('management-result', '检查所有服务状态...', 'info');
+            
+            if (!llmServiceInstance) {
+                log('management-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            if (llmServiceInstance.getAllServiceConfigurations) {
+                const configs = llmServiceInstance.getAllServiceConfigurations();
+                const configMap = {};
+                configs.forEach(config => {
+                    configMap[config.provider] = config;
+                });
+                
+                providers.forEach(provider => {
+                    const config = configMap[provider];
+                    let status;
+                    if (config && (config.apiKey || config.isValid)) {
+                        status = '<span class="success">就绪</span>';
+                    } else {
+                        status = '<span class="info">未初始化</span>';
+                    }
+                    log('management-result', `${provider}: ${status}`, 'info');
+                });
+            } else {
+                providers.forEach(provider => {
+                    // 检查是否有对应API Key方法
+                    const hasApiKeyMethod = `has${provider.charAt(0).toUpperCase() + provider.slice(1)}ApiKey`;
+                    let isReady = false;
+                    if (llmServiceInstance[hasApiKeyMethod]) {
+                        isReady = llmServiceInstance[hasApiKeyMethod]();
+                    }
+                    const status = isReady ? '<span class="success">就绪</span>' : '<span class="info">未初始化</span>';
+                    log('management-result', `${provider}: ${status}`, 'info');
+                });
+            }
+        }
+        
+        // 验证API Key格式
+        function validateApiKeyTest() {
+            clearOutput('management-result');
+            log('management-result', '验证API Key格式测试...', 'info');
+            
+            const testKeys = {
+                'openai': 'sk-...',
+                'gemini': 'AIza...',
+                'doubao': '123456abcdef',
+                'invalid': 'this-is-invalid'
+            };
+            
+            try {
+                Object.entries(testKeys).forEach(([provider, key]) => {
+                    if (llmCore.providerNamesConfig[provider]) {
+                        const isValid = llmCore.providerManager.validateApiKey(provider, key);
+                        const result = isValid ? '<span class="success">有效</span>' : '<span class="error">无效</span>';
+                        log('management-result', `${provider}: ${key} - ${result}`, 'info');
+                    }
+                });
+            } catch (error) {
+                log('management-result', '验证失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 初始化豆包服务
+        function initDoubaoService() {
+            clearOutput('doubao-result');
+            log('doubao-result', '开始初始化豆包服务...', 'info');
+            
+            if (!llmServiceInstance) {
+                log('doubao-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            const apiKey = document.getElementById('doubao-api-key').value.trim();
+            
+            if (!apiKey) {
+                log('doubao-result', '请输入API Key', 'error');
+                return;
+            }
+            
+            if (llmCore.providerManager && llmCore.providerManager.saveProviderCredentials) {
+                llmCore.providerManager.saveProviderCredentials('doubao', apiKey);
+                log('doubao-result', '豆包服务设置成功!', 'success');
+            } else if (llmServiceInstance && llmServiceInstance.setDoubaoApiKey) {
+                llmServiceInstance.setDoubaoApiKey(apiKey);
+                log('doubao-result', '豆包服务设置成功!', 'success');
+            }
+        }
+        
+        // 测试豆包对话
+        async function testDoubaoChat() {
+            const prompt = document.getElementById('doubao-prompt').value.trim();
+            const model = document.getElementById('doubao-model').value;
+            
+            if (!prompt) {
+                log('doubao-result', '请输入对话内容', 'error');
+                return;
+            }
+            
+            if (!llmServiceInstance) {
+                log('doubao-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            clearOutput('doubao-result');
+            log('doubao-result', `开始豆包对话测试 (模型: ${model})...`, 'info');
+            document.getElementById('doubao-loading').style.display = 'inline';
+            
+            // 设置当前服务为豆包
+            llmServiceInstance.setSelectedServiceProvider('doubao');
+            
+            // 设置豆包模型
+            if (llmServiceInstance && llmServiceInstance.setDoubaoModel) {
+                llmServiceInstance.setDoubaoModel(model);
+            }
+            
+            const response = await llmServiceInstance.chat(prompt);
+            log('doubao-result', '豆包对话响应:', 'success');
+            log('doubao-result', response, 'info');
+            document.getElementById('doubao-loading').style.display = 'none';
+        }
+        
+        // 测试豆包流式对话
+        function testDoubaoStreamChat() {
+            const prompt = document.getElementById('doubao-prompt').value.trim();
+            const model = document.getElementById('doubao-model').value;
+            
+            if (!prompt) {
+                log('doubao-result', '请输入对话内容', 'error');
+                return;
+            }
+            
+            if (!llmServiceInstance) {
+                log('doubao-result', 'llmService未初始化，请检查库加载', 'error');
+                return;
+            }
+            
+            clearOutput('doubao-result');
+            log('doubao-result', `开始豆包流式对话测试 (模型: ${model})...`, 'info');
+            document.getElementById('doubao-loading').style.display = 'inline';
+            
+            // 设置当前服务为豆包
+            llmServiceInstance.setSelectedServiceProvider('doubao');
+            
+            // 设置豆包模型
+            if (llmServiceInstance && llmServiceInstance.setDoubaoModel) {
+                llmServiceInstance.setDoubaoModel(model);
+            }
+            
+            const stream = llmServiceInstance.streamChat(prompt);
+            
+            let fullResponse = '';
+            const streamOutput = document.createElement('div');
+            streamOutput.className = 'info';
+            document.getElementById('doubao-result').appendChild(streamOutput);
+            
+            // 简化流式处理
+            if (llmServiceInstance.handleStream) {
+                llmServiceInstance.handleStream(stream, {
+                    onChunk: function(chunk) {
+                        fullResponse += chunk;
+                        streamOutput.textContent = fullResponse;
+                    },
+                    onComplete: function() {
+                        log('doubao-result', '豆包流式对话完成!', 'success');
+                        document.getElementById('doubao-loading').style.display = 'none';
+                    }
+                });
+            } else {
+                // 降级处理
+                streamOutput.textContent = '流式处理功能不可用';
+                document.getElementById('doubao-loading').style.display = 'none';
+            }
+        }
+        
+        // 页面加载完成后开始加载库
+        window.onload = loadLLMCore;
+    </script>
+</body>
+</html>
