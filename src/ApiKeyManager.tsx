@@ -212,8 +212,8 @@ const ApiKeyManager = ({
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} className="api-key-manager-close-btn">
-          ×
+        <button onClick={onClose} className="api-key-manager-close-btn" aria-label="Close">
+          <span>×</span>
         </button>
 
         <h2 className="api-key-manager-title">
