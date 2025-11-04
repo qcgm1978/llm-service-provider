@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../index.css";
-import { 
-  getPromptsByLanguage, 
-  getLanguages
-} from "./prompts";
-import { 
+import { getPromptsByLanguage, getLanguages } from "./prompts";
+import {
   ServiceProvider,
   providerNamesConfig,
   getSelectedServiceProvider,
@@ -14,7 +11,7 @@ import {
   clearProviderCredentials,
   validateCredentials,
   getProviderApiKeyLink,
-  getProviderDisplayName
+  getProviderDisplayName,
 } from "../llm-core/src";
 import { HUNYUAN_MODELS } from "../llm-core/src/hunyuanService";
 
@@ -203,7 +200,12 @@ const ApiKeyManager = ({
 
   if (!isOpen) return null;
 
-  const enable_vpn = selectedProvider === ServiceProvider.YOUCHAT || selectedProvider === ServiceProvider.GROQ || selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI || selectedProvider === ServiceProvider.IFLOW;
+  const enable_vpn =
+    selectedProvider === ServiceProvider.YOUCHAT ||
+    selectedProvider === ServiceProvider.GROQ ||
+    selectedProvider === ServiceProvider.GEMINI ||
+    selectedProvider === ServiceProvider.OPENAI ||
+    selectedProvider === ServiceProvider.IFLOW;
   return (
     <div id="api-key-manager" onClick={onClose}>
       <div
@@ -212,10 +214,6 @@ const ApiKeyManager = ({
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} className="api-key-manager-close-btn">
-          Close
-        </button>
-
         <h2 className="api-key-manager-title">
           {currentLanguage === "zh" ? "API 密钥配置" : "API Key Configuration"}
         </h2>
@@ -355,7 +353,8 @@ const ApiKeyManager = ({
                   onKeyPress={handleKeyPress}
                   placeholder={
                     currentLanguage === "zh"
-                      ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI
+                      ? `请输入你的 ${
+                          selectedProvider === ServiceProvider.XUNFEI
                             ? "讯飞"
                             : selectedProvider === ServiceProvider.DEEPSEEK
                             ? "DeepSeek"
@@ -372,10 +371,13 @@ const ApiKeyManager = ({
                             : selectedProvider === ServiceProvider.IFLOW
                             ? "心流"
                             : "OpenAI"
-                        } ${selectedProvider === ServiceProvider.XUNFEI
+                        } ${
+                          selectedProvider === ServiceProvider.XUNFEI
                             ? "API Key"
-                            : "API 密钥"}`
-                      : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI
+                            : "API 密钥"
+                        }`
+                      : `Please enter your ${
+                          selectedProvider === ServiceProvider.XUNFEI
                             ? "Xunfei"
                             : selectedProvider === ServiceProvider.DEEPSEEK
                             ? "DeepSeek"
@@ -465,14 +467,20 @@ const ApiKeyManager = ({
                   rel="noopener noreferrer"
                 >
                   {currentLanguage === "zh"
-                    ? `点击这里访问 ${providerNamesConfig[selectedProvider]?.zh || providerNamesConfig[selectedProvider]?.en} 平台`
-                    : `Click here to visit ${providerNamesConfig[selectedProvider]?.en || providerNamesConfig[selectedProvider]?.zh} platform`}
+                    ? `点击这里访问 ${
+                        providerNamesConfig[selectedProvider]?.zh ||
+                        providerNamesConfig[selectedProvider]?.en
+                      } 平台`
+                    : `Click here to visit ${
+                        providerNamesConfig[selectedProvider]?.en ||
+                        providerNamesConfig[selectedProvider]?.zh
+                      } platform`}
                 </a>
               )}
             </p>
           </>
         )}
-        {(enable_vpn) && (
+        {enable_vpn && (
           <div className="api-key-manager-input-group">
             <label htmlFor="apiKey" className="api-key-manager-label">
               {currentLanguage === "zh" ? "(需代理)" : ""}
@@ -533,81 +541,79 @@ const ApiKeyManager = ({
           >
             {currentLanguage === "zh" ? "保存" : "Save"}
           </button>
+          <button onClick={onClose} className="api-key-manager-save-btn api-key-manager-close-btn">
+            {currentLanguage === "zh" ? "关闭" : "Close"}
+          </button>
         </div>
 
         {!compactTemplate && (
-            <div className="api-key-manager-template-section">
-              <h3 className="api-key-manager-template-title">
+          <div className="api-key-manager-template-section">
+            <h3 className="api-key-manager-template-title">
+              {currentLanguage === "zh"
+                ? "提示模板设置"
+                : "Prompt Template Settings"}
+            </h3>
+            <div className="api-key-manager-section">
+              <label className="api-key-manager-label">
                 {currentLanguage === "zh"
-                  ? "提示模板设置"
-                  : "Prompt Template Settings"}
-              </h3>
-              <div className="api-key-manager-section">
-                <label className="api-key-manager-label">
-                  {currentLanguage === "zh"
-                    ? "语言 / Language"
-                    : "Language / 语言"}
-                </label>
-                <select
-                  value={currentLanguage}
-                  onChange={(e) =>
-                    handleLanguageChange(e.target.value as "zh" | "en")
-                  }
-                  className="api-key-manager-select"
-                >
-                  <option value="zh">中文</option>
-                  <option value="en">English</option>
-                </select>
-              </div>
-              <div>
-                <label className="api-key-manager-label">
-                  {currentLanguage === "zh"
-                    ? "选择提示类型"
-                    : "Select Prompt Type"}
-                </label>
-              </div>
-
+                  ? "语言 / Language"
+                  : "Language / 语言"}
+              </label>
               <select
-                value={selectedPromptType}
-                onChange={handlePromptTypeChange}
+                value={currentLanguage}
+                onChange={(e) =>
+                  handleLanguageChange(e.target.value as "zh" | "en")
+                }
                 className="api-key-manager-select"
               >
-                {availablePrompts.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
+                <option value="zh">中文</option>
+                <option value="en">English</option>
               </select>
             </div>
-          )}
+            <div>
+              <label className="api-key-manager-label">
+                {currentLanguage === "zh"
+                  ? "选择提示类型"
+                  : "Select Prompt Type"}
+              </label>
+            </div>
+
+            <select
+              value={selectedPromptType}
+              onChange={handlePromptTypeChange}
+              className="api-key-manager-select"
+            >
+              {availablePrompts.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {isValid && (
-            <div className="api-key-manager-success-message">
-              ✅
-              {selectedProvider === ServiceProvider.DEEPSEEK && "DeepSeek"}
-              {selectedProvider === ServiceProvider.GEMINI && "Gemini"}
-              {selectedProvider === ServiceProvider.GROQ && "Groq"}
-              {selectedProvider === ServiceProvider.YOUCHAT && "YouChat"}
-              {selectedProvider === ServiceProvider.OPENAI && "OpenAI"}
-              {selectedProvider === ServiceProvider.DOUBAO && "豆包"}
-              {selectedProvider === ServiceProvider.OPENROUTER && "OpenRouter"}
-              {selectedProvider === ServiceProvider.MOONSHOT && 
-                (currentLanguage === "zh" ? "月之暗面" : "Moonshot")
-              }
-              {selectedProvider === ServiceProvider.IFLOW && 
-                (currentLanguage === "zh" ? "心流" : "iFlow")
-              }
-              {selectedProvider === ServiceProvider.XUNFEI && 
-                (currentLanguage === "zh" ? "讯飞" : "Xunfei")
-              }
-              {selectedProvider === ServiceProvider.HUNYUAN && 
-                (currentLanguage === "zh" ? "混元" : "Hunyuan")
-              }
-              {" "}{currentLanguage === "zh" 
-                ? "API 密钥已配置，应用可以正常使用" 
-                : "API key has been configured, the application can be used normally"}
-            </div>
-          )}
+          <div className="api-key-manager-success-message">
+            ✅{selectedProvider === ServiceProvider.DEEPSEEK && "DeepSeek"}
+            {selectedProvider === ServiceProvider.GEMINI && "Gemini"}
+            {selectedProvider === ServiceProvider.GROQ && "Groq"}
+            {selectedProvider === ServiceProvider.YOUCHAT && "YouChat"}
+            {selectedProvider === ServiceProvider.OPENAI && "OpenAI"}
+            {selectedProvider === ServiceProvider.DOUBAO && "豆包"}
+            {selectedProvider === ServiceProvider.OPENROUTER && "OpenRouter"}
+            {selectedProvider === ServiceProvider.MOONSHOT &&
+              (currentLanguage === "zh" ? "月之暗面" : "Moonshot")}
+            {selectedProvider === ServiceProvider.IFLOW &&
+              (currentLanguage === "zh" ? "心流" : "iFlow")}
+            {selectedProvider === ServiceProvider.XUNFEI &&
+              (currentLanguage === "zh" ? "讯飞" : "Xunfei")}
+            {selectedProvider === ServiceProvider.HUNYUAN &&
+              (currentLanguage === "zh" ? "混元" : "Hunyuan")}{" "}
+            {currentLanguage === "zh"
+              ? "API 密钥已配置，应用可以正常使用"
+              : "API key has been configured, the application can be used normally"}
+          </div>
+        )}
       </div>
     </div>
   );

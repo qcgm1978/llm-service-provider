@@ -22,17 +22,7 @@
 }
 
 .api-key-manager-close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #666;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
+  right: 4rem;
 }
 
 .api-key-manager-close-btn:hover {
