@@ -328,6 +328,7 @@ function App() {
         </button>
         <ApiKeyManager
                   onSave={() => {}}
+                  showCloseButton={false}
                   onClose={() => setIsApiKeyManagerOpen(false)}
                   onNavigateToWiki={() => {}}
                   onPromptTypeChange={() => {}}
