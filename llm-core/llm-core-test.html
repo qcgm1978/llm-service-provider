@@ -139,7 +139,7 @@
             </div>
               <div>
                 <label>输入提示:</label>
-                <textarea id="chat-prompt" rows="3" placeholder="请输入您的问题..."></textarea>
+                <textarea id="chat-prompt" rows="3" placeholder="请输入您的问题...">你是谁</textarea>
             </div>
             <div>
                 <button onclick="testSyncChat()">同步对话</button>
@@ -157,7 +157,7 @@
             </div>
             <div>
                 <label>主题:</label>
-                <input type="text" id="def-topic" placeholder="例如: 人工智能">
+                <input type="text" id="def-topic" placeholder="例如: 人工智能" value="你是谁">
             </div>
             <div>
                 <label>语言:</label>
@@ -206,7 +206,7 @@
             </div>
             <div>
                 <label>输入提示:</label>
-                <textarea id="doubao-prompt" rows="3" placeholder="请输入您的问题..."></textarea>
+                <textarea id="doubao-prompt" rows="3" placeholder="请输入您的问题...">你是谁</textarea>
             </div>
             <div>
                 <button onclick="initDoubaoService()">初始化豆包服务</button>
@@ -444,14 +444,11 @@
             
             llmServiceInstance.setSelectedServiceProvider(provider);
             
-            // 使用streamDefinition方法并同步收集输出
+            // 使用chat方法进行同步对话
             (async function() {
                 try {
-                    let fullResponse = '';
-                    // 使用await和for循环来同步收集所有输出
-                    for await (const chunk of llmServiceInstance.streamDefinition(prompt, 'zh')) {
-                        fullResponse += chunk;
-                    }
+                    // 直接调用chat方法获取完整响应
+                    const fullResponse = await llmServiceInstance.chat(prompt);
                     log('chat-result', '对话响应:', 'success');
                     log('chat-result', fullResponse, 'info');
                 } catch (error) {
@@ -482,18 +479,20 @@
             document.getElementById('chat-loading').style.display = 'inline';
             
             llmServiceInstance.setSelectedServiceProvider(provider);
-            const stream = llmServiceInstance.streamDefinition(prompt, 'zh');
+            const stream = llmServiceInstance.streamChat(prompt);
             
             let fullResponse = '';
             const streamOutput = document.createElement('div');
             streamOutput.className = 'info';
             document.getElementById('chat-result').appendChild(streamOutput);
             
-            // 简化流式处理
+            // 处理流式响应
             if (llmServiceInstance.handleStream) {
                 llmServiceInstance.handleStream(stream, {
                     onChunk: function(chunk) {
-                        fullResponse += chunk;
+                        // 确保正确累积内容
+                        fullResponse += chunk || '';
+                        // 确保每次更新都正确显示累积的内容
                         streamOutput.textContent = fullResponse;
                     },
                     onComplete: function() {
@@ -506,12 +505,16 @@
                 (async function() {
                     try {
                         for await (const chunk of stream) {
-                            fullResponse += chunk;
-                            streamOutput.textContent = fullResponse;
+                            // 确保正确累积内容
+                            if (chunk && chunk !== null && chunk !== undefined) {
+                                fullResponse += chunk;
+                                // 确保每次更新都正确显示累积的内容
+                                streamOutput.textContent = fullResponse;
+                            }
                         }
                         log('chat-result', '流式对话完成!', 'success');
                     } catch (error) {
-                        log('chat-result', '流式对话出错: ' + error.message, 'error');
+                        log('chat-result', '流式对话出错: ' + (error.message || String(error)), 'error');
                     } finally {
                         document.getElementById('chat-loading').style.display = 'none';
                     }
@@ -543,13 +546,22 @@
             llmServiceInstance.setSelectedServiceProvider(provider);
             
             (async function() {
-                let fullResponse = '';
-                for await (const chunk of llmServiceInstance.streamDefinition(topic, language, context)) {
-                    fullResponse += chunk;
+                try {
+                    // 尝试使用可能存在的syncDefinition方法或使用chat方法
+                    let fullResponse;
+                    if (llmServiceInstance.syncDefinition) {
+                        fullResponse = await llmServiceInstance.syncDefinition(topic, language, context);
+                    } else {
+                        // 如果syncDefinition不存在，使用chat方法作为备选
+                        fullResponse = await llmServiceInstance.chat(topic, language, context);
+                    }
+                    log('def-result', '定义生成结果:', 'success');
+                    log('def-result', fullResponse, 'info');
+                } catch (error) {
+                    log('def-result', '定义生成错误: ' + error.message, 'error');
+                } finally {
+                    document.getElementById('def-loading').style.display = 'none';
                 }
-                log('def-result', '定义生成结果:', 'success');
-                log('def-result', fullResponse, 'info');
-                document.getElementById('def-loading').style.display = 'none';
             })();
         }
         
@@ -575,7 +587,14 @@
             document.getElementById('def-loading').style.display = 'inline';
             
             llmServiceInstance.setSelectedServiceProvider(provider);
-            const stream = llmServiceInstance.streamDefinition(topic, language, context);
+            let stream;
+            // 尝试使用streamChat作为备选，因为streamDefinition可能不可用
+            try {
+                stream = llmServiceInstance.streamDefinition(topic, language, context);
+            } catch (e) {
+                // 降级使用streamChat
+                stream = llmServiceInstance.streamChat(topic);
+            }
             
             let fullDefinition = '';
             const streamOutput = document.createElement('div');

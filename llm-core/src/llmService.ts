@@ -565,6 +565,17 @@ export const llmService = {
         } else {
           return "豆包服务未配置API Key";
         }
+      case ServiceProvider.DEEPSEEK:
+        if (hasDeepSeekApiKey()) {
+          // 使用streamDefinition方法实现chat功能 - 正确累积增量内容
+          let fullResponse = '';
+          for await (const chunk of deepseekStreamDefinition(prompt, 'zh')) {
+            fullResponse += chunk;
+          }
+          return fullResponse;
+        } else {
+          return "DeepSeek服务未配置API Key";
+        }
       default:
         // 对于其他服务，这里可以添加相应的实现
         return "该服务的聊天功能暂未实现";
@@ -586,6 +597,16 @@ export const llmService = {
           yield "豆包服务未配置API Key";
         }
         break;
+      case ServiceProvider.DEEPSEEK:
+        if (hasDeepSeekApiKey()) {
+          // 使用deepseekStreamDefinition方法实现流式聊天
+          for await (const chunk of deepseekStreamDefinition(prompt, 'zh')) {
+            yield cleanContent(chunk);
+          }
+        } else {
+          yield "DeepSeek服务未配置API Key";
+        }
+        break;
       default:
         // 对于其他服务，这里可以添加相应的实现
         yield "该服务的流式聊天功能暂未实现";
@@ -600,10 +621,9 @@ export const llmService = {
       onComplete: () => void;
     }
   ): Promise<void> => {
-    let fullContent = '';
+    // 直接传递增量内容，不再累积
     for await (const chunk of stream) {
-      fullContent += chunk;
-      callbacks.onChunk(fullContent);
+      callbacks.onChunk(chunk);
     }
     callbacks.onComplete();
   },
@@ -615,7 +635,13 @@ export const llmService = {
   hasDoubaoApiKey: hasDoubaoApiKey,
   
   // 添加setDoubaoApiKey方法
-  setDoubaoApiKey: setDoubaoApiKey
+  setDoubaoApiKey: setDoubaoApiKey,
+  
+  // 添加hasDeepSeekApiKey方法
+  hasDeepSeekApiKey: hasDeepSeekApiKey,
+  
+  // 添加setDeepSeekApiKey方法
+  setDeepSeekApiKey: setDeepSeekApiKey
 };
 
 // 为了兼容，同时保留单独的导出

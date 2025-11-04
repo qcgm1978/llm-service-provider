@@ -88,15 +88,15 @@ export async function* streamDefinition (
             }
 
             try {
-              const parsed = JSON.parse(data)
-              if (parsed.choices?.[0]?.delta?.content) {
-                accumulatedContent += parsed.choices[0].delta.content
-                yield accumulatedContent
-                accumulatedContent = ''
+                const parsed = JSON.parse(data)
+                if (parsed.choices?.[0]?.delta?.content) {
+                  const newContent = parsed.choices[0].delta.content
+                  accumulatedContent += newContent
+                  yield newContent
+                }
+              } catch (e) {
+                console.error('Error parsing DeepSeek response:', e)
               }
-            } catch (e) {
-              console.error('Error parsing DeepSeek response:', e)
-            }
           }
         }
       }
