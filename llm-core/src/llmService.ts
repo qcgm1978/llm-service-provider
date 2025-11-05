@@ -10,7 +10,7 @@ import {
 } from "./geminiService";
 import { streamDefinition as groqStreamDefinition } from "./groqService";
 import { streamDefinition as youChatStreamDefinition } from "./youChatService";
-import { streamDefinition as xunfeiStreamDefinition } from "./xunfeiService";
+import { streamDefinition as xunfeiStreamDefinition, chat as xunfeiChat, streamChat as xunfeiStreamChat } from "./xunfeiService";
 import { 
   streamDefinition as doubaoStreamDefinition,
   chat as doubaoChat,
@@ -300,85 +300,78 @@ export async function* streamDefinition(
   context?: string
 ): AsyncGenerator<string, void, undefined> {
   const provider = getSelectedServiceProvider();
-  try {
-    let implementationStream: AsyncGenerator<string, void, undefined>;
+  let implementationStream: AsyncGenerator<string, void, undefined>;
 
-    // 首先检查是否有指定服务的API密钥，如果没有则使用默认的youchat
-    switch (provider) {
-      case ServiceProvider.DEEPSEEK:
-        implementationStream = hasDeepSeekApiKey()
-          ? deepseekStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.OPENAI:
-        implementationStream = hasOpenAiApiKey()
-          ? openaiStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.GEMINI:
-        implementationStream = hasGeminiApiKey()
-          ? geminiStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.GROQ:
-        implementationStream = hasGroqApiKey()
-          ? groqStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.YOUCHAT:
-        implementationStream = youChatStreamDefinition(
-          topic,
-          language,
-          context
-        );
-        break;
-      case ServiceProvider.DOUBAO:
-        implementationStream = hasDoubaoApiKey()
-          ? doubaoStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.OPENROUTER:
-        implementationStream = hasOpenRouterApiKey()
-          ? openrouterStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.MOONSHOT:
-        implementationStream = hasMoonshotApiKey()
-          ? moonshotStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.IFLOW:
-        implementationStream = hasIflowApiKey()
-          ? iflowStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.HUNYUAN:
-        implementationStream = hasHunyuanApiKey()
-          ? hunyuanStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      case ServiceProvider.XUNFEI:
-        implementationStream = (hasXunfeiApiKey() && hasXunfeiApiSecret())
-          ? xunfeiStreamDefinition(topic, language, context)
-          : youChatStreamDefinition(topic, language, context);
-        break;
-      default:
-        implementationStream = youChatStreamDefinition(
-          topic,
-          language,
-          context
-        );
-    }
+  // 首先检查是否有指定服务的API密钥，如果没有则使用默认的youchat
+  switch (provider) {
+    case ServiceProvider.DEEPSEEK:
+      implementationStream = hasDeepSeekApiKey()
+        ? deepseekStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.OPENAI:
+      implementationStream = hasOpenAiApiKey()
+        ? openaiStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.GEMINI:
+      implementationStream = hasGeminiApiKey()
+        ? geminiStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.GROQ:
+      implementationStream = hasGroqApiKey()
+        ? groqStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.YOUCHAT:
+      implementationStream = youChatStreamDefinition(
+        topic,
+        language,
+        context
+      );
+      break;
+    case ServiceProvider.DOUBAO:
+      implementationStream = hasDoubaoApiKey()
+        ? doubaoStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.OPENROUTER:
+      implementationStream = hasOpenRouterApiKey()
+        ? openrouterStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.MOONSHOT:
+      implementationStream = hasMoonshotApiKey()
+        ? moonshotStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.IFLOW:
+      implementationStream = hasIflowApiKey()
+        ? iflowStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.HUNYUAN:
+      implementationStream = hasHunyuanApiKey()
+        ? hunyuanStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    case ServiceProvider.XUNFEI:
+      implementationStream = (hasXunfeiApiKey() && hasXunfeiApiSecret())
+        ? xunfeiStreamDefinition(topic, language, context)
+        : youChatStreamDefinition(topic, language, context);
+      break;
+    default:
+      implementationStream = youChatStreamDefinition(
+        topic,
+        language,
+        context
+      );
+  }
 
-    // 遍历实现的流，应用清理函数
-    for await (const chunk of implementationStream) {
-      yield cleanContent(chunk);
-    }
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
-    const prefix = language === "zh" ? "发生错误: " : "Error: ";
-    throw new Error(`${prefix}${errorMessage}`);
+  // 遍历实现的流，应用清理函数
+  for await (const chunk of implementationStream) {
+    yield cleanContent(chunk);
   }
 }
 
@@ -576,6 +569,12 @@ export const llmService = {
         } else {
           return "DeepSeek服务未配置API Key";
         }
+      case ServiceProvider.XUNFEI:
+        if (hasXunfeiApiKey() && hasXunfeiApiSecret()) {
+          return xunfeiChat(prompt);
+        } else {
+          return "讯飞服务未配置API Key或Secret";
+        }
       default:
         // 对于其他服务，这里可以添加相应的实现
         return "该服务的聊天功能暂未实现";
@@ -605,6 +604,15 @@ export const llmService = {
           }
         } else {
           yield "DeepSeek服务未配置API Key";
+        }
+        break;
+      case ServiceProvider.XUNFEI:
+        if (hasXunfeiApiKey() && hasXunfeiApiSecret()) {
+          for await (const chunk of xunfeiStreamChat(prompt)) {
+            yield cleanContent(chunk);
+          }
+        } else {
+          yield "讯飞服务未配置API Key或Secret";
         }
         break;
       default:

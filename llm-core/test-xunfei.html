@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>讯飞服务测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .output {
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>讯飞服务测试</h1>
+    
+    <div>
+        <h2>配置API密钥</h2>
+        <input type="text" id="xunfei-api-key" placeholder="请输入讯飞API Key">
+        <input type="text" id="xunfei-api-secret" placeholder="请输入讯飞API Secret">
+        <button onclick="setApiKeys()">设置API密钥</button>
+        <button onclick="initService()">初始化服务</button>
+    </div>
+    
+    <div>
+        <h2>测试功能</h2>
+        <button onclick="testSyncChat()">测试同步对话</button>
+        <button onclick="testStreamChat()">测试流式对话</button>
+    </div>
+    
+    <div>
+        <h2>日志输出</h2>
+        <div id="log-output" class="output"></div>
+    </div>
+    
+    <script src="./dist/browser.js"></script>
+    <script>
+        let llmService;
+        
+        function log(message, type = 'info') {
+            const output = document.getElementById('log-output');
+            const line = document.createElement('div');
+            line.textContent = message;
+            line.className = type;
+            output.appendChild(line);
+            console.log(message);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function setApiKeys() {
+            const apiKey = document.getElementById('xunfei-api-key').value.trim();
+            const apiSecret = document.getElementById('xunfei-api-secret').value.trim();
+            
+            if (!apiKey || !apiSecret) {
+                log('请输入有效的API Key和Secret', 'error');
+                return;
+            }
+            
+            // 设置API密钥
+            if (window.llmService) {
+                window.llmService.setXunfeiApiKey(apiKey);
+                window.llmService.setXunfeiApiSecret(apiSecret);
+                log('API密钥设置成功', 'success');
+            } else if (window.llmCore && window.llmCore.llmService) {
+                window.llmCore.llmService.setXunfeiApiKey(apiKey);
+                window.llmCore.llmService.setXunfeiApiSecret(apiSecret);
+                log('API密钥设置成功 (从llmCore)', 'success');
+            } else {
+                log('llmService未加载', 'error');
+            }
+        }
+        
+        function initService() {
+            log('正在初始化讯飞服务...', 'info');
+            
+            // 尝试获取llmService实例
+            if (window.llmService) {
+                llmService = window.llmService;
+            } else if (window.llmCore && window.llmCore.llmService) {
+                llmService = window.llmCore.llmService;
+            }
+            
+            if (!llmService) {
+                log('llmService未加载，请检查浏览器控制台', 'error');
+                return;
+            }
+            
+            // 设置为讯飞服务
+            llmService.setSelectedServiceProvider('xunfei');
+            
+            // 检查API密钥状态
+            const hasKey = llmService.hasXunfeiApiKey();
+            const hasSecret = llmService.hasXunfeiApiSecret();
+            
+            log(`API Key配置: ${hasKey ? '已配置' : '未配置'}`, hasKey ? 'success' : 'error');
+            log(`API Secret配置: ${hasSecret ? '已配置' : '未配置'}`, hasSecret ? 'success' : 'error');
+            
+            if (hasKey && hasSecret) {
+                log('讯飞服务初始化完成，可以开始测试', 'success');
+            } else {
+                log('请先设置有效的API密钥和Secret', 'error');
+            }
+        }
+        
+        async function testSyncChat() {
+            if (!llmService) {
+                log('请先初始化服务', 'error');
+                return;
+            }
+            
+            log('开始测试同步对话...', 'info');
+            
+            try {
+                const result = await llmService.chat('你好，请介绍一下你自己');
+                log('同步对话结果:', 'success');
+                log(result, 'info');
+            } catch (error) {
+                log('同步对话失败: ' + error.message, 'error');
+            }
+        }
+        
+        async function testStreamChat() {
+            if (!llmService) {
+                log('请先初始化服务', 'error');
+                return;
+            }
+            
+            log('开始测试流式对话...', 'info');
+            
+            try {
+                const stream = llmService.streamChat('你好，请介绍一下你自己');
+                let fullResponse = '';
+                
+                for await (const chunk of stream) {
+                    fullResponse = chunk; // 流式对话返回的是累积的内容
+                    log('流式响应更新: ' + chunk, 'info');
+                }
+                
+                log('流式对话完成!', 'success');
+            } catch (error) {
+                log('流式对话失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 页面加载完成后自动初始化
+        window.onload = function() {
+            log('页面加载完成，等待llm-core库加载...', 'info');
+            setTimeout(() => {
+                if (window.llmService || (window.llmCore && window.llmCore.llmService)) {
+                    log('llm-core库加载成功', 'success');
+                } else {
+                    log('警告: llm-core库可能未正确加载，请检查控制台', 'error');
+                }
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

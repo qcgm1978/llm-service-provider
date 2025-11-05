@@ -246,51 +246,53 @@
             event.target.classList.add('active');
         }
         
-        // 全局变量存储llmService实例
-        let llmServiceInstance = null;
+        // 全局变量存储llmService实例 - 暴露到window对象
+        window.llmServiceInstance = null;
         
         // 加载llm-core库
         function loadLLMCore() {
             const status = document.getElementById('library-status');
             status.textContent = '正在加载llm-core库...';
             
+            // 创建script元素加载编译后的JavaScript文件
             const script = document.createElement('script');
-            script.src = 'dist/browser.js';
+            script.src = './dist/browser.js';
             script.onload = function() {
-                if (typeof llmCore !== 'undefined') {
-                    status.innerHTML = '<span class="success">✓ llm-core库加载成功</span><br>';
-                    status.innerHTML += '库类型: ' + typeof llmCore + '<br>';
-                    status.innerHTML += '导出属性数量: ' + Object.keys(llmCore).length + '<br>';
-                    status.innerHTML += '导出属性: ' + Object.keys(llmCore).join(', ') + '<br>';
-                    
-                    // 确保llmService可用
-                    if (llmCore.llmService) {
-                        llmServiceInstance = llmCore.llmService;
-                        status.innerHTML += '<span class="success">✓ llmService初始化成功</span><br>';
-                    } else {
-                        status.innerHTML += '<span class="warning">⚠️ llmService未找到，尝试创建实例</span><br>';
-                        // 尝试直接使用llmCore
-                        llmServiceInstance = llmCore;
-                    }
-                    
-                    if (llmCore.providerNamesConfig) {
-                        status.innerHTML += '<span class="success">✓ 找到providerNamesConfig</span><br>';
-                        status.innerHTML += '支持的服务提供商: ' + Object.keys(llmCore.providerNamesConfig).join(', ') + '<br>';
-                        
-                        // 初始化API Key输入字段
-                        initApiKeyFields();
-                        // 初始化提供商选择下拉框
-                        initProviderSelectors();
-                    }
+                status.innerHTML = '<span class="success">✓ llm-core库加载成功</span><br>';
+                
+                // 尝试从全局作用域获取llmService
+                if (window.llmService) {
+                    window.llmServiceInstance = window.llmService;
+                    status.innerHTML += '<span class="success">✓ llmService初始化成功</span><br>';
+                } else if (window.llmCore && window.llmCore.llmService) {
+                    window.llmServiceInstance = window.llmCore.llmService;
+                    status.innerHTML += '<span class="success">✓ llmService从llmCore初始化成功</span><br>';
                 } else {
-                    status.innerHTML = '<span class="error">✗ llm-core库加载失败</span>';
+                    status.innerHTML += '<span class="error">✗ llmService未找到</span><br>';
                 }
+            
+                // 检查providerNamesConfig
+                if (window.providerNamesConfig) {
+                    status.innerHTML += '<span class="success">✓ 找到providerNamesConfig</span><br>';
+                    status.innerHTML += '支持的服务提供商: ' + Object.keys(window.providerNamesConfig).join(', ') + '<br>';
+                } else if (window.llmCore && window.llmCore.providerNamesConfig) {
+                    status.innerHTML += '<span class="success">✓ 从llmCore找到providerNamesConfig</span><br>';
+                    status.innerHTML += '支持的服务提供商: ' + Object.keys(window.llmCore.providerNamesConfig).join(', ') + '<br>';
+                } else if (window.llmService && window.llmService.providerNamesConfig) {
+                    status.innerHTML += '<span class="success">✓ 从llmService找到providerNamesConfig</span><br>';
+                    status.innerHTML += '支持的服务提供商: ' + Object.keys(window.llmService.providerNamesConfig).join(', ') + '<br>';
+                }
+                
+                initApiKeyFields();
+                initProviderSelectors();
             };
             
-            script.onerror = function(event) {
-                status.innerHTML = '<span class="error">✗ 加载失败: ' + (event.message || '未知错误') + '</span>';
+            // 处理加载错误
+            script.onerror = function() {
+                status.innerHTML += '<span class="error">✗ llm-core库加载失败</span><br>';
             };
             
+            // 添加script元素到文档
             document.body.appendChild(script);
         }
         
@@ -302,10 +304,18 @@
             providers.forEach(provider => {
                 const div = document.createElement('div');
                 div.className = 'api-key-group';
-                div.innerHTML = `
-                    <label><input type="checkbox" id="check-${provider}"> ${provider}</label>
-                    <input type="text" id="key-${provider}" placeholder="请输入${provider}的API Key">
-                `;
+                if (provider === 'xunfei') {
+                    div.innerHTML = `
+                        <label><input type="checkbox" id="check-${provider}"> ${provider}</label>
+                        <input type="text" id="key-${provider}" placeholder="请输入${provider}的API Key">
+                        <input type="text" id="secret-${provider}" placeholder="请输入${provider}的API Secret">
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <label><input type="checkbox" id="check-${provider}"> ${provider}</label>
+                        <input type="text" id="key-${provider}" placeholder="请输入${provider}的API Key">
+                    `;
+                }
                 container.appendChild(div);
             });
         }
@@ -338,7 +348,7 @@
             clearOutput('init-result');
             log('init-result', '开始初始化选中的服务...', 'info');
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('init-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -354,21 +364,39 @@
                     hasSelected = true;
                     const apiKey = keyInput.value.trim();
                     
-                    if (llmCore.providerManager && llmCore.providerManager.saveProviderCredentials) {
-                        llmCore.providerManager.saveProviderCredentials(provider, { apiKey });
-                    } else {
-                        let setApiKeyMethod;
-                        if (provider === 'deepseek') {
-                            setApiKeyMethod = 'setDeepSeekApiKey';
+                    if (provider === 'xunfei') {
+                        const secretInput = document.getElementById(`secret-${provider}`);
+                        const apiSecret = secretInput ? secretInput.value.trim() : '';
+                        
+                        if (llmCore.providerManager && llmCore.providerManager.saveProviderCredentials) {
+                            llmCore.providerManager.saveProviderCredentials(provider, { apiKey, apiSecret });
                         } else {
-                            setApiKeyMethod = `set${provider.charAt(0).toUpperCase() + provider.slice(1)}ApiKey`;
+                            if (window.llmServiceInstance.setXunfeiApiKey) {
+                                window.llmServiceInstance.setXunfeiApiKey(apiKey);
+                            }
+                            if (window.llmServiceInstance.setXunfeiApiSecret) {
+                                window.llmServiceInstance.setXunfeiApiSecret(apiSecret);
+                            }
                         }
-                        if (llmServiceInstance[setApiKeyMethod]) {
-                            llmServiceInstance[setApiKeyMethod](apiKey);
+                        
+                        log('init-result', `${provider}: API Key 和 Secret 已设置`, 'success');
+                    } else {
+                        if (llmCore.providerManager && llmCore.providerManager.saveProviderCredentials) {
+                            llmCore.providerManager.saveProviderCredentials(provider, { apiKey });
+                        } else {
+                            let setApiKeyMethod;
+                            if (provider === 'deepseek') {
+                                setApiKeyMethod = 'setDeepSeekApiKey';
+                            } else {
+                                setApiKeyMethod = `set${provider.charAt(0).toUpperCase() + provider.slice(1)}ApiKey`;
+                            }
+                            if (window.llmServiceInstance[setApiKeyMethod]) {
+                                window.llmServiceInstance[setApiKeyMethod](apiKey);
+                            }
                         }
+                        
+                        log('init-result', `${provider}: API Key 已设置`, 'success');
                     }
-                    
-                    log('init-result', `${provider}: API Key 已设置`, 'success');
                 }
             });
             
@@ -384,7 +412,7 @@
             clearOutput('init-result');
             log('init-result', '开始初始化所有服务...', 'info');
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('init-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -407,8 +435,8 @@
                         } else {
                             setApiKeyMethod = `set${provider.charAt(0).toUpperCase() + provider.slice(1)}ApiKey`;
                         }
-                        if (llmServiceInstance[setApiKeyMethod]) {
-                            llmServiceInstance[setApiKeyMethod](apiKey);
+                        if (window.llmServiceInstance[setApiKeyMethod]) {
+                            window.llmServiceInstance[setApiKeyMethod](apiKey);
                         }
                     }
                     
@@ -433,7 +461,7 @@
                 return;
             }
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('chat-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -442,13 +470,13 @@
             log('chat-result', `开始同步对话测试 (${provider})...`, 'info');
             document.getElementById('chat-loading').style.display = 'inline';
             
-            llmServiceInstance.setSelectedServiceProvider(provider);
+            window.llmServiceInstance.setSelectedServiceProvider(provider);
             
             // 使用chat方法进行同步对话
             (async function() {
                 try {
                     // 直接调用chat方法获取完整响应
-                    const fullResponse = await llmServiceInstance.chat(prompt);
+                    const fullResponse = await window.llmServiceInstance.chat(prompt);
                     log('chat-result', '对话响应:', 'success');
                     log('chat-result', fullResponse, 'info');
                 } catch (error) {
@@ -469,7 +497,7 @@
                 return;
             }
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('chat-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -478,8 +506,8 @@
             log('chat-result', `开始流式对话测试 (${provider})...`, 'info');
             document.getElementById('chat-loading').style.display = 'inline';
             
-            llmServiceInstance.setSelectedServiceProvider(provider);
-            const stream = llmServiceInstance.streamChat(prompt);
+            window.llmServiceInstance.setSelectedServiceProvider(provider);
+            const stream = window.llmServiceInstance.streamChat(prompt);
             
             let fullResponse = '';
             const streamOutput = document.createElement('div');
@@ -487,8 +515,8 @@
             document.getElementById('chat-result').appendChild(streamOutput);
             
             // 处理流式响应
-            if (llmServiceInstance.handleStream) {
-                llmServiceInstance.handleStream(stream, {
+            if (window.llmServiceInstance.handleStream) {
+                window.llmServiceInstance.handleStream(stream, {
                     onChunk: function(chunk) {
                         // 确保正确累积内容
                         fullResponse += chunk || '';
@@ -534,8 +562,8 @@
                 return;
             }
             
-            if (!llmServiceInstance) {
-                log('def-result', 'llmService未初始化，请检查库加载', 'error');
+            if (!window.llmServiceInstance) {
+                log('chat-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
             
@@ -549,11 +577,11 @@
                 try {
                     // 尝试使用可能存在的syncDefinition方法或使用chat方法
                     let fullResponse;
-                    if (llmServiceInstance.syncDefinition) {
-                        fullResponse = await llmServiceInstance.syncDefinition(topic, language, context);
+                    if (window.llmServiceInstance.syncDefinition) {
+                        fullResponse = await window.llmServiceInstance.syncDefinition(topic, language, context);
                     } else {
                         // 如果syncDefinition不存在，使用chat方法作为备选
-                        fullResponse = await llmServiceInstance.chat(topic, language, context);
+                        fullResponse = await window.llmServiceInstance.chat(topic, language, context);
                     }
                     log('def-result', '定义生成结果:', 'success');
                     log('def-result', fullResponse, 'info');
@@ -577,7 +605,7 @@
                 return;
             }
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('def-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -590,10 +618,10 @@
             let stream;
             // 尝试使用streamChat作为备选，因为streamDefinition可能不可用
             try {
-                stream = llmServiceInstance.streamDefinition(topic, language, context);
+                stream = window.llmServiceInstance.streamDefinition(topic, language, context);
             } catch (e) {
                 // 降级使用streamChat
-                stream = llmServiceInstance.streamChat(topic);
+                stream = window.llmServiceInstance.streamChat(topic);
             }
             
             let fullDefinition = '';
@@ -602,8 +630,8 @@
             document.getElementById('def-result').appendChild(streamOutput);
             
             // 简化流式处理
-            if (llmServiceInstance.handleStream) {
-                llmServiceInstance.handleStream(stream, {
+            if (window.llmServiceInstance.handleStream) {
+                window.llmServiceInstance.handleStream(stream, {
                     onChunk: function(chunk) {
                         fullDefinition += chunk;
                         streamOutput.textContent = fullDefinition;
@@ -636,14 +664,14 @@
             clearOutput('management-result');
             log('management-result', '检查活跃服务...', 'info');
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('management-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
             
             // 获取所有服务配置
-            if (llmServiceInstance.getAllServiceConfigurations) {
-                const configs = llmServiceInstance.getAllServiceConfigurations();
+            if (window.llmServiceInstance.getAllServiceConfigurations) {
+                const configs = window.llmServiceInstance.getAllServiceConfigurations();
                 const activeProviders = configs.filter(config => config.apiKey || config.isValid).map(config => config.provider);
                 
                 log('management-result', '活跃服务数量: ' + activeProviders.length, 'info');
@@ -666,13 +694,13 @@
             const providers = Object.keys(llmCore.providerNamesConfig);
             log('management-result', '检查所有服务状态...', 'info');
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('management-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
             
-            if (llmServiceInstance.getAllServiceConfigurations) {
-                const configs = llmServiceInstance.getAllServiceConfigurations();
+            if (window.llmServiceInstance.getAllServiceConfigurations) {
+                const configs = window.llmServiceInstance.getAllServiceConfigurations();
                 const configMap = {};
                 configs.forEach(config => {
                     configMap[config.provider] = config;
@@ -693,8 +721,8 @@
                     // 检查是否有对应API Key方法
                     const hasApiKeyMethod = `has${provider.charAt(0).toUpperCase() + provider.slice(1)}ApiKey`;
                     let isReady = false;
-                    if (llmServiceInstance[hasApiKeyMethod]) {
-                        isReady = llmServiceInstance[hasApiKeyMethod]();
+                    if (window.llmServiceInstance[hasApiKeyMethod]) {
+                        isReady = window.llmServiceInstance[hasApiKeyMethod]();
                     }
                     const status = isReady ? '<span class="success">就绪</span>' : '<span class="info">未初始化</span>';
                     log('management-result', `${provider}: ${status}`, 'info');
@@ -732,7 +760,7 @@
             clearOutput('doubao-result');
             log('doubao-result', '开始初始化豆包服务...', 'info');
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('doubao-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -747,8 +775,8 @@
             if (llmCore.providerManager && llmCore.providerManager.saveProviderCredentials) {
                 llmCore.providerManager.saveProviderCredentials('doubao', apiKey);
                 log('doubao-result', '豆包服务设置成功!', 'success');
-            } else if (llmServiceInstance && llmServiceInstance.setDoubaoApiKey) {
-                llmServiceInstance.setDoubaoApiKey(apiKey);
+            } else if (window.llmServiceInstance && window.llmServiceInstance.setDoubaoApiKey) {
+                window.llmServiceInstance.setDoubaoApiKey(apiKey);
                 log('doubao-result', '豆包服务设置成功!', 'success');
             }
         }
@@ -763,7 +791,7 @@
                 return;
             }
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('doubao-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -773,14 +801,14 @@
             document.getElementById('doubao-loading').style.display = 'inline';
             
             // 设置当前服务为豆包
-            llmServiceInstance.setSelectedServiceProvider('doubao');
+            window.llmServiceInstance.setSelectedServiceProvider('doubao');
             
             // 设置豆包模型
-            if (llmServiceInstance && llmServiceInstance.setDoubaoModel) {
-                llmServiceInstance.setDoubaoModel(model);
+            if (window.llmServiceInstance && window.llmServiceInstance.setDoubaoModel) {
+                window.llmServiceInstance.setDoubaoModel(model);
             }
             
-            const response = await llmServiceInstance.chat(prompt);
+            const response = await window.llmServiceInstance.chat(prompt);
             log('doubao-result', '豆包对话响应:', 'success');
             log('doubao-result', response, 'info');
             document.getElementById('doubao-loading').style.display = 'none';
@@ -796,7 +824,7 @@
                 return;
             }
             
-            if (!llmServiceInstance) {
+            if (!window.llmServiceInstance) {
                 log('doubao-result', 'llmService未初始化，请检查库加载', 'error');
                 return;
             }
@@ -806,14 +834,14 @@
             document.getElementById('doubao-loading').style.display = 'inline';
             
             // 设置当前服务为豆包
-            llmServiceInstance.setSelectedServiceProvider('doubao');
+            window.llmServiceInstance.setSelectedServiceProvider('doubao');
             
             // 设置豆包模型
-            if (llmServiceInstance && llmServiceInstance.setDoubaoModel) {
-                llmServiceInstance.setDoubaoModel(model);
+            if (window.llmServiceInstance && window.llmServiceInstance.setDoubaoModel) {
+                window.llmServiceInstance.setDoubaoModel(model);
             }
             
-            const stream = llmServiceInstance.streamChat(prompt);
+            const stream = window.llmServiceInstance.streamChat(prompt);
             
             let fullResponse = '';
             const streamOutput = document.createElement('div');
@@ -821,8 +849,8 @@
             document.getElementById('doubao-result').appendChild(streamOutput);
             
             // 简化流式处理
-            if (llmServiceInstance.handleStream) {
-                llmServiceInstance.handleStream(stream, {
+            if (window.llmServiceInstance.handleStream) {
+                window.llmServiceInstance.handleStream(stream, {
                     onChunk: function(chunk) {
                         fullResponse += chunk;
                         streamOutput.textContent = fullResponse;

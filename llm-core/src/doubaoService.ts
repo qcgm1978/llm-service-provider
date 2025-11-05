@@ -1,8 +1,6 @@
 import { getItem, getEnv } from './utils';
 
-// 豆包 API 配置
-// 使用代理路径以避免CORS问题
-const DOUBAO_API_URL = '/api/doubao';
+const DOUBAO_API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
 let DOUBAO_MODEL = 'doubao-1-5-pro-32k-250115';
 
 // 设置模型
