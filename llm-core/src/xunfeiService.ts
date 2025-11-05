@@ -13,67 +13,70 @@ export async function* streamChat(prompt: string): AsyncGenerator<string, void, 
     return getItem('XUNFEI_API_SECRET') || getEnv('VITE_XUNFEI_API_SECRET') || '';
   };
 
-  try {
-    const reader = await request_xunfei(
-      getApiKey(),
-      getApiSecret(),
-      'wss://spark-api.xf-yun.com/v1/x1',
-      prompt
-    )
+  const apiKey = getApiKey();
+  const apiSecret = getApiSecret();
+  
+  if (!apiKey || !apiSecret) {
+    yield "请配置有效的XUNFEI_API_KEY和XUNFEI_API_SECRET";
+    return;
+  }
+  
+  const reader = await request_xunfei(
+    apiKey,
+    apiSecret,
+    'wss://spark-api.xf-yun.com/v1/x1',
+    prompt
+  )
 
-    let accumulatedContent = ''
+  let accumulatedContent = ''
 
-    if (reader) {
-      const decoder = new TextDecoder()
-      let buffer = ''
+  if (reader) {
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let doneReading = false
 
-      try {
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
+    while (!doneReading) {
+      const result = await reader.read()
+      if (result.done) {
+        doneReading = true
+        break
+      }
 
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split('\n')
-          buffer = lines.pop() || ''
+      const value = result.value || new Uint8Array(0)
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6)
-              if (data === '[DONE]') {
-                if (accumulatedContent) {
-                  yield accumulatedContent
-                  accumulatedContent = ''
-                }
-                return
-              }
-
-              try {
-                const parsed = JSON.parse(data)
-                if (parsed.choices?.[0]?.delta?.content) {
-                  accumulatedContent += parsed.choices[0].delta.content
-                  yield accumulatedContent
-                  await new Promise(resolve => setTimeout(resolve, 30))
-                }
-              } catch (e) {}
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6)
+          if (data === '[DONE]') {
+            if (accumulatedContent) {
+              yield accumulatedContent
             }
+            reader.releaseLock()
+            return
           }
+
+          try {
+            const parsed = JSON.parse(data)
+            if (parsed.choices?.[0]?.delta?.content) {
+              accumulatedContent += parsed.choices[0].delta.content
+              yield accumulatedContent
+              await new Promise(resolve => setTimeout(resolve, 30))
+            }
+          } catch (e) {}
         }
-      } finally {
-        if (accumulatedContent) {
-          yield accumulatedContent
-        }
-        reader.releaseLock()
       }
     }
-
-    const errorMsg = '无法连接到讯飞API'
-    yield `Error: ${errorMsg}`
-    throw new Error(errorMsg)
-  } catch (error) {
-    const msg = "请配置有效的XUNFEI_API_KEY和XUNFEI_API_SECRET";
-    yield `Error: ${msg}`
-    throw new Error(msg)
+    
+    if (accumulatedContent) {
+      yield accumulatedContent
+    }
+    reader.releaseLock()
   }
+
+  yield "无法连接到讯飞API";
 }
 
 // 同步对话函数
@@ -86,55 +89,61 @@ export async function chat(prompt: string): Promise<string> {
     return getItem('XUNFEI_API_SECRET') || getEnv('VITE_XUNFEI_API_SECRET') || '';
   };
 
-  try {
-    const reader = await request_xunfei(
-      getApiKey(),
-      getApiSecret(),
-      'wss://spark-api.xf-yun.com/v1/x1',
-      prompt
-    )
+  const apiKey = getApiKey();
+  const apiSecret = getApiSecret();
+  
+  if (!apiKey || !apiSecret) {
+    return "请配置有效的XUNFEI_API_KEY和XUNFEI_API_SECRET";
+  }
+  
+  const reader = await request_xunfei(
+    apiKey,
+    apiSecret,
+    'wss://spark-api.xf-yun.com/v1/x1',
+    prompt
+  )
 
-    let fullContent = ''
+  let fullContent = ''
 
-    if (reader) {
-      const decoder = new TextDecoder()
-      let buffer = ''
+  if (reader) {
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let doneReading = false
 
-      try {
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
+    while (!doneReading) {
+      const result = await reader.read()
+      if (result.done) {
+        doneReading = true
+        break
+      }
 
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split('\n')
-          buffer = lines.pop() || ''
+      const value = result.value || new Uint8Array(0)
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6)
-              if (data === '[DONE]') {
-                return fullContent
-              }
-
-              try {
-                const parsed = JSON.parse(data)
-                if (parsed.choices?.[0]?.delta?.content) {
-                  fullContent += parsed.choices[0].delta.content
-                }
-              } catch (e) {}
-            }
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6)
+          if (data === '[DONE]') {
+            reader.releaseLock()
+            return fullContent
           }
+
+          try {
+            const parsed = JSON.parse(data)
+            if (parsed.choices?.[0]?.delta?.content) {
+              fullContent += parsed.choices[0].delta.content
+            }
+          } catch (e) {}
         }
-      } finally {
-        reader.releaseLock()
       }
     }
-
-    throw new Error('无法连接到讯飞API')
-  } catch (error) {
-    const msg = "请配置有效的XUNFEI_API_KEY和XUNFEI_API_SECRET";
-    throw new Error(msg)
+    
+    reader.releaseLock()
   }
+
+  return "无法连接到讯飞API";
 }
 
 // 流式定义生成函数
