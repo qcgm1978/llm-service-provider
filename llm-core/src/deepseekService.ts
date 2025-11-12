@@ -54,7 +54,7 @@ export async function* streamDefinition (
           }
         ],
         stream: true,
-        max_tokens: 500,
+        max_tokens: 4000, // todo need check
         temperature: 0.7 // https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings
       })
     })

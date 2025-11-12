@@ -38,11 +38,24 @@ export const {
   hasGroqApiKey,
   hasOpenAiApiKey,
   hasDoubaoApiKey,
+  hasXunfeiApiKey,
+  hasXunfeiApiSecret,
+  hasHunyuanApiKey,
+  hasOpenRouterApiKey,
+  hasMoonshotApiKey,
+  hasIflowApiKey,
   setDeepSeekApiKey,
   setGeminiApiKey,
   setGroqApiKey,
   setOpenAiApiKey,
-  setDoubaoApiKey
+  setDoubaoApiKey,
+  setXunfeiApiKey,
+  setXunfeiApiSecret,
+  setHunyuanApiKey,
+  setOpenRouterApiKey,
+  setMoonshotApiKey,
+  setIflowApiKey,
+  clearAllApiKeys
 } = llmCore;
 
 export const init = initAllServices;
@@ -75,9 +88,54 @@ export const generatePrompt = (
 };
 
 // 默认导出一个不直接引用ApiKeyManager的对象
+// 统一的API密钥设置函数
+export const setApiKey = (provider: string, apiKey: string, apiSecret?: string): void => {
+  switch (provider) {
+    case ServiceProvider.DEEPSEEK:
+      setDeepSeekApiKey(apiKey);
+      break;
+    case ServiceProvider.GEMINI:
+      setGeminiApiKey(apiKey);
+      break;
+    case ServiceProvider.GROQ:
+      setGroqApiKey(apiKey);
+      break;
+    case ServiceProvider.OPENAI:
+      setOpenAiApiKey(apiKey);
+      break;
+    case ServiceProvider.DOUBAO:
+      setDoubaoApiKey(apiKey);
+      break;
+    case ServiceProvider.XUNFEI:
+      setXunfeiApiKey(apiKey);
+      if (apiSecret) {
+        setXunfeiApiSecret(apiSecret);
+      }
+      break;
+    case ServiceProvider.OPENROUTER:
+      setOpenRouterApiKey(apiKey);
+      break;
+    case ServiceProvider.MOONSHOT:
+      setMoonshotApiKey(apiKey);
+      break;
+    case ServiceProvider.IFLOW:
+      setIflowApiKey(apiKey);
+      break;
+    case ServiceProvider.HUNYUAN:
+      setHunyuanApiKey(apiKey);
+      break;
+    case ServiceProvider.YOUCHAT:
+      // YouChat 可能有特殊的设置逻辑，但根据现有代码，这里可能不需要操作
+      break;
+    default:
+      break;
+  }
+};
+
 export default {
   streamDefinition,
   hasApiKey,
+  setApiKey,
 
   generatePrompt,
   getPromptByName,
