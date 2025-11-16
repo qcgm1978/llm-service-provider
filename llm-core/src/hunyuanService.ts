@@ -1,4 +1,4 @@
-import { generatePrompt } from './llmService';
+import { generatePrompt, StreamDefinitionOptions } from './llmService';
 import { getItem, setItem, removeItem, getEnv } from './utils';
 
 const HUNYUAN_API_URL = 'https://api.hunyuan.cloud.tencent.com/v1/chat/completions';
@@ -34,19 +34,12 @@ export function hasApiKey(): boolean {
   return !!getApiKey();
 }
 
-export async function* streamDefinition(
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context, responseFormat } = options;
   const apiKey = getApiKey();
   let accumulatedContent = '';
   if (!apiKey) {
-    const errorMsg =
-      language === 'zh'
-        ? 'Error: HUNYUAN_API_KEY is not configured. Please configure your API key in the settings to continue.'
-        : 'Error: HUNYUAN_API_KEY is not configured. Please configure your API key in the settings to continue.';
+    const errorMsg = language === 'zh' ? '请配置HUNYUAN_API_KEY' : 'Please configure HUNYUAN_API_KEY';
     yield errorMsg;
     return;
   }
@@ -60,19 +53,24 @@ export async function* streamDefinition(
         Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: HUNYUAN_MODEL,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        enable_enhancement: true,
-        stream: true,
-        max_tokens: 1000,
-        temperature: 0.7,
-        top_p: 0.95
+      model: HUNYUAN_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      enable_enhancement: true,
+      stream: true,
+      max_tokens: 4000,
+      temperature: 0.7,
+      top_p: 0.95,
+      ...(responseFormat === 'json' && {
+        response_format: {
+          type: 'json_object'
+        }
       })
+    })
     });
 
     if (!response.ok) {

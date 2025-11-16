@@ -1,4 +1,5 @@
 import { getItem, getEnv } from './utils';
+import { StreamDefinitionOptions } from './llmService';
 
 const DOUBAO_API_URL = 'https://ark.cn-beijing.volces.com/api/v3/chat/completions';
 let DOUBAO_MODEL = 'doubao-1-5-pro-32k-250115';
@@ -148,12 +149,8 @@ export async function* streamChat(prompt: string): AsyncGenerator<string, void, 
 }
 
 // 处理定义生成请求
-export async function* streamDefinition(
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context } = options;
   const apiKey = getApiKey();
   
   if (!apiKey) {

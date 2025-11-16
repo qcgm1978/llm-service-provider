@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai'
-import { generatePrompt } from './llmService'
+import { generatePrompt, StreamDefinitionOptions } from './llmService'
 import { getItem, setItem, removeItem, getEnv } from "./utils"
 
 let apiKey: string | null = null
@@ -27,12 +27,8 @@ export const updateApiKey = (newApiKey: string | null): void => {
   }
 }
 
-export async function* streamDefinition (
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function* streamDefinition (options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context } = options;
   if (!ai) {
     yield 'Error: GEMINI_API_KEY is not configured. Please check your settings to continue.'
     return

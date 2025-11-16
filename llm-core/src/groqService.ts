@@ -1,5 +1,5 @@
-import { generatePrompt } from './llmService';
 import { getItem, setItem, removeItem, getEnv } from './utils';
+import { generatePrompt, StreamDefinitionOptions } from './llmService';
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const GROQ_MODEL = 'meta-llama/llama-4-maverick-17b-128e-instruct'
@@ -27,24 +27,18 @@ export function hasApiKey (): boolean {
   return !!getApiKey()
 }
 
-export async function* streamDefinition (
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
-  const apiKey = getApiKey()
-  let accumulatedContent = ''
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context, responseFormat } = options;
+  const apiKey = getApiKey();
+  let accumulatedContent = '';
+  
   if (!apiKey) {
-    const errorMsg = 
-      language === 'zh'
-        ? 'Error: GROQ_API_KEY is not configured. Please configure your API key in the settings to continue.'
-        : 'Error: GROQ_API_KEY is not configured. Please configure your API key in the settings to continue.'
-    yield errorMsg
-    return
+    const errorMsg = language === 'zh' ? '请配置GROQ_API_KEY' : 'Please configure GROQ_API_KEY';
+    yield errorMsg;
+    return;
   }
-
-  const prompt = generatePrompt(topic, language, context)
+  
+  const prompt = generatePrompt(topic, language, context);
   try {
     const response = await fetch(GROQ_API_URL, {
       method: 'POST',
@@ -53,18 +47,22 @@ export async function* streamDefinition (
         Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: GROQ_MODEL,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        stream: true,
-        max_tokens: 1000,
-        temperature: 0.7,
-        top_p: 0.95
+      model: GROQ_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      stream: true,
+      max_tokens: 4000,
+      temperature: 0.7,
+      ...(responseFormat === 'json' && {
+        response_format: {
+          type: 'json_object'
+        }
       })
+    })
     })
 
     if (!response.ok) {

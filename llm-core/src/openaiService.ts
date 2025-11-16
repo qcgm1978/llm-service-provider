@@ -1,4 +1,4 @@
-import { generatePrompt } from './llmService'
+import { generatePrompt, StreamDefinitionOptions } from './llmService'
 import { getItem, setItem, removeItem, getEnv } from './utils';
 
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
@@ -27,12 +27,8 @@ export function hasApiKey(): boolean {
   return !!getApiKey()
 }
 
-export async function* streamDefinition(
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context, responseFormat } = options;
   const apiKey = getApiKey()
   let accumulatedContent = ''
   if (!apiKey) {
@@ -53,18 +49,23 @@ export async function* streamDefinition(
         Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: OPENAI_MODEL,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        stream: true,
-        max_tokens: 1000,
-        temperature: 0.7,
-        top_p: 0.95
+      model: OPENAI_MODEL,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      stream: true,
+      max_tokens: 4000,
+      temperature: 0.7,
+      top_p: 0.95,
+      ...(responseFormat === 'json' && {
+        response_format: {
+          type: 'json_object'
+        }
       })
+    })
     })
 
     if (!response.ok) {

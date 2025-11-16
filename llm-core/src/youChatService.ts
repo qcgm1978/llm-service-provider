@@ -1,4 +1,4 @@
-import { generatePrompt } from './llmService'
+import { generatePrompt, StreamDefinitionOptions } from './llmService'
 import { getItem, getEnv } from './utils'
 import queryString from 'query-string'
 import { SSE } from 'sse.js'
@@ -63,12 +63,22 @@ export function getAllowChatField(): boolean {
   return allowChatField
 }
 
-export async function* streamDefinition (
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context, allowChatField } = options;
+  const apiKey = getApiKey();
+  let accumulatedContent = '';
+  
+  if (!apiKey) {
+    const errorMsg = language === 'zh' ? '请配置YOUCHAT_API_KEY' : 'Please configure YOUCHAT_API_KEY';
+    yield errorMsg;
+    return;
+  }
+  
+  // 更新allowChatField全局变量
+  if (allowChatField !== undefined) {
+    setAllowChatField(allowChatField);
+  }
+  
   const prompt = generatePrompt(topic, language, context);
   const contextData = getChatContext()
   let text = ''

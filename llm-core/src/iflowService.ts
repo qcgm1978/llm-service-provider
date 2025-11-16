@@ -1,4 +1,4 @@
-import { generatePrompt } from "./llmService";
+import { generatePrompt, StreamDefinitionOptions } from "./llmService";
 import { getItem, setItem, removeItem } from "./utils";
 
 const IFLOW_API_URL = "https://apis.iflow.cn/v1/chat/completions";
@@ -43,13 +43,9 @@ const defaultConfig = {
 };
 
 // 修复streamDefinition函数，恢复正确的异步生成器接口
-export async function* streamDefinition(
-  topic: string,
-  language: "zh" | "en" = "zh",
-  category?: string,
-  context?: string,
-  allowChatField?: boolean
-): AsyncGenerator<string, void, undefined> {
+export async function*
+streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = "zh", category, context } = options;
   const apiKey = getApiKey();
   console.log("streamDefinition中获取API密钥:", apiKey ? "已获取" : "未获取");
 

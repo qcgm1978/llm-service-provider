@@ -1,13 +1,10 @@
-import { generatePrompt } from './llmService';
+import { generatePrompt, StreamDefinitionOptions } from './llmService';
 import { getItem, getEnv } from './utils';
 
 // 定义Moonshot服务的流定义函数
-export async function* streamDefinition(
-  topic: string,
-  language: "zh" | "en" = "zh",
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function*
+streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = "zh", category, context, responseFormat } = options;
   try {
     // 生成提示词
     const prompt = generatePrompt(topic, language, context);
@@ -35,7 +32,12 @@ export async function* streamDefinition(
         content: prompt
       }],
       max_tokens: 2000,
-      stream: true
+      stream: true,
+      ...(responseFormat === 'json' && {
+        response_format: {
+          type: 'json_object'
+        }
+      })
     });
     
     // 发送请求

@@ -90,6 +90,7 @@ function App() {
   const [selectedPromptType, setSelectedPromptType] = useState("简洁定义");
   const [category, setCategory] = useState("");
   const [context, setContext] = useState("");
+  const [responseFormat, setResponseFormat] = useState<'json' | 'text'>('text');
   const [availablePrompts, setAvailablePrompts] = useState<string[]>([
     "简洁定义",
   ]);
@@ -264,12 +265,13 @@ function App() {
     setContent("");
 
     try {
-      for await (const chunk of streamDefinition(
+      for await (const chunk of streamDefinition({
         topic,
-        "zh",
-        category || undefined,
-        context || undefined
-      )) {
+        language: "zh",
+        category,
+        context,
+        responseFormat
+      })) {
         setContent(prev => prev + chunk);
       }
     } catch (error) {
@@ -379,6 +381,18 @@ function App() {
                 {type}
               </option>
             ))}
+          </select>
+        </div>
+
+        <div className="prompt-type-selector">
+          <label>响应格式:</label>
+          <select
+            value={responseFormat}
+            onChange={(e) => setResponseFormat(e.target.value as 'json' | 'text')}
+            style={{ padding: "5px", marginLeft: "10px" }}
+          >
+            <option value="text">文本</option>
+            <option value="json">JSON</option>
           </select>
         </div>
 

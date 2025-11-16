@@ -20,24 +20,22 @@ function getApiKey (): string | undefined {
   return undefined
 }
 
-export async function* streamDefinition (
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
-  const apiKey = getApiKey()
-  let accumulatedContent = ''
+import { StreamDefinitionOptions } from './llmService';
+
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context, responseFormat } = options;
+  const apiKey = getApiKey();
+  let accumulatedContent = '';
   if (!apiKey) {
     const errorMsg = 
       language === 'zh'
         ? 'Error: DEEPSEEK_API_KEY is not configured. Please configure your API key in the settings to continue.'
-        : 'Error: DEEPSEEK_API_KEY is not configured. Please configure your API key in the settings to continue.'
-    yield errorMsg
-    return
+        : 'Error: DEEPSEEK_API_KEY is not configured. Please configure your API key in the settings to continue.';
+    yield errorMsg;
+    return;
   }
 
-  const prompt = generatePrompt(topic, language, context)
+  const prompt = generatePrompt(topic, language, context);
   try {
     const response = await fetch(DEEPSEEK_API_URL, {
       method: 'POST',
@@ -54,8 +52,13 @@ export async function* streamDefinition (
           }
         ],
         stream: true,
-        max_tokens: 4000, // todo need check
-        temperature: 0.7 // https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings
+        max_tokens: 4000,
+        temperature: 0.7,
+        ...(responseFormat === 'json' && {
+          response_format: {
+            type: 'json_object'
+          }
+        })
       })
     })
 

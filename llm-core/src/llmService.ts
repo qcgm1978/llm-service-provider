@@ -248,14 +248,17 @@ export const setIflowApiKey = (key: string): void => {
   }
 };
 
+export interface StreamDefinitionOptions {
+  topic: string;
+  language?: "zh" | "en";
+  category?: string;
+  context?: string;
+  allowChatField?: boolean;
+  responseFormat?: 'json' | 'text';
+}
+
 export interface ServiceProviderImplementation {
-  streamDefinition: (
-    topic: string,
-    language: "zh" | "en",
-    category?: string,
-    context?: string,
-    allowChatField?: boolean
-  ) => AsyncGenerator<string, void, undefined>;
+  streamDefinition: (options: StreamDefinitionOptions) => AsyncGenerator<string, void, undefined>;
 }
 
 // 提示模板相关接口
@@ -294,79 +297,73 @@ function cleanContent(content: string): string {
   return cleaned;
 }
 
-export async function* streamDefinition(
-  topic: string,
-  language: "zh" | "en" = "zh",
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = "zh", context, responseFormat = 'text' } = options;
   const provider = getSelectedServiceProvider();
   let implementationStream: AsyncGenerator<string, void, undefined>;
+  
+  // 如果需要JSON格式且API不支持，修改topic添加格式要求
+  let processedTopic = topic;
+  if (responseFormat === 'json') {
+    processedTopic = `${topic}\n请以JSON格式返回结果，确保返回的是有效的JSON字符串。`;
+  }
 
   // 首先检查是否有指定服务的API密钥，如果没有则使用默认的youchat
   switch (provider) {
     case ServiceProvider.DEEPSEEK:
       implementationStream = hasDeepSeekApiKey()
-        ? deepseekStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? deepseekStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.OPENAI:
       implementationStream = hasOpenAiApiKey()
-        ? openaiStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? openaiStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.GEMINI:
       implementationStream = hasGeminiApiKey()
-        ? geminiStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? geminiStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.GROQ:
       implementationStream = hasGroqApiKey()
-        ? groqStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? groqStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
-    case ServiceProvider.YOUCHAT:
-      implementationStream = youChatStreamDefinition(
-        topic,
-        language,
-        context
-      );
+    case ServiceProvider.XUNFEI:
+      implementationStream = hasXunfeiApiKey() && hasXunfeiApiSecret()
+        ? xunfeiStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.DOUBAO:
       implementationStream = hasDoubaoApiKey()
-        ? doubaoStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? doubaoStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.OPENROUTER:
       implementationStream = hasOpenRouterApiKey()
-        ? openrouterStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? openrouterStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.MOONSHOT:
       implementationStream = hasMoonshotApiKey()
-        ? moonshotStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? moonshotStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.IFLOW:
       implementationStream = hasIflowApiKey()
-        ? iflowStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? iflowStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
     case ServiceProvider.HUNYUAN:
       implementationStream = hasHunyuanApiKey()
-        ? hunyuanStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
+        ? hunyuanStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
-    case ServiceProvider.XUNFEI:
-      implementationStream = (hasXunfeiApiKey() && hasXunfeiApiSecret())
-        ? xunfeiStreamDefinition(topic, language, context)
-        : youChatStreamDefinition(topic, language, context);
-      break;
+    case ServiceProvider.YOUCHAT:
     default:
-      implementationStream = youChatStreamDefinition(
-        topic,
-        language,
-        context
-      );
+      implementationStream = youChatStreamDefinition({ ...options, topic: processedTopic });
+      break;
   }
 
   // 遍历实现的流，应用清理函数
@@ -562,7 +559,7 @@ export const llmService = {
         if (hasDeepSeekApiKey()) {
           // 使用streamDefinition方法实现chat功能 - 正确累积增量内容
           let fullResponse = '';
-          for await (const chunk of deepseekStreamDefinition(prompt, 'zh')) {
+          for await (const chunk of deepseekStreamDefinition({ topic: prompt, language: 'zh' })) {
             fullResponse += chunk;
           }
           return fullResponse;
@@ -599,7 +596,7 @@ export const llmService = {
       case ServiceProvider.DEEPSEEK:
         if (hasDeepSeekApiKey()) {
           // 使用deepseekStreamDefinition方法实现流式聊天
-          for await (const chunk of deepseekStreamDefinition(prompt, 'zh')) {
+          for await (const chunk of deepseekStreamDefinition({ topic: prompt, language: 'zh' })) {
             yield cleanContent(chunk);
           }
         } else {

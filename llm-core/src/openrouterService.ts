@@ -1,6 +1,6 @@
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
-import { generatePrompt } from './llmService';
 import { getItem, getEnv } from './utils';
+import { generatePrompt, StreamDefinitionOptions } from './llmService';
 
 // 定义可用模型
 export const OPENROUTER_MODELS = {
@@ -55,20 +55,13 @@ export function hasApiKey(): boolean {
 }
 
 // 修改streamDefinition函数使用选定的模型
-export async function* streamDefinition(
-  topic: string,
-  language: "zh" | "en" = "zh",
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function*
+streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context, responseFormat } = options;
   const apiKey = getApiKey();
-  const model = getSelectedModel(); // 使用选定的模型
   let accumulatedContent = "";
   if (!apiKey) {
-    const errorMsg =
-      language === "zh"
-        ? "Error: OPENROUTER_API_KEY is not configured. Please configure your API key in the settings to continue."
-        : "Error: OPENROUTER_API_KEY is not configured. Please configure your API key in the settings to continue.";
+    const errorMsg = language === 'zh' ? '请配置OPENROUTER_API_KEY' : 'Please configure OPENROUTER_API_KEY';
     yield errorMsg;
     return;
   }
@@ -84,18 +77,22 @@ export async function* streamDefinition(
         // 'X-Title': 'LLM Service Provider', // 可配置的站点标题
       },
       body: JSON.stringify({
-        model: model, // 使用选定的模型
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        stream: true,
-        max_tokens: 1000,
-        temperature: 0.7,
-        top_p: 0.95,
-      }),
+      model: getSelectedModel(),
+      messages: [
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      stream: true,
+      max_tokens: 4000,
+      temperature: 0.7,
+      ...(responseFormat === 'json' && {
+        response_format: {
+          type: 'json_object'
+        }
+      })
+    }),
     });
 
     if (!response.ok) {

@@ -1,4 +1,4 @@
-import { generatePrompt } from './llmService'
+import { generatePrompt, StreamDefinitionOptions } from './llmService'
 import request_xunfei from './xunfei'
 import { getItem, getEnv } from './utils'
 
@@ -147,11 +147,8 @@ export async function chat(prompt: string): Promise<string> {
 }
 
 // 流式定义生成函数
-export async function* streamDefinition (
-  topic: string,
-  language: 'zh' | 'en' = 'zh',
-  context?: string
-): AsyncGenerator<string, void, undefined> {
+export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
+  const { topic, language = 'zh', category, context } = options;
   const getApiKey = (): string => {
     return getItem('XUNFEI_API_KEY') || getEnv('VITE_XUNFEI_API_KEY') || '';
   };
