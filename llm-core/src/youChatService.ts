@@ -65,14 +65,8 @@ export function getAllowChatField(): boolean {
 
 export async function* streamDefinition(options: StreamDefinitionOptions): AsyncGenerator<string, void, undefined> {
   const { topic, language = 'zh', category, context, allowChatField } = options;
-  const apiKey = getApiKey();
+  // youchat不需要API密钥
   let accumulatedContent = '';
-  
-  if (!apiKey) {
-    const errorMsg = language === 'zh' ? '请配置YOUCHAT_API_KEY' : 'Please configure YOUCHAT_API_KEY';
-    yield errorMsg;
-    return;
-  }
   
   // 更新allowChatField全局变量
   if (allowChatField !== undefined) {
