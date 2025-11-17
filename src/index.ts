@@ -55,7 +55,8 @@ export const {
   setOpenRouterApiKey,
   setMoonshotApiKey,
   setIflowApiKey,
-  clearAllApiKeys
+  clearAllApiKeys,
+  streamDefinition
 } = llmCore;
 
 export const init = initAllServices;
@@ -67,14 +68,6 @@ export { updateSelectedPromptType } from './ApiKeyManager';
 export { default as MindMapVisualizer } from './MindMapVisualizer';
 
 // 包装llm-core的streamDefinition函数，传递promptConfig
-export async function* streamDefinition(
-  topic: string,
-  language: "zh" | "en" = "zh",
-  category?: string,
-  context?: string
-): AsyncGenerator<string, void, undefined> {
-  yield* llmCore.streamDefinition({ topic, language, category, context });
-}
 
 
 
