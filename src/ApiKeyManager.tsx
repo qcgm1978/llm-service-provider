@@ -125,7 +125,7 @@ const ApiKeyManager = ({
   };
 
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider>(
-    ServiceProvider.XUNFEI
+    ServiceProvider.DEEPSEEK
   );
   const [apiKey, setApiKey] = useState("");
   const [apiSecret, setApiSecret] = useState("");
@@ -152,9 +152,7 @@ const ApiKeyManager = ({
     handleProviderSelection(provider);
     setSelectedServiceProvider(provider);
 
-    if (provider === ServiceProvider.YOUCHAT) {
-      onSave("");
-    } else if (
+    if (
       provider !== ServiceProvider.DEEPSEEK &&
       provider !== ServiceProvider.GEMINI &&
       provider !== ServiceProvider.GROQ &&
@@ -164,7 +162,8 @@ const ApiKeyManager = ({
       provider !== ServiceProvider.OPENROUTER &&
       provider !== ServiceProvider.MOONSHOT &&
       provider !== ServiceProvider.IFLOW &&
-      provider !== ServiceProvider.HUNYUAN
+      provider !== ServiceProvider.HUNYUAN &&
+      provider !== ServiceProvider.YOUCHAT
     ) {
       onSave("");
     }
@@ -327,77 +326,121 @@ const ApiKeyManager = ({
           </div>
         </div>
 
-        {selectedProvider !== ServiceProvider.YOUCHAT && (
-          <>
+        <>
+          <div className="api-key-manager-input-group">
+            <label htmlFor="apiKey" className="api-key-manager-label">
+              {
+                providerNamesConfig[selectedProvider]?.[
+                  currentLanguage === "zh" ? "zh" : "en"
+                ]
+              }{
+                " "
+              }API {currentLanguage === "zh" ? "密钥" : "Key"}
+              {selectedProvider === ServiceProvider.GEMINI ||
+                selectedProvider === ServiceProvider.OPENAI}
+              {selectedProvider === ServiceProvider.OPENROUTER &&
+              currentLanguage === "zh"
+                ? "(通义千问3)"
+                : ""}
+            </label>
+            <div className="api-key-manager-input-wrapper">
+              <input
+                id="apiKey"
+                type={showPassword ? "text" : "password"}
+                value={apiKey}
+                onChange={(e) => {
+                  setApiKey(e.target.value);
+                  setIsValid(
+                    validateCredentials(
+                      selectedProvider,
+                      e.target.value,
+                      apiSecret
+                    )
+                  );
+                }}
+                onKeyPress={handleKeyPress}
+                placeholder={
+                  currentLanguage === "zh"
+                    ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI
+                          ? "讯飞"
+                          : selectedProvider === ServiceProvider.DEEPSEEK
+                          ? "DeepSeek"
+                          : selectedProvider === ServiceProvider.GEMINI
+                          ? "Gemini"
+                          : selectedProvider === ServiceProvider.GROQ
+                          ? "Groq"
+                          : selectedProvider === ServiceProvider.DOUBAO
+                          ? "豆包"
+                          : selectedProvider === ServiceProvider.OPENROUTER
+                          ? "OpenRouter"
+                          : selectedProvider === ServiceProvider.MOONSHOT
+                          ? "Moonshot"
+                          : selectedProvider === ServiceProvider.IFLOW
+                          ? "心流"
+                          : selectedProvider === ServiceProvider.YOUCHAT
+                          ? "YouChat"
+                          : "OpenAI"
+                      } ${selectedProvider === ServiceProvider.XUNFEI
+                          ? "API Key"
+                          : "API 密钥"}`
+                    : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI
+                          ? "Xunfei"
+                          : selectedProvider === ServiceProvider.DEEPSEEK
+                          ? "DeepSeek"
+                          : selectedProvider === ServiceProvider.GEMINI
+                          ? "Gemini"
+                          : selectedProvider === ServiceProvider.GROQ
+                          ? "Groq"
+                          : selectedProvider === ServiceProvider.DOUBAO
+                          ? "Doubao"
+                          : selectedProvider === ServiceProvider.OPENROUTER
+                          ? "OpenRouter"
+                          : selectedProvider === ServiceProvider.IFLOW
+                          ? "iFlow"
+                          : selectedProvider === ServiceProvider.YOUCHAT
+                          ? "YouChat"
+                          : "OpenAI"
+                      } API Key`
+                }
+                className="api-key-manager-input"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="api-key-manager-password-toggle"
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </div>
+
+          {selectedProvider === ServiceProvider.XUNFEI && (
             <div className="api-key-manager-input-group">
-              <label htmlFor="apiKey" className="api-key-manager-label">
-                {
-                  providerNamesConfig[selectedProvider]?.[
-                    currentLanguage === "zh" ? "zh" : "en"
-                  ]
-                }{" "}
-                API {currentLanguage === "zh" ? "密钥" : "Key"}
-                {selectedProvider === ServiceProvider.GEMINI ||
-                  selectedProvider === ServiceProvider.OPENAI}
-                {selectedProvider === ServiceProvider.OPENROUTER &&
-                currentLanguage === "zh"
-                  ? "(通义千问3)"
-                  : ""}
+              <label htmlFor="apiSecret" className="api-key-manager-label">
+                {currentLanguage === "zh"
+                  ? "讯飞 API Secret"
+                  : "Xunfei API Secret"}
               </label>
               <div className="api-key-manager-input-wrapper">
                 <input
-                  id="apiKey"
+                  id="apiSecret"
                   type={showPassword ? "text" : "password"}
-                  value={apiKey}
+                  value={apiSecret}
                   onChange={(e) => {
-                    setApiKey(e.target.value);
+                    setApiSecret(e.target.value);
                     setIsValid(
                       validateCredentials(
                         selectedProvider,
-                        e.target.value,
-                        apiSecret
+                        apiKey,
+                        e.target.value
                       )
                     );
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder={
                     currentLanguage === "zh"
-                      ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI
-                            ? "讯飞"
-                            : selectedProvider === ServiceProvider.DEEPSEEK
-                            ? "DeepSeek"
-                            : selectedProvider === ServiceProvider.GEMINI
-                            ? "Gemini"
-                            : selectedProvider === ServiceProvider.GROQ
-                            ? "Groq"
-                            : selectedProvider === ServiceProvider.DOUBAO
-                            ? "豆包"
-                            : selectedProvider === ServiceProvider.OPENROUTER
-                            ? "OpenRouter"
-                            : selectedProvider === ServiceProvider.MOONSHOT
-                            ? "Moonshot"
-                            : selectedProvider === ServiceProvider.IFLOW
-                            ? "心流"
-                            : "OpenAI"
-                        } ${selectedProvider === ServiceProvider.XUNFEI
-                            ? "API Key"
-                            : "API 密钥"}`
-                      : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI
-                            ? "Xunfei"
-                            : selectedProvider === ServiceProvider.DEEPSEEK
-                            ? "DeepSeek"
-                            : selectedProvider === ServiceProvider.GEMINI
-                            ? "Gemini"
-                            : selectedProvider === ServiceProvider.GROQ
-                            ? "Groq"
-                            : selectedProvider === ServiceProvider.DOUBAO
-                            ? "Doubao"
-                            : selectedProvider === ServiceProvider.OPENROUTER
-                            ? "OpenRouter"
-                            : selectedProvider === ServiceProvider.IFLOW
-                            ? "iFlow"
-                            : "OpenAI"
-                        } API Key`
+                      ? "请输入你的讯飞 API Secret"
+                      : "Please enter your Xunfei API Secret"
                   }
                   className="api-key-manager-input"
                 />
@@ -410,75 +453,45 @@ const ApiKeyManager = ({
                 </button>
               </div>
             </div>
+          )}
 
-            {selectedProvider === ServiceProvider.XUNFEI && (
-              <div className="api-key-manager-input-group">
-                <label htmlFor="apiSecret" className="api-key-manager-label">
-                  {currentLanguage === "zh"
-                    ? "讯飞 API Secret"
-                    : "Xunfei API Secret"}
-                </label>
-                <div className="api-key-manager-input-wrapper">
-                  <input
-                    id="apiSecret"
-                    type={showPassword ? "text" : "password"}
-                    value={apiSecret}
-                    onChange={(e) => {
-                      setApiSecret(e.target.value);
-                      setIsValid(
-                        validateCredentials(
-                          selectedProvider,
-                          apiKey,
-                          e.target.value
-                        )
-                      );
-                    }}
-                    onKeyPress={handleKeyPress}
-                    placeholder={
-                      currentLanguage === "zh"
-                        ? "请输入你的讯飞 API Secret"
-                        : "Please enter your Xunfei API Secret"
-                    }
-                    className="api-key-manager-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="api-key-manager-password-toggle"
-                  >
-                    {showPassword ? "🙈" : "👁️"}
-                  </button>
-                </div>
-              </div>
+          <p className="api-key-manager-info-text">
+            💡{
+              " "
+            }{currentLanguage === "zh" ? "获取 API 密钥：" : "Get API Key: "}
+            {selectedProvider === ServiceProvider.XUNFEI ? (
+              <a
+                href="https://console.xfyun.cn/app/myapp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {currentLanguage === "zh"
+                  ? "点击这里访问讯飞开放平台获取 API Key 和 Secret"
+                  : "Click here to visit Xunfei Open Platform to get API Key and Secret"}
+              </a>
+            ) : selectedProvider === ServiceProvider.YOUCHAT ? (
+              <a
+                href="https://you.com/platform/api-keys"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {currentLanguage === "zh"
+                  ? "点击这里访问 YouChat 平台获取 API Key"
+                  : "Click here to visit YouChat platform to get API Key"}
+              </a>
+            ) : (
+              <a
+                href={getProviderApiKeyLink(selectedProvider)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {currentLanguage === "zh"
+                  ? `点击这里访问 ${providerNamesConfig[selectedProvider]?.zh || providerNamesConfig[selectedProvider]?.en} 平台`
+                  : `Click here to visit ${providerNamesConfig[selectedProvider]?.en || providerNamesConfig[selectedProvider]?.zh} platform`}
+              </a>
             )}
-
-            <p className="api-key-manager-info-text">
-              💡{" "}
-              {currentLanguage === "zh" ? "获取 API 密钥：" : "Get API Key: "}
-              {selectedProvider === ServiceProvider.XUNFEI ? (
-                <a
-                  href="https://console.xfyun.cn/app/myapp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {currentLanguage === "zh"
-                    ? "点击这里访问讯飞开放平台获取 API Key 和 Secret"
-                    : "Click here to visit Xunfei Open Platform to get API Key and Secret"}
-                </a>
-              ) : (
-                <a
-                  href={getProviderApiKeyLink(selectedProvider)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {currentLanguage === "zh"
-                    ? `点击这里访问 ${providerNamesConfig[selectedProvider]?.zh || providerNamesConfig[selectedProvider]?.en} 平台`
-                    : `Click here to visit ${providerNamesConfig[selectedProvider]?.en || providerNamesConfig[selectedProvider]?.zh} platform`}
-                </a>
-              )}
-            </p>
-          </>
-        )}
+          </p>
+        </>
         {(enable_vpn) && (
           <div className="api-key-manager-input-group">
             <label htmlFor="apiKey" className="api-key-manager-label">
@@ -524,15 +537,14 @@ const ApiKeyManager = ({
         )}
 
         <div className="api-key-manager-actions">
-          {selectedProvider !== ServiceProvider.XUNFEI &&
-            selectedProvider !== ServiceProvider.YOUCHAT && (
-              <button
-                onClick={handleClear}
-                className="api-key-manager-clear-btn"
-              >
-                {currentLanguage === "zh" ? "清除" : "Clear"}
-              </button>
-            )}
+          {selectedProvider !== ServiceProvider.XUNFEI && (
+            <button
+              onClick={handleClear}
+              className="api-key-manager-clear-btn"
+            >
+              {currentLanguage === "zh" ? "清除" : "Clear"}
+            </button>
+          )}
           <button
             onClick={handleSave}
             disabled={!isValid}

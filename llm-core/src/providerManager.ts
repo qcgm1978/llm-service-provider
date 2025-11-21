@@ -19,9 +19,12 @@ import {
   hasOpenRouterApiKey,
   setMoonshotApiKey,
   hasMoonshotApiKey,
-  hasIflowApiKey
+  hasIflowApiKey,
+  setYouChatApiKey,
+  hasYouChatApiKey
 } from './index';
 import { setApiKey as setHunyuanApiKey, hasApiKey as hasHunyuanApiKey, clearApiKey as clearHunyuanApiKey } from './hunyuanService';
+import { clearYouChatApiKey } from './youChatService';
 
 // 定义接口
 export interface ProviderState {
@@ -77,7 +80,8 @@ export const getProviderCredentials = (provider: ServiceProvider): ProviderState
       state.isValid = hasIflowApiKey();
       break;
     case ServiceProvider.YOUCHAT:
-      state.isValid = true;
+      state.apiKey = localStorage.getItem('YOUCHAT_API_KEY') || '';
+      state.isValid = hasYouChatApiKey();
       break;
     case ServiceProvider.HUNYUAN:
       state.apiKey = localStorage.getItem('HUNYUAN_API_KEY') || '';
@@ -163,6 +167,12 @@ export const saveProviderCredentials = async (provider: ServiceProvider, apiKey:
         saved = true;
       }
       break;
+    case ServiceProvider.YOUCHAT:
+      if (apiKey.trim()) {
+        setYouChatApiKey(apiKey.trim());
+        saved = true;
+      }
+      break;
     default:
       break;
   }
@@ -209,6 +219,9 @@ export const clearProviderCredentials = (provider: ServiceProvider): void => {
     case ServiceProvider.HUNYUAN:
       clearHunyuanApiKey();
       break;
+    case ServiceProvider.YOUCHAT:
+      clearYouChatApiKey();
+      break;
     default:
       break;
   }
@@ -218,8 +231,6 @@ export const clearProviderCredentials = (provider: ServiceProvider): void => {
 export const validateCredentials = (provider: ServiceProvider, apiKey: string, apiSecret?: string): boolean => {
   if (provider === ServiceProvider.XUNFEI) {
     return apiKey.length > 0 && (apiSecret?.length || 0) > 0;
-  } else if (provider === ServiceProvider.YOUCHAT) {
-    return true;
   }
   return apiKey.length > 0;
 };
@@ -247,6 +258,8 @@ export const getProviderApiKeyLink = (provider: ServiceProvider): string => {
       return 'https://platform.iflow.cn/profile?tab=apiKey';
     case ServiceProvider.HUNYUAN:
       return 'https://cloud.tencent.com/product/hunyuan';
+    case ServiceProvider.YOUCHAT:
+      return 'https://you.com/platform/api-keys';
     default:
       return '#';
   }
