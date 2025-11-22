@@ -16,5 +16,6 @@ export const providerNamesConfig = {
   [ServiceProvider.YOUCHAT]: { zh: '优聊', en: 'YouChat' },
   [ServiceProvider.MOONSHOT]: { zh: '月之暗面', en: 'Kimi' },
   [ServiceProvider.IFLOW]: { zh: '心流', en: 'iFlow' },
-  [ServiceProvider.HUNYUAN]: { zh: '混元', en: 'Hunyuan' }
+  [ServiceProvider.HUNYUAN]: { zh: '混元', en: 'Hunyuan' },
+  [ServiceProvider.LONGCHAT]: { zh: '美团', en: 'LongChat' }
 };

@@ -163,7 +163,8 @@ const ApiKeyManager = ({
       provider !== ServiceProvider.MOONSHOT &&
       provider !== ServiceProvider.IFLOW &&
       provider !== ServiceProvider.HUNYUAN &&
-      provider !== ServiceProvider.YOUCHAT
+      provider !== ServiceProvider.YOUCHAT &&
+      provider !== ServiceProvider.LONGCHAT
     ) {
       onSave("");
     }
@@ -299,14 +300,8 @@ const ApiKeyManager = ({
             >
               OpenRouter
             </button>
-            <button
-              onClick={() => handleProviderChange(ServiceProvider.YOUCHAT)}
-              className={`api-key-manager-provider-btn ${
-                selectedProvider === ServiceProvider.YOUCHAT ? "active" : ""
-              }`}
-            >
-              YouChat
-            </button>
+           
+           
             <button
               onClick={() => handleProviderChange(ServiceProvider.IFLOW)}
               className={`api-key-manager-provider-btn ${
@@ -322,6 +317,14 @@ const ApiKeyManager = ({
               }`}
             >
               {currentLanguage === "zh" ? "混元" : "Hunyuan"}
+            </button>
+            <button
+              onClick={() => handleProviderChange(ServiceProvider.LONGCHAT)}
+              className={`api-key-manager-provider-btn ${
+                selectedProvider === ServiceProvider.LONGCHAT ? "active" : ""
+              }`}
+            >
+              {currentLanguage === "zh" ? "美团" : "LongChat"}
             </button>
           </div>
         </div>
@@ -379,6 +382,8 @@ const ApiKeyManager = ({
                           ? "心流"
                           : selectedProvider === ServiceProvider.YOUCHAT
                           ? "YouChat"
+                          : selectedProvider === ServiceProvider.LONGCHAT
+                          ? "LongChat"
                           : "OpenAI"
                       } ${selectedProvider === ServiceProvider.XUNFEI
                           ? "API Key"
@@ -399,6 +404,8 @@ const ApiKeyManager = ({
                           ? "iFlow"
                           : selectedProvider === ServiceProvider.YOUCHAT
                           ? "YouChat"
+                          : selectedProvider === ServiceProvider.LONGCHAT
+                          ? "LongChat"
                           : "OpenAI"
                       } API Key`
                 }
@@ -621,6 +628,9 @@ const ApiKeyManager = ({
               }
               {selectedProvider === ServiceProvider.HUNYUAN && 
                 (currentLanguage === "zh" ? "混元" : "Hunyuan")
+              }
+              {selectedProvider === ServiceProvider.LONGCHAT && 
+                (currentLanguage === "zh" ? "美团" : "LongChat")
               }
               {" "}{currentLanguage === "zh" 
                 ? "API 密钥已配置，应用可以正常使用" 

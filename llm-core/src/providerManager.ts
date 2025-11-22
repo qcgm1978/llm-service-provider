@@ -23,6 +23,7 @@ import {
   setYouChatApiKey,
   hasYouChatApiKey
 } from './index';
+import { setLongchatApiKey, hasLongchatApiKey, clearLongchatApiKey } from './longchatService';
 import { setApiKey as setHunyuanApiKey, hasApiKey as hasHunyuanApiKey, clearApiKey as clearHunyuanApiKey } from './hunyuanService';
 import { clearYouChatApiKey } from './youChatService';
 
@@ -86,6 +87,10 @@ export const getProviderCredentials = (provider: ServiceProvider): ProviderState
     case ServiceProvider.HUNYUAN:
       state.apiKey = localStorage.getItem('HUNYUAN_API_KEY') || '';
       state.isValid = hasHunyuanApiKey();
+      break;
+    case ServiceProvider.LONGCHAT:
+      state.apiKey = localStorage.getItem('LONGCHAT_API_KEY') || '';
+      state.isValid = hasLongchatApiKey();
       break;
     default:
       break;
@@ -173,6 +178,12 @@ export const saveProviderCredentials = async (provider: ServiceProvider, apiKey:
         saved = true;
       }
       break;
+    case ServiceProvider.LONGCHAT:
+      if (apiKey.trim()) {
+        setLongchatApiKey(apiKey.trim());
+        saved = true;
+      }
+      break;
     default:
       break;
   }
@@ -222,6 +233,9 @@ export const clearProviderCredentials = (provider: ServiceProvider): void => {
     case ServiceProvider.YOUCHAT:
       clearYouChatApiKey();
       break;
+    case ServiceProvider.LONGCHAT:
+      clearLongchatApiKey();
+      break;
     default:
       break;
   }
@@ -260,6 +274,8 @@ export const getProviderApiKeyLink = (provider: ServiceProvider): string => {
       return 'https://cloud.tencent.com/product/hunyuan';
     case ServiceProvider.YOUCHAT:
       return 'https://you.com/platform/api-keys';
+    case ServiceProvider.LONGCHAT:
+      return 'https://longcat.chat/platform/api_keys';
     default:
       return '#';
   }

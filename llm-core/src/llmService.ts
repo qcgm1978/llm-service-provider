@@ -21,6 +21,7 @@ import { streamDefinition as openrouterStreamDefinition } from "./openrouterServ
 import { streamDefinition as moonshotStreamDefinition } from "./moonshotService";
 import { streamDefinition as iflowStreamDefinition } from "./iflowService";
 import { streamDefinition as hunyuanStreamDefinition } from "./hunyuanService";
+import { streamDefinition as longchatStreamDefinition } from "./longchatService";
 
 // 添加心流模型服务
 export enum ServiceProvider {
@@ -35,6 +36,7 @@ export enum ServiceProvider {
   MOONSHOT = "moonshot",
   IFLOW = "iflow",
   HUNYUAN = "hunyuan",
+  LONGCHAT = "longchat",
 }
 
 export interface ServiceConfiguration {
@@ -75,6 +77,8 @@ export const getSelectedServiceProvider = (): ServiceProvider => {
     return ServiceProvider.IFLOW;
   } else if (hasHunyuanApiKey()) {
     return ServiceProvider.HUNYUAN;
+  } else if (hasLongchatApiKey()) {
+    return ServiceProvider.LONGCHAT;
   } else {
     return ServiceProvider.XUNFEI;
   }
@@ -121,6 +125,7 @@ export const hasApiKey = (): boolean => {
     hasOpenRouterApiKey() ||
     hasMoonshotApiKey() ||
     hasHunyuanApiKey() ||
+    hasLongchatApiKey() ||
     (hasXunfeiApiKey() && hasXunfeiApiSecret())
   );
 };
@@ -142,6 +147,7 @@ export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
     [ServiceProvider.MOONSHOT]: "Moonshot",
     [ServiceProvider.IFLOW]: "心流",
     [ServiceProvider.HUNYUAN]: "混元",
+    [ServiceProvider.LONGCHAT]: "美团",
   };
 
   // 遍历所有服务提供商
@@ -196,6 +202,10 @@ export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
       case ServiceProvider.HUNYUAN:
         config.apiKey = getItem("HUNYUAN_API_KEY") || "";
         config.isValid = hasHunyuanApiKey();
+        break;
+      case ServiceProvider.LONGCHAT:
+        config.apiKey = getItem("LONGCHAT_API_KEY") || "";
+        config.isValid = hasLongchatApiKey();
         break;
       case ServiceProvider.YOUCHAT:
         config.apiKey = getItem("YOUCHAT_API_KEY") || "";
@@ -360,6 +370,11 @@ export async function* streamDefinition(options: StreamDefinitionOptions): Async
         ? hunyuanStreamDefinition({ ...options, topic: processedTopic })
         : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
+    case ServiceProvider.LONGCHAT:
+      implementationStream = hasLongchatApiKey()
+        ? longchatStreamDefinition({ ...options, topic: processedTopic })
+        : youChatStreamDefinition({ ...options, topic: processedTopic });
+      break;
     case ServiceProvider.YOUCHAT:
     default:
       implementationStream = youChatStreamDefinition({ ...options, topic: processedTopic });
@@ -394,6 +409,21 @@ export const clearAllApiKeys = (): void => {
   localStorage.removeItem("OPENROUTER_API_KEY");
   localStorage.removeItem("MOONSHOT_API_KEY");
   localStorage.removeItem("HUNYUAN_API_KEY");
+  localStorage.removeItem("LONGCHAT_API_KEY");
+};
+
+// 添加LongChat的API密钥管理函数
+export const hasLongchatApiKey = (): boolean => {
+  const key = getItem("LONGCHAT_API_KEY");
+  return !!key && key.trim().length > 0;
+};
+
+export const setLongchatApiKey = (key: string): void => {
+  if (key) {
+    setItem("LONGCHAT_API_KEY", key);
+  } else {
+    removeItem("LONGCHAT_API_KEY");
+  }
 };
 
 export const generatePrompt = (
