@@ -2,20 +2,22 @@ import { generatePrompt } from './llmService'
 import { getItem, getEnv } from './utils'
 
 const OLLAMA_API_URL = 'http://localhost:11434/api/generate'
-const DEFAULT_OLLAMA_MODEL = 'gemma3:1b'
+const DEFAULT_OLLAMA_MODEL = 'llama3.2:latest'
 
 // 定义Ollama模型列表
 export const OLLAMA_MODELS = {
+  'deepseek-r1:8b': 'Deepseek R1 8B',
   'gemma3:1b': 'Gemma 3 1B',
-  'llama3': 'Llama 3',
-  'llama3-chinese': 'Llama 3 Chinese',
-  'gemma': 'Gemma',
-  'mistral': 'Mistral',
-  'gemma:2b': 'Gemma 2B',
-  'llama2': 'Llama 2',
-  'phi3': 'Phi-3',
-  'qwen2': 'Qwen 2',
-  'glm4': 'GLM-4'
+  'llama3.2:latest': 'Llama 3.2',
+  // 'llama3': 'Llama 3',
+  // 'llama3-chinese': 'Llama 3 Chinese',
+  // 'gemma': 'Gemma',
+  // 'mistral': 'Mistral',
+  // 'gemma:2b': 'Gemma 2B',
+  // 'llama2': 'Llama 2',
+  // 'phi3': 'Phi-3',
+  // 'qwen2': 'Qwen 2',
+  // 'glm4': 'GLM-4'
 };
 
 function getOllamaModel(): string {
