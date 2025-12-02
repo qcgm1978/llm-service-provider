@@ -22,6 +22,7 @@ import { streamDefinition as moonshotStreamDefinition } from "./moonshotService"
 import { streamDefinition as iflowStreamDefinition } from "./iflowService";
 import { streamDefinition as hunyuanStreamDefinition } from "./hunyuanService";
 import { streamDefinition as longchatStreamDefinition } from "./longchatService";
+import { streamDefinition as ollamaStreamDefinition, hasOllamaConnection } from "./ollamaService";
 
 // 添加心流模型服务
 export enum ServiceProvider {
@@ -37,6 +38,7 @@ export enum ServiceProvider {
   IFLOW = "iflow",
   HUNYUAN = "hunyuan",
   LONGCHAT = "longchat",
+  OLLAMA = "ollama",
 }
 
 export interface ServiceConfiguration {
@@ -80,6 +82,7 @@ export const getSelectedServiceProvider = (): ServiceProvider => {
   } else if (hasLongchatApiKey()) {
     return ServiceProvider.LONGCHAT;
   } else {
+    // Ollama检查需要异步处理，但这里是同步函数，暂时返回默认值
     return ServiceProvider.XUNFEI;
   }
 };
@@ -126,6 +129,8 @@ export const hasApiKey = (): boolean => {
     hasMoonshotApiKey() ||
     hasHunyuanApiKey() ||
     hasLongchatApiKey() ||
+    // Ollama检查需要异步处理，这里暂时注释
+    // hasOllamaConnection() ||
     (hasXunfeiApiKey() && hasXunfeiApiSecret())
   );
 };
@@ -148,6 +153,7 @@ export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
     [ServiceProvider.IFLOW]: "心流",
     [ServiceProvider.HUNYUAN]: "混元",
     [ServiceProvider.LONGCHAT]: "美团",
+    [ServiceProvider.OLLAMA]: "Ollama本地",
   };
 
   // 遍历所有服务提供商
@@ -206,6 +212,12 @@ export const getAllServiceConfigurations = (): ServiceConfiguration[] => {
       case ServiceProvider.LONGCHAT:
         config.apiKey = getItem("LONGCHAT_API_KEY") || "";
         config.isValid = hasLongchatApiKey();
+        break;
+      case ServiceProvider.OLLAMA:
+        config.apiKey = "本地服务不需要API密钥";
+        // 由于hasOllamaConnection现在是异步函数，这里暂时设置为true
+        // 实际使用时会在streamDefinition中进行异步检查
+        config.isValid = true;
         break;
       case ServiceProvider.YOUCHAT:
         config.apiKey = getItem("YOUCHAT_API_KEY") || "";
@@ -375,6 +387,10 @@ export async function* streamDefinition(options: StreamDefinitionOptions): Async
         ? longchatStreamDefinition({ ...options, topic: processedTopic })
         : youChatStreamDefinition({ ...options, topic: processedTopic });
       break;
+    case ServiceProvider.OLLAMA:
+        // 不再在这里检查连接，而是在ollamaStreamDefinition内部进行异步检查
+        implementationStream = ollamaStreamDefinition({ ...options, topic: processedTopic });
+        break;
     case ServiceProvider.YOUCHAT:
     default:
       implementationStream = youChatStreamDefinition({ ...options, topic: processedTopic });

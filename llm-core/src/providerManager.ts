@@ -24,6 +24,7 @@ import {
   hasYouChatApiKey
 } from './index';
 import { setLongchatApiKey, hasLongchatApiKey, clearLongchatApiKey } from './longchatService';
+import { hasOllamaConnection } from './ollamaService';
 import { setApiKey as setHunyuanApiKey, hasApiKey as hasHunyuanApiKey, clearApiKey as clearHunyuanApiKey } from './hunyuanService';
 import { clearYouChatApiKey } from './youChatService';
 
@@ -91,6 +92,12 @@ export const getProviderCredentials = (provider: ServiceProvider): ProviderState
     case ServiceProvider.LONGCHAT:
       state.apiKey = localStorage.getItem('LONGCHAT_API_KEY') || '';
       state.isValid = hasLongchatApiKey();
+      break;
+    case ServiceProvider.OLLAMA:
+      state.apiKey = "本地服务不需要API密钥";
+      // 由于hasOllamaConnection现在是异步函数，这里返回true
+      // 实际连接检查在使用时进行
+      state.isValid = true;
       break;
     default:
       break;
@@ -184,6 +191,10 @@ export const saveProviderCredentials = async (provider: ServiceProvider, apiKey:
         saved = true;
       }
       break;
+    case ServiceProvider.OLLAMA:
+      // Ollama本地服务不需要API密钥，跳过设置
+      saved = true;
+      break;
     default:
       break;
   }
@@ -236,6 +247,9 @@ export const clearProviderCredentials = (provider: ServiceProvider): void => {
     case ServiceProvider.LONGCHAT:
       clearLongchatApiKey();
       break;
+    case ServiceProvider.OLLAMA:
+      // Ollama本地服务不需要清除API密钥
+      break;
     default:
       break;
   }
@@ -276,6 +290,8 @@ export const getProviderApiKeyLink = (provider: ServiceProvider): string => {
       return 'https://you.com/platform/api-keys';
     case ServiceProvider.LONGCHAT:
       return 'https://longcat.chat/platform/api_keys';
+    case ServiceProvider.OLLAMA:
+      return 'http://localhost:11434';
     default:
       return '#';
   }

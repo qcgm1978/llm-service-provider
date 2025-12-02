@@ -17,6 +17,7 @@ import {
   getProviderDisplayName
 } from "../llm-core/src";
 import { HUNYUAN_MODELS } from "../llm-core/src/hunyuanService";
+import { OLLAMA_MODELS, getSelectedModel, setSelectedModel as setSelectedOllamaModel } from "../llm-core/src/ollamaService";
 
 import {
   getDefaultModel,
@@ -61,9 +62,17 @@ const ApiKeyManager = ({
   const [selectedOpenrouterModel, setSelectedOpenrouterModel] = useState(
     defaultOpenrouterModel
   );
+  const defaultOllamaModel = getSelectedModel();
+  const [selectedOllamaModel, setSelectedOllamaModelState] = useState(
+    defaultOllamaModel
+  );
   const customSetSelectedOpenrouterModel = (model: string) => {
     setSelectedOpenrouterModel(model);
     setSelectedModel(model);
+  };
+  const customSetSelectedOllamaModel = (model: string) => {
+    setSelectedOllamaModelState(model);
+    setSelectedOllamaModel(model);
   };
   const updateSelectedPromptType = (value: string) => {
     setSelectedPromptType(value);
@@ -151,6 +160,12 @@ const ApiKeyManager = ({
   const handleProviderChange = (provider: ServiceProvider) => {
     handleProviderSelection(provider);
     setSelectedServiceProvider(provider);
+    
+    // 当切换到Ollama时，更新选中的模型
+    if (provider === ServiceProvider.OLLAMA) {
+      const currentModel = getSelectedModel();
+      setSelectedOllamaModelState(currentModel);
+    }
 
     if (
       provider !== ServiceProvider.DEEPSEEK &&
@@ -164,7 +179,8 @@ const ApiKeyManager = ({
       provider !== ServiceProvider.IFLOW &&
       provider !== ServiceProvider.HUNYUAN &&
       provider !== ServiceProvider.YOUCHAT &&
-      provider !== ServiceProvider.LONGCHAT
+      provider !== ServiceProvider.LONGCHAT &&
+      provider !== ServiceProvider.OLLAMA
     ) {
       onSave("");
     }
@@ -208,7 +224,7 @@ const ApiKeyManager = ({
 
   if (!isOpen) return null;
 
-  const enable_vpn = selectedProvider === ServiceProvider.YOUCHAT || selectedProvider === ServiceProvider.GROQ || selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI || selectedProvider === ServiceProvider.IFLOW;
+  const enable_vpn = selectedProvider === ServiceProvider.YOUCHAT || selectedProvider === ServiceProvider.GROQ || selectedProvider === ServiceProvider.GEMINI || selectedProvider === ServiceProvider.OPENAI || selectedProvider === ServiceProvider.IFLOW || selectedProvider === ServiceProvider.OLLAMA;
   return (
     <div id="api-key-manager" onClick={onClose}>
       <div
@@ -230,11 +246,19 @@ const ApiKeyManager = ({
         <div className="api-key-manager-section">
           <label className="api-key-manager-label">
             {currentLanguage === "zh"
-              ? "服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat/OpenAI）"
-              : "Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat/OpenAI)"}
+              ? "服务提供商（讯飞星火/DeepSeek/Gemini/Meta/YouChat/OpenAI/Ollama）"
+              : "Service Provider (Xunfei/DeepSeek/Gemini/Meta/YouChat/OpenAI/Ollama)"}
           </label>
 
           <div className="api-key-manager-provider-buttons">
+             <button
+              onClick={() => handleProviderChange(ServiceProvider.DEEPSEEK)}
+              className={`api-key-manager-provider-btn ${
+                selectedProvider === ServiceProvider.DEEPSEEK ? "active" : ""
+              }`}
+            >
+              DeepSeek
+            </button>
             <button
               onClick={() => handleProviderChange(ServiceProvider.XUNFEI)}
               className={`api-key-manager-provider-btn ${
@@ -243,14 +267,7 @@ const ApiKeyManager = ({
             >
               {currentLanguage === "zh" ? "讯飞星火" : "Xunfei"}
             </button>
-            <button
-              onClick={() => handleProviderChange(ServiceProvider.DEEPSEEK)}
-              className={`api-key-manager-provider-btn ${
-                selectedProvider === ServiceProvider.DEEPSEEK ? "active" : ""
-              }`}
-            >
-              DeepSeek
-            </button>
+           
             <button
               onClick={() => handleProviderChange(ServiceProvider.GEMINI)}
               className={`api-key-manager-provider-btn ${
@@ -301,6 +318,14 @@ const ApiKeyManager = ({
               OpenRouter
             </button>
            
+            <button
+              onClick={() => handleProviderChange(ServiceProvider.OLLAMA)}
+              className={`api-key-manager-provider-btn ${
+                selectedProvider === ServiceProvider.OLLAMA ? "active" : ""
+              }`}
+            >
+              Ollama
+            </button>
            
             <button
               onClick={() => handleProviderChange(ServiceProvider.IFLOW)}
@@ -329,127 +354,89 @@ const ApiKeyManager = ({
           </div>
         </div>
 
-        <>
-          <div className="api-key-manager-input-group">
-            <label htmlFor="apiKey" className="api-key-manager-label">
-              {
-                providerNamesConfig[selectedProvider]?.[
-                  currentLanguage === "zh" ? "zh" : "en"
-                ]
-              }{
-                " "
-              }API {currentLanguage === "zh" ? "密钥" : "Key"}
-              {selectedProvider === ServiceProvider.GEMINI ||
-                selectedProvider === ServiceProvider.OPENAI}
-              {selectedProvider === ServiceProvider.OPENROUTER &&
-              currentLanguage === "zh"
-                ? "(通义千问3)"
-                : ""}
-            </label>
-            <div className="api-key-manager-input-wrapper">
-              <input
-                id="apiKey"
-                type={showPassword ? "text" : "password"}
-                value={apiKey}
-                onChange={(e) => {
-                  setApiKey(e.target.value);
-                  setIsValid(
-                    validateCredentials(
-                      selectedProvider,
-                      e.target.value,
-                      apiSecret
-                    )
-                  );
-                }}
-                onKeyPress={handleKeyPress}
-                placeholder={
-                  currentLanguage === "zh"
-                    ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI
-                          ? "讯飞"
-                          : selectedProvider === ServiceProvider.DEEPSEEK
-                          ? "DeepSeek"
-                          : selectedProvider === ServiceProvider.GEMINI
-                          ? "Gemini"
-                          : selectedProvider === ServiceProvider.GROQ
-                          ? "Groq"
-                          : selectedProvider === ServiceProvider.DOUBAO
-                          ? "豆包"
-                          : selectedProvider === ServiceProvider.OPENROUTER
-                          ? "OpenRouter"
-                          : selectedProvider === ServiceProvider.MOONSHOT
-                          ? "Moonshot"
-                          : selectedProvider === ServiceProvider.IFLOW
-                          ? "心流"
-                          : selectedProvider === ServiceProvider.YOUCHAT
-                          ? "YouChat"
-                          : selectedProvider === ServiceProvider.LONGCHAT
-                          ? "LongChat"
-                          : "OpenAI"
-                      } ${selectedProvider === ServiceProvider.XUNFEI
-                          ? "API Key"
-                          : "API 密钥"}`
-                    : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI
-                          ? "Xunfei"
-                          : selectedProvider === ServiceProvider.DEEPSEEK
-                          ? "DeepSeek"
-                          : selectedProvider === ServiceProvider.GEMINI
-                          ? "Gemini"
-                          : selectedProvider === ServiceProvider.GROQ
-                          ? "Groq"
-                          : selectedProvider === ServiceProvider.DOUBAO
-                          ? "Doubao"
-                          : selectedProvider === ServiceProvider.OPENROUTER
-                          ? "OpenRouter"
-                          : selectedProvider === ServiceProvider.IFLOW
-                          ? "iFlow"
-                          : selectedProvider === ServiceProvider.YOUCHAT
-                          ? "YouChat"
-                          : selectedProvider === ServiceProvider.LONGCHAT
-                          ? "LongChat"
-                          : "OpenAI"
-                      } API Key`
-                }
-                className="api-key-manager-input"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="api-key-manager-password-toggle"
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </button>
-            </div>
-          </div>
-
-          {selectedProvider === ServiceProvider.XUNFEI && (
+        {selectedProvider !== ServiceProvider.OLLAMA ? (
+          <>
             <div className="api-key-manager-input-group">
-              <label htmlFor="apiSecret" className="api-key-manager-label">
-                {currentLanguage === "zh"
-                  ? "讯飞 API Secret"
-                  : "Xunfei API Secret"}
+              <label htmlFor="apiKey" className="api-key-manager-label">
+                {
+                  providerNamesConfig[selectedProvider]?.[
+                    currentLanguage === "zh" ? "zh" : "en"
+                  ]
+                }{
+                  " "
+                }API {currentLanguage === "zh" ? "密钥" : "Key"}
+                {selectedProvider === ServiceProvider.GEMINI ||
+                  selectedProvider === ServiceProvider.OPENAI}
+                {selectedProvider === ServiceProvider.OPENROUTER &&
+                currentLanguage === "zh"
+                  ? "(通义千问3)"
+                  : ""}
               </label>
               <div className="api-key-manager-input-wrapper">
                 <input
-                  id="apiSecret"
+                  id="apiKey"
                   type={showPassword ? "text" : "password"}
-                  value={apiSecret}
+                  value={apiKey}
                   onChange={(e) => {
-                    setApiSecret(e.target.value);
+                    setApiKey(e.target.value);
                     setIsValid(
                       validateCredentials(
                         selectedProvider,
-                        apiKey,
-                        e.target.value
+                        e.target.value,
+                        apiSecret
                       )
                     );
                   }}
                   onKeyPress={handleKeyPress}
                   placeholder={
                     currentLanguage === "zh"
-                      ? "请输入你的讯飞 API Secret"
-                      : "Please enter your Xunfei API Secret"
+                      ? `请输入你的 ${selectedProvider === ServiceProvider.XUNFEI
+                            ? "讯飞"
+                            : selectedProvider === ServiceProvider.DEEPSEEK
+                            ? "DeepSeek"
+                            : selectedProvider === ServiceProvider.GEMINI
+                            ? "Gemini"
+                            : selectedProvider === ServiceProvider.GROQ
+                            ? "Groq"
+                            : selectedProvider === ServiceProvider.DOUBAO
+                            ? "豆包"
+                            : selectedProvider === ServiceProvider.OPENROUTER
+                            ? "OpenRouter"
+                            : selectedProvider === ServiceProvider.MOONSHOT
+                            ? "Moonshot"
+                            : selectedProvider === ServiceProvider.IFLOW
+                            ? "心流"
+                            : selectedProvider === ServiceProvider.YOUCHAT
+                            ? "YouChat"
+                            : selectedProvider === ServiceProvider.LONGCHAT
+                            ? "LongChat"
+                            : "OpenAI"
+                        } ${selectedProvider === ServiceProvider.XUNFEI
+                            ? "API Key"
+                            : "API 密钥"}`
+                      : `Please enter your ${selectedProvider === ServiceProvider.XUNFEI
+                            ? "Xunfei"
+                            : selectedProvider === ServiceProvider.DEEPSEEK
+                            ? "DeepSeek"
+                            : selectedProvider === ServiceProvider.GEMINI
+                            ? "Gemini"
+                            : selectedProvider === ServiceProvider.GROQ
+                            ? "Groq"
+                            : selectedProvider === ServiceProvider.DOUBAO
+                            ? "Doubao"
+                            : selectedProvider === ServiceProvider.OPENROUTER
+                            ? "OpenRouter"
+                            : selectedProvider === ServiceProvider.IFLOW
+                            ? "iFlow"
+                            : selectedProvider === ServiceProvider.YOUCHAT
+                            ? "YouChat"
+                            : selectedProvider === ServiceProvider.LONGCHAT
+                            ? "LongChat"
+                            : "OpenAI"
+                        } API Key`
                   }
                   className="api-key-manager-input"
+                  disabled={false}
                 />
                 <button
                   type="button"
@@ -460,51 +447,115 @@ const ApiKeyManager = ({
                 </button>
               </div>
             </div>
-          )}
 
-          <p className="api-key-manager-info-text">
-            💡{
-              " "
-            }{currentLanguage === "zh" ? "获取 API 密钥：" : "Get API Key: "}
-            {selectedProvider === ServiceProvider.XUNFEI ? (
-              <a
-                href="https://console.xfyun.cn/app/myapp"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {currentLanguage === "zh"
-                  ? "点击这里访问讯飞开放平台获取 API Key 和 Secret"
-                  : "Click here to visit Xunfei Open Platform to get API Key and Secret"}
-              </a>
-            ) : selectedProvider === ServiceProvider.YOUCHAT ? (
-              <a
-                href="https://you.com/platform/api-keys"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {currentLanguage === "zh"
-                  ? "点击这里访问 YouChat 平台获取 API Key"
-                  : "Click here to visit YouChat platform to get API Key"}
-              </a>
-            ) : (
-              <a
-                href={getProviderApiKeyLink(selectedProvider)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {currentLanguage === "zh"
-                  ? `点击这里访问 ${providerNamesConfig[selectedProvider]?.zh || providerNamesConfig[selectedProvider]?.en} 平台`
-                  : `Click here to visit ${providerNamesConfig[selectedProvider]?.en || providerNamesConfig[selectedProvider]?.zh} platform`}
-              </a>
+            {selectedProvider === ServiceProvider.XUNFEI && (
+              <div className="api-key-manager-input-group">
+                <label htmlFor="apiSecret" className="api-key-manager-label">
+                  {currentLanguage === "zh"
+                    ? "讯飞 API Secret"
+                    : "Xunfei API Secret"}
+                </label>
+                <div className="api-key-manager-input-wrapper">
+                  <input
+                    id="apiSecret"
+                    type={showPassword ? "text" : "password"}
+                    value={apiSecret}
+                    onChange={(e) => {
+                      setApiSecret(e.target.value);
+                      setIsValid(
+                        validateCredentials(
+                          selectedProvider,
+                          apiKey,
+                          e.target.value
+                        )
+                      );
+                    }}
+                    onKeyPress={handleKeyPress}
+                    placeholder={
+                      currentLanguage === "zh"
+                        ? "请输入你的讯飞 API Secret"
+                        : "Please enter your Xunfei API Secret"
+                    }
+                    className="api-key-manager-input"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="api-key-manager-password-toggle"
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+              </div>
             )}
-          </p>
-        </>
-        {(enable_vpn) && (
+
+            <p className="api-key-manager-info-text">
+              💡{" "} {currentLanguage === "zh" ? "获取 API 密钥：" : "Get API Key: "}  
+              {selectedProvider === ServiceProvider.XUNFEI ? (
+                <a
+                  href="https://console.xfyun.cn/app/myapp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {currentLanguage === "zh"
+                    ? "点击这里访问讯飞开放平台获取 API Key 和 Secret"
+                    : "Click here to visit Xunfei Open Platform to get API Key and Secret"}
+                </a>
+              ) : selectedProvider === ServiceProvider.YOUCHAT ? (
+                <a
+                  href="https://you.com/platform/api-keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {currentLanguage === "zh"
+                    ? "点击这里访问 YouChat 平台获取 API Key"
+                    : "Click here to visit YouChat platform to get API Key"}
+                </a>
+              ) : (
+                <a
+                  href={getProviderApiKeyLink(selectedProvider)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {currentLanguage === "zh"
+                    ? `点击这里访问 ${providerNamesConfig[selectedProvider]?.zh || providerNamesConfig[selectedProvider]?.en} 平台`
+                    : `Click here to visit ${providerNamesConfig[selectedProvider]?.en || providerNamesConfig[selectedProvider]?.zh} platform`}
+                </a>
+              )}
+            </p>
+          </>
+        ) : null}
+        {(enable_vpn && selectedProvider !== ServiceProvider.OLLAMA) && (
           <div className="api-key-manager-input-group">
             <label htmlFor="apiKey" className="api-key-manager-label">
               {currentLanguage === "zh" ? "(需代理)" : ""}
             </label>
           </div>
+        )}
+        {selectedProvider === ServiceProvider.OLLAMA && (
+          <>
+            <div className="api-key-manager-model-section">
+              <label className="api-key-manager-label">
+                {currentLanguage === "zh" ? "选择模型" : "Select Model"}
+              </label>
+              <select
+                value={selectedOllamaModel}
+                onChange={(e) => customSetSelectedOllamaModel(e.target.value)}
+                className="api-key-manager-select"
+              >
+                {Object.entries(OLLAMA_MODELS).map(([model, label]) => (
+                  <option key={model} value={model}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="api-key-manager-input-group">
+              <label htmlFor="apiKey" className="api-key-manager-label">
+                {currentLanguage === "zh" ? "(本地服务，运行在localhost:11434)" : "(local service, running on localhost:11434)"}
+              </label>
+            </div>
+          </>
         )}
         {selectedProvider === ServiceProvider.OPENROUTER && (
           <div className="api-key-manager-model-section">
@@ -610,7 +661,10 @@ const ApiKeyManager = ({
         {isValid && (
             <div className="api-key-manager-success-message">
               ✅
-              {selectedProvider === ServiceProvider.DEEPSEEK && "DeepSeek"}
+              {selectedProvider === ServiceProvider.OLLAMA ? 
+                (currentLanguage === "zh" ? "Ollama" : "Ollama")
+                : selectedProvider === ServiceProvider.DEEPSEEK && "DeepSeek"
+              }
               {selectedProvider === ServiceProvider.GEMINI && "Gemini"}
               {selectedProvider === ServiceProvider.GROQ && "Groq"}
               {selectedProvider === ServiceProvider.YOUCHAT && "YouChat"}
@@ -632,7 +686,11 @@ const ApiKeyManager = ({
               {selectedProvider === ServiceProvider.LONGCHAT && 
                 (currentLanguage === "zh" ? "美团" : "LongChat")
               }
-              {" "}{currentLanguage === "zh" 
+              {" "}{selectedProvider === ServiceProvider.OLLAMA ?
+                (currentLanguage === "zh" 
+                  ? "本地服务已配置，请确保Ollama服务正在运行" 
+                  : "local service has been configured, please ensure Ollama service is running")
+                : currentLanguage === "zh" 
                 ? "API 密钥已配置，应用可以正常使用" 
                 : "API key has been configured, the application can be used normally"}
             </div>
